@@ -184,7 +184,7 @@ async function cargarRifa(){
   raffleName.textContent='Sorteo #'+(r.numero_sorteo||1);
   priceEl.textContent='$'+Number(r.precio_numero).toLocaleString('es-MX')+' por número';
   const ga=document.getElementById('grandAmount');
-  if(ga) ga.innerHTML='$1,000<span class="decimals">.⁰⁰</span>';
+  if(ga) ga.innerHTML='$150<span class="decimals">.⁰⁰</span>';
 
   const {data:n,error:ne}=await db.from('numeros').select('numero,estado,apartado_hasta').eq('rifa_id',r.id).order('numero');
   if(ne){
