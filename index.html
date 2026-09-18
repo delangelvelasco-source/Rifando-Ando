@@ -67,11 +67,11 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <div class="prize">🏆</div>
 <div class="official">PRIMER SORTEO OFICIAL</div>
 <div class="grand-label">💰 GRAN PREMIO 💰</div>
-<div class="grand-amount" id="grandAmount">$1,000<span class="decimals">.⁰⁰</span></div>
+<div class="grand-amount" id="grandAmount">$150<span class="decimals">.⁰⁰</span></div>
 <div class="winner-text">✨ ¡PUEDE SER TUYO! ✨</div>
-<div class="raffle-info"><span>🎟️ <b>$15</b> por boleto</span><span>🔢 <b>100</b> números</span></div>
+<div class="raffle-info"><span>🎟️ <b id="raffleTicketPrice">$2.00</b> por boleto</span><span>🔢 <b>100</b> números</span></div>
 <h2 id="raffleName">Primer sorteo oficial</h2>
-<div class="price" id="price">$15 por número</div>
+<div class="price" id="price">$2.00 por número</div>
 <div class="meta" id="meta"><span>0% ocupados</span><span>Sorteo próximamente</span></div>
 <div class="bar"><i id="progress"></i></div>
 </div>
@@ -139,6 +139,7 @@ const tickets=document.getElementById('tickets');
 const count=document.getElementById('count');
 const total=document.getElementById('total');
 const priceEl=document.getElementById('price');
+const raffleTicketPrice=document.getElementById('raffleTicketPrice');
 const raffleName=document.getElementById('raffleName');
 const meta=document.getElementById('meta');
 const bar=document.getElementById('progress');
@@ -202,9 +203,310 @@ async function cargarRifa(){
   await cargarHistorialGanadores();
   await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});
   raffleName.textContent='Sorteo #'+(r.numero_sorteo||1);
-  priceEl.textContent='$'+Number(r.precio_numero).toLocaleString('es-MX')+' por número';
+  const ticketPrice=Number(r.precio_numero);
+  priceEl.textContent='
+
+  const {data:n,error:ne}=await db.from('numeros').select('numero,estado,apartado_hasta').eq('rifa_id',r.id).order('numero');
+  if(ne){
+    tickets.innerHTML='<p style="color:#aaa">No se pudieron cargar los números.</p>';
+    return;
+  }
+  tickets.innerHTML='';
+  let busy=0;
+  (n||[]).forEach(x=>{
+    const free=x.estado==='disponible'||(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)<=new Date());
+    if(!free) busy++;
+    const b=document.createElement('button');
+    b.type='button';
+    const stateClass=free?'available':(x.estado==='apartado'?'pending':'sold');
+    b.className='ticket '+stateClass;
+    b.textContent=String(x.numero).padStart(2,'0');
+    if(free){
+      b.addEventListener('click',()=>{
+        if(sel.has(x.numero)){
+          sel.delete(x.numero);
+          b.classList.remove('selected','pending');
+        }else{
+          sel.add(x.numero);
+          b.classList.add('selected','pending');
+        }
+        update();
+      });
+    }else{
+      b.disabled=true;
+    }
+    tickets.appendChild(b);
+  });
+  const pct=n?.length?Math.round(busy/n.length*100):0;
+  meta.innerHTML='<span>'+pct+'% ocupados</span><span>'+(r.fecha_sorteo?'Sorteo: '+new Date(r.fecha_sorteo).toLocaleDateString('es-MX'):'Sorteo próximamente')+'</span>';
+  bar.style.width=pct+'%';
+  update();
+  activarTiempoReal();
+}
+function abrirFormulario(){
+  if(!sel.size){
+    alert('Primero elige al menos un número, compa.');
+    return;
+  }
+  formNumbers.textContent=nums().join(', ');
+  modal.classList.add('open');
+}
+function cerrarFormulario(){
+  modal.classList.remove('open');
+}
+async function confirmar(e){
+  e.preventDefault();
+  if(!rifa||!sel.size) return;
+  const btn=e.submitter||e.target.querySelector('button[type="submit"]');
+  const selected=Array.from(sel);
+  const name=nombre.value.trim();
+  const phone=whatsapp.value.trim();
+  const email=correo.value.trim();
+  if(!name||!phone){
+    alert('Completa tu nombre y WhatsApp, compa.');
+    return;
+  }
+  btn.disabled=true;
+  btn.textContent='Apartando...';
+  const {data,error}=await db.rpc('apartar_numeros',{
+    p_rifa_id:rifa.id,
+    p_nombre:name,
+    p_whatsapp:phone,
+    p_correo:email,
+    p_numeros:selected
+  });
+  if(error){
+    alert('No se pudo apartar: '+error.message);
+    btn.disabled=false;
+    btn.textContent='Solicitar apartado';
+    await cargarRifa();
+    return;
+  }
+  const displayNumbers=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');
+  const displayTotal=Number(data?.total||selected.length*Number(rifa.precio_numero)).toLocaleString('es-MX');
+  document.getElementById('confirmName').textContent=name;
+  document.getElementById('confirmNumbers').textContent=displayNumbers;
+  document.getElementById('confirmTotal').textContent='$'+displayTotal;
+  const message='Hola Rifando Ando, confirmo mi apartado de los números '+displayNumbers+' por un total de $'+displayTotal+'. Mi nombre es '+name+'.';
+  document.getElementById('waConfirm').href='https://wa.me/528123859824?text='+encodeURIComponent(message);
+  formView.style.display='none';
+  confirmation.classList.add('show');
+  sel.clear();
+  btn.disabled=false;
+  btn.textContent='Solicitar apartado';
+  await cargarRifa();
+}
+modal.addEventListener('click',e=>{
+  if(e.target===modal) cerrarFormulario();
+});
+cargarRifa();
+</script>
+</body>
+</html>+ticketPrice.toFixed(2)+' por número';
+  if(raffleTicketPrice) raffleTicketPrice.textContent='
+
+  const {data:n,error:ne}=await db.from('numeros').select('numero,estado,apartado_hasta').eq('rifa_id',r.id).order('numero');
+  if(ne){
+    tickets.innerHTML='<p style="color:#aaa">No se pudieron cargar los números.</p>';
+    return;
+  }
+  tickets.innerHTML='';
+  let busy=0;
+  (n||[]).forEach(x=>{
+    const free=x.estado==='disponible'||(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)<=new Date());
+    if(!free) busy++;
+    const b=document.createElement('button');
+    b.type='button';
+    const stateClass=free?'available':(x.estado==='apartado'?'pending':'sold');
+    b.className='ticket '+stateClass;
+    b.textContent=String(x.numero).padStart(2,'0');
+    if(free){
+      b.addEventListener('click',()=>{
+        if(sel.has(x.numero)){
+          sel.delete(x.numero);
+          b.classList.remove('selected','pending');
+        }else{
+          sel.add(x.numero);
+          b.classList.add('selected','pending');
+        }
+        update();
+      });
+    }else{
+      b.disabled=true;
+    }
+    tickets.appendChild(b);
+  });
+  const pct=n?.length?Math.round(busy/n.length*100):0;
+  meta.innerHTML='<span>'+pct+'% ocupados</span><span>'+(r.fecha_sorteo?'Sorteo: '+new Date(r.fecha_sorteo).toLocaleDateString('es-MX'):'Sorteo próximamente')+'</span>';
+  bar.style.width=pct+'%';
+  update();
+  activarTiempoReal();
+}
+function abrirFormulario(){
+  if(!sel.size){
+    alert('Primero elige al menos un número, compa.');
+    return;
+  }
+  formNumbers.textContent=nums().join(', ');
+  modal.classList.add('open');
+}
+function cerrarFormulario(){
+  modal.classList.remove('open');
+}
+async function confirmar(e){
+  e.preventDefault();
+  if(!rifa||!sel.size) return;
+  const btn=e.submitter||e.target.querySelector('button[type="submit"]');
+  const selected=Array.from(sel);
+  const name=nombre.value.trim();
+  const phone=whatsapp.value.trim();
+  const email=correo.value.trim();
+  if(!name||!phone){
+    alert('Completa tu nombre y WhatsApp, compa.');
+    return;
+  }
+  btn.disabled=true;
+  btn.textContent='Apartando...';
+  const {data,error}=await db.rpc('apartar_numeros',{
+    p_rifa_id:rifa.id,
+    p_nombre:name,
+    p_whatsapp:phone,
+    p_correo:email,
+    p_numeros:selected
+  });
+  if(error){
+    alert('No se pudo apartar: '+error.message);
+    btn.disabled=false;
+    btn.textContent='Solicitar apartado';
+    await cargarRifa();
+    return;
+  }
+  const displayNumbers=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');
+  const displayTotal=Number(data?.total||selected.length*Number(rifa.precio_numero)).toLocaleString('es-MX');
+  document.getElementById('confirmName').textContent=name;
+  document.getElementById('confirmNumbers').textContent=displayNumbers;
+  document.getElementById('confirmTotal').textContent='$'+displayTotal;
+  const message='Hola Rifando Ando, confirmo mi apartado de los números '+displayNumbers+' por un total de $'+displayTotal+'. Mi nombre es '+name+'.';
+  document.getElementById('waConfirm').href='https://wa.me/528123859824?text='+encodeURIComponent(message);
+  formView.style.display='none';
+  confirmation.classList.add('show');
+  sel.clear();
+  btn.disabled=false;
+  btn.textContent='Solicitar apartado';
+  await cargarRifa();
+}
+modal.addEventListener('click',e=>{
+  if(e.target===modal) cerrarFormulario();
+});
+cargarRifa();
+</script>
+</body>
+</html>+ticketPrice.toFixed(2);
   const ga=document.getElementById('grandAmount');
-  if(ga) ga.innerHTML='$1,000<span class="decimals">.⁰⁰</span>';
+  if(ga){
+    const premioTexto=String(r.premio||'$150.00').replace(/[^0-9.]/g,'');
+    const premio=Number(premioTexto);
+    const partes=Number.isFinite(premio)?premio.toFixed(2).split('.'):[ '150','00' ];
+    ga.innerHTML='
+
+  const {data:n,error:ne}=await db.from('numeros').select('numero,estado,apartado_hasta').eq('rifa_id',r.id).order('numero');
+  if(ne){
+    tickets.innerHTML='<p style="color:#aaa">No se pudieron cargar los números.</p>';
+    return;
+  }
+  tickets.innerHTML='';
+  let busy=0;
+  (n||[]).forEach(x=>{
+    const free=x.estado==='disponible'||(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)<=new Date());
+    if(!free) busy++;
+    const b=document.createElement('button');
+    b.type='button';
+    const stateClass=free?'available':(x.estado==='apartado'?'pending':'sold');
+    b.className='ticket '+stateClass;
+    b.textContent=String(x.numero).padStart(2,'0');
+    if(free){
+      b.addEventListener('click',()=>{
+        if(sel.has(x.numero)){
+          sel.delete(x.numero);
+          b.classList.remove('selected','pending');
+        }else{
+          sel.add(x.numero);
+          b.classList.add('selected','pending');
+        }
+        update();
+      });
+    }else{
+      b.disabled=true;
+    }
+    tickets.appendChild(b);
+  });
+  const pct=n?.length?Math.round(busy/n.length*100):0;
+  meta.innerHTML='<span>'+pct+'% ocupados</span><span>'+(r.fecha_sorteo?'Sorteo: '+new Date(r.fecha_sorteo).toLocaleDateString('es-MX'):'Sorteo próximamente')+'</span>';
+  bar.style.width=pct+'%';
+  update();
+  activarTiempoReal();
+}
+function abrirFormulario(){
+  if(!sel.size){
+    alert('Primero elige al menos un número, compa.');
+    return;
+  }
+  formNumbers.textContent=nums().join(', ');
+  modal.classList.add('open');
+}
+function cerrarFormulario(){
+  modal.classList.remove('open');
+}
+async function confirmar(e){
+  e.preventDefault();
+  if(!rifa||!sel.size) return;
+  const btn=e.submitter||e.target.querySelector('button[type="submit"]');
+  const selected=Array.from(sel);
+  const name=nombre.value.trim();
+  const phone=whatsapp.value.trim();
+  const email=correo.value.trim();
+  if(!name||!phone){
+    alert('Completa tu nombre y WhatsApp, compa.');
+    return;
+  }
+  btn.disabled=true;
+  btn.textContent='Apartando...';
+  const {data,error}=await db.rpc('apartar_numeros',{
+    p_rifa_id:rifa.id,
+    p_nombre:name,
+    p_whatsapp:phone,
+    p_correo:email,
+    p_numeros:selected
+  });
+  if(error){
+    alert('No se pudo apartar: '+error.message);
+    btn.disabled=false;
+    btn.textContent='Solicitar apartado';
+    await cargarRifa();
+    return;
+  }
+  const displayNumbers=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');
+  const displayTotal=Number(data?.total||selected.length*Number(rifa.precio_numero)).toLocaleString('es-MX');
+  document.getElementById('confirmName').textContent=name;
+  document.getElementById('confirmNumbers').textContent=displayNumbers;
+  document.getElementById('confirmTotal').textContent='$'+displayTotal;
+  const message='Hola Rifando Ando, confirmo mi apartado de los números '+displayNumbers+' por un total de $'+displayTotal+'. Mi nombre es '+name+'.';
+  document.getElementById('waConfirm').href='https://wa.me/528123859824?text='+encodeURIComponent(message);
+  formView.style.display='none';
+  confirmation.classList.add('show');
+  sel.clear();
+  btn.disabled=false;
+  btn.textContent='Solicitar apartado';
+  await cargarRifa();
+}
+modal.addEventListener('click',e=>{
+  if(e.target===modal) cerrarFormulario();
+});
+cargarRifa();
+</script>
+</body>
+</html>+Number(partes[0]).toLocaleString('es-MX')+'<span class="decimals">.'+partes[1].replace(/0/g,'⁰')+'</span>';
+  }
 
   const {data:n,error:ne}=await db.from('numeros').select('numero,estado,apartado_hasta').eq('rifa_id',r.id).order('numero');
   if(ne){
