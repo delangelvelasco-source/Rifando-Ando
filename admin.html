@@ -12,12 +12,168 @@ function cerrarPago(){document.getElementById('payModal').classList.remove('open
 async function guardarPago(){
  const monto=Number(document.getElementById('payAmount').value);
  if(!payParticipant||!rifa||monto<=0){document.getElementById('payMsg').innerHTML='<span class="error">Indica un monto válido.</span>';return}
+ const ns=numerosActuales(payParticipant);
+ const total=ns.length*Number(rifa.precio_numero);
+ const {data:prev,error:pe}=await db.from('pagos').select('monto').eq('rifa_id',rifa.id).eq('participante_id',payParticipant).eq('estado','confirmado');
+ if(pe){document.getElementById('payMsg').innerHTML='<span class="error">'+esc(pe.message)+'</span>';return}
+ const pagado=(prev||[]).reduce((s,x)=>s+Number(x.monto||0),0);
+ const saldo=Math.max(0,total-pagado);
+ if(saldo<=0){document.getElementById('payMsg').innerHTML='<span class="error">Este participante ya está pagado.</span>';return}
+ if(monto>saldo){document.getElementById('payMsg').innerHTML='<span class="error">El máximo a registrar es 
+async function cargar(){const {data:r,error}=await db.from('rifas').select('*').eq('estado','activa').limit(1).maybeSingle();if(error||!r){status.textContent='No se pudo cargar la rifa.';return}rifa=r;await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});const {data:n,error:ne}=await db.from('numeros').select('id,numero,estado,apartado_hasta,participante_id').eq('rifa_id',r.id).order('numero');nGlobal=n||[];if(ne){status.textContent='No se pudieron cargar los números.';return}disp.textContent=n.filter(x=>estado(x)==='disponible').length;apart.textContent=n.filter(x=>estado(x)==='apartado').length;vend.textContent=n.filter(x=>x.estado==='vendido').length;nums.innerHTML=n.map(x=>{const st=estado(x);let b='';if(st==='apartado')b='<button class="btn small danger" onclick="liberar(\''+x.id+'\')">Liberar</button>';if(st==='disponible')b='<button class="btn small" onclick="vender(\''+x.id+'\')">Vendido</button>';if(st==='vendido')b='<button class="btn small secondary" onclick="liberar(\''+x.id+'\')">Liberar</button>';return '<div class="ticket '+st+'"><b>'+String(x.numero).padStart(2,'0')+'</b><div class="actions">'+b+'</div></div>'}).join('');const {data:p,error:pe}=await db.from('participantes').select('id,nombre,whatsapp,correo,created_at').order('created_at',{ascending:false}).limit(20);
+if(pe){participants.textContent='No se pudieron cargar participantes.';return}
+people.textContent=p?.length||0;
+const ids=(p||[]).map(x=>x.id);
+const {data:payments}=ids.length?await db.from('pagos').select('participante_id,monto,estado').eq('rifa_id',r.id).in('participante_id',ids):{data:[]};
+const paidBy={};
+(payments||[]).forEach(q=>{if(q.estado==='confirmado')paidBy[q.participante_id]=(paidBy[q.participante_id]||0)+Number(q.monto||0)});
+participants.innerHTML=p?.length?p.map(x=>{
+ const ns=nGlobal.filter(z=>z.participante_id===x.id && (z.estado==='apartado'||z.estado==='vendido')).map(z=>String(z.numero).padStart(2,'0'));
+ const total=ns.length*Number(r.precio_numero);
+ const pagado=paidBy[x.id]||0;
+ const saldo=Math.max(0,total-pagado);
+ const estadoPago=total===0?'Sin números':saldo===0?'Pagado':pagado>0?'Abono':'Pendiente';
+ const safeName=esc(x.nombre).replace(/'/g,'');
+ return '<div class="row"><b>'+esc(x.nombre)+'</b><br>'+esc(x.whatsapp)+(x.correo?' · '+esc(x.correo):'')+'<br><span class="gold">Números: '+(ns.join(', ')||'—')+'</span><div class="pay"><span>Total: 
+status.textContent=r.nombre+' · $'+Number(r.precio_numero).toLocaleString('es-MX')}db.auth.onAuthStateChange((e,s)=>{if(s)sesion();else mostrarLogin()});sesion();setInterval(()=>{if(!app.classList.contains('hidden'))cargar()},10000);</script><div id="payModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarPago()" style="float:right">×</button><h2>Registrar pago</h2><p id="payPerson"></p><div class="field"><label>Monto recibido</label><input id="payAmount" type="number" min="0.01" step="0.01"></div><div class="field"><label>Método</label><select id="payMethod"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Otro</option></select></div><button class="btn" onclick="guardarPago()">Confirmar pago</button><p id="payMsg"></p></div></div></body></html>+saldo.toLocaleString('es-MX')+'.</span>';return}
  const ins=await db.from('pagos').insert({rifa_id:rifa.id,participante_id:payParticipant,monto:monto,metodo:document.getElementById('payMethod').value,estado:'confirmado'});
  if(ins.error){document.getElementById('payMsg').innerHTML='<span class="error">'+esc(ins.error.message)+'</span>';return}
- const upd=await db.from('numeros').update({estado:'vendido',apartado_hasta:null}).eq('rifa_id',rifa.id).eq('participante_id',payParticipant).eq('estado','apartado');
- if(upd.error){document.getElementById('payMsg').innerHTML='<span class="error">Pago guardado, pero no se pudieron actualizar los números.</span>';return}
- cerrarPago();alert('Pago registrado y números vendidos.');await cargar();
+ const nuevoPagado=pagado+monto;
+ if(nuevoPagado>=total){
+   const upd=await db.from('numeros').update({estado:'vendido',apartado_hasta:null}).eq('rifa_id',rifa.id).eq('participante_id',payParticipant).eq('estado','apartado');
+   if(upd.error){document.getElementById('payMsg').innerHTML='<span class="error">Pago guardado, pero no se pudieron actualizar los números.</span>';return}
+   cerrarPago();alert('Pago completo registrado y números vendidos.');
+ }else{
+   cerrarPago();alert('Abono registrado. Saldo pendiente: 
+async function cargar(){const {data:r,error}=await db.from('rifas').select('*').eq('estado','activa').limit(1).maybeSingle();if(error||!r){status.textContent='No se pudo cargar la rifa.';return}rifa=r;await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});const {data:n,error:ne}=await db.from('numeros').select('id,numero,estado,apartado_hasta,participante_id').eq('rifa_id',r.id).order('numero');if(ne){status.textContent='No se pudieron cargar los números.';return}disp.textContent=n.filter(x=>estado(x)==='disponible').length;apart.textContent=n.filter(x=>estado(x)==='apartado').length;vend.textContent=n.filter(x=>x.estado==='vendido').length;nums.innerHTML=n.map(x=>{const st=estado(x);let b='';if(st==='apartado')b='<button class="btn small danger" onclick="liberar(\''+x.id+'\')">Liberar</button>';if(st==='disponible')b='<button class="btn small" onclick="vender(\''+x.id+'\')">Vendido</button>';if(st==='vendido')b='<button class="btn small secondary" onclick="liberar(\''+x.id+'\')">Liberar</button>';return '<div class="ticket '+st+'"><b>'+String(x.numero).padStart(2,'0')+'</b><div class="actions">'+b+'</div></div>'}).join('');const {data:p,error:pe}=await db.from('participantes').select('id,nombre,whatsapp,correo,created_at').order('created_at',{ascending:false}).limit(20);
+if(pe){participants.textContent='No se pudieron cargar participantes.';return}
+people.textContent=p?.length||0;
+participants.innerHTML=p?.length?p.map(x=>{
+ const ns=n.filter(z=>z.participante_id===x.id).map(z=>String(z.numero).padStart(2,'0'));
+ const total=ns.length*Number(r.precio_numero);
+ const safeName=esc(x.nombre).replace(/'/g,'');
+ return '<div class="row"><b>'+esc(x.nombre)+'</b><br>'+esc(x.whatsapp)+(x.correo?' · '+esc(x.correo):'')+'<br><span class="gold">Números: '+(ns.join(', ')||'—')+'</span><div class="pay"><span class="muted">Total: $'+total.toLocaleString('es-MX')+'</span><br><button class="btn small" onclick="abrirPago(\''+x.id+'\',\''+safeName+'\','+total+')">Registrar pago</button></div><small>'+new Date(x.created_at).toLocaleString('es-MX')+'</small></div>';
+}).join(''):'Sin participantes';
+status.textContent=r.nombre+' · $'+Number(r.precio_numero).toLocaleString('es-MX')}db.auth.onAuthStateChange((e,s)=>{if(s)sesion();else mostrarLogin()});sesion();setInterval(()=>{if(!app.classList.contains('hidden'))cargar()},10000);</script><div id="payModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarPago()" style="float:right">×</button><h2>Registrar pago</h2><p id="payPerson"></p><div class="field"><label>Monto recibido</label><input id="payAmount" type="number" min="0.01" step="0.01"></div><div class="field"><label>Método</label><select id="payMethod"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Otro</option></select></div><button class="btn" onclick="guardarPago()">Confirmar pago</button><p id="payMsg"></p></div></div></body></html>+(total-nuevoPagado).toLocaleString('es-MX'));
+ }
+ await cargar();
 }
+function numerosActuales(pid){
+ return nGlobal.filter(z=>z.participante_id===pid && (z.estado==='apartado'||z.estado==='vendido'));
+}
+let nGlobal=[];
+async function cargar(){const {data:r,error}=await db.from('rifas').select('*').eq('estado','activa').limit(1).maybeSingle();if(error||!r){status.textContent='No se pudo cargar la rifa.';return}rifa=r;await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});const {data:n,error:ne}=await db.from('numeros').select('id,numero,estado,apartado_hasta,participante_id').eq('rifa_id',r.id).order('numero');if(ne){status.textContent='No se pudieron cargar los números.';return}disp.textContent=n.filter(x=>estado(x)==='disponible').length;apart.textContent=n.filter(x=>estado(x)==='apartado').length;vend.textContent=n.filter(x=>x.estado==='vendido').length;nums.innerHTML=n.map(x=>{const st=estado(x);let b='';if(st==='apartado')b='<button class="btn small danger" onclick="liberar(\''+x.id+'\')">Liberar</button>';if(st==='disponible')b='<button class="btn small" onclick="vender(\''+x.id+'\')">Vendido</button>';if(st==='vendido')b='<button class="btn small secondary" onclick="liberar(\''+x.id+'\')">Liberar</button>';return '<div class="ticket '+st+'"><b>'+String(x.numero).padStart(2,'0')+'</b><div class="actions">'+b+'</div></div>'}).join('');const {data:p,error:pe}=await db.from('participantes').select('id,nombre,whatsapp,correo,created_at').order('created_at',{ascending:false}).limit(20);
+if(pe){participants.textContent='No se pudieron cargar participantes.';return}
+people.textContent=p?.length||0;
+participants.innerHTML=p?.length?p.map(x=>{
+ const ns=n.filter(z=>z.participante_id===x.id).map(z=>String(z.numero).padStart(2,'0'));
+ const total=ns.length*Number(r.precio_numero);
+ const safeName=esc(x.nombre).replace(/'/g,'');
+ return '<div class="row"><b>'+esc(x.nombre)+'</b><br>'+esc(x.whatsapp)+(x.correo?' · '+esc(x.correo):'')+'<br><span class="gold">Números: '+(ns.join(', ')||'—')+'</span><div class="pay"><span class="muted">Total: $'+total.toLocaleString('es-MX')+'</span><br><button class="btn small" onclick="abrirPago(\''+x.id+'\',\''+safeName+'\','+total+')">Registrar pago</button></div><small>'+new Date(x.created_at).toLocaleString('es-MX')+'</small></div>';
+}).join(''):'Sin participantes';
+status.textContent=r.nombre+' · $'+Number(r.precio_numero).toLocaleString('es-MX')}db.auth.onAuthStateChange((e,s)=>{if(s)sesion();else mostrarLogin()});sesion();setInterval(()=>{if(!app.classList.contains('hidden'))cargar()},10000);</script><div id="payModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarPago()" style="float:right">×</button><h2>Registrar pago</h2><p id="payPerson"></p><div class="field"><label>Monto recibido</label><input id="payAmount" type="number" min="0.01" step="0.01"></div><div class="field"><label>Método</label><select id="payMethod"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Otro</option></select></div><button class="btn" onclick="guardarPago()">Confirmar pago</button><p id="payMsg"></p></div></div></body></html>+total.toLocaleString('es-MX')+'</span><br><span>Pagado: 
+status.textContent=r.nombre+' · $'+Number(r.precio_numero).toLocaleString('es-MX')}db.auth.onAuthStateChange((e,s)=>{if(s)sesion();else mostrarLogin()});sesion();setInterval(()=>{if(!app.classList.contains('hidden'))cargar()},10000);</script><div id="payModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarPago()" style="float:right">×</button><h2>Registrar pago</h2><p id="payPerson"></p><div class="field"><label>Monto recibido</label><input id="payAmount" type="number" min="0.01" step="0.01"></div><div class="field"><label>Método</label><select id="payMethod"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Otro</option></select></div><button class="btn" onclick="guardarPago()">Confirmar pago</button><p id="payMsg"></p></div></div></body></html>+saldo.toLocaleString('es-MX')+'.</span>';return}
+ const ins=await db.from('pagos').insert({rifa_id:rifa.id,participante_id:payParticipant,monto:monto,metodo:document.getElementById('payMethod').value,estado:'confirmado'});
+ if(ins.error){document.getElementById('payMsg').innerHTML='<span class="error">'+esc(ins.error.message)+'</span>';return}
+ const nuevoPagado=pagado+monto;
+ if(nuevoPagado>=total){
+   const upd=await db.from('numeros').update({estado:'vendido',apartado_hasta:null}).eq('rifa_id',rifa.id).eq('participante_id',payParticipant).eq('estado','apartado');
+   if(upd.error){document.getElementById('payMsg').innerHTML='<span class="error">Pago guardado, pero no se pudieron actualizar los números.</span>';return}
+   cerrarPago();alert('Pago completo registrado y números vendidos.');
+ }else{
+   cerrarPago();alert('Abono registrado. Saldo pendiente: 
+async function cargar(){const {data:r,error}=await db.from('rifas').select('*').eq('estado','activa').limit(1).maybeSingle();if(error||!r){status.textContent='No se pudo cargar la rifa.';return}rifa=r;await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});const {data:n,error:ne}=await db.from('numeros').select('id,numero,estado,apartado_hasta,participante_id').eq('rifa_id',r.id).order('numero');if(ne){status.textContent='No se pudieron cargar los números.';return}disp.textContent=n.filter(x=>estado(x)==='disponible').length;apart.textContent=n.filter(x=>estado(x)==='apartado').length;vend.textContent=n.filter(x=>x.estado==='vendido').length;nums.innerHTML=n.map(x=>{const st=estado(x);let b='';if(st==='apartado')b='<button class="btn small danger" onclick="liberar(\''+x.id+'\')">Liberar</button>';if(st==='disponible')b='<button class="btn small" onclick="vender(\''+x.id+'\')">Vendido</button>';if(st==='vendido')b='<button class="btn small secondary" onclick="liberar(\''+x.id+'\')">Liberar</button>';return '<div class="ticket '+st+'"><b>'+String(x.numero).padStart(2,'0')+'</b><div class="actions">'+b+'</div></div>'}).join('');const {data:p,error:pe}=await db.from('participantes').select('id,nombre,whatsapp,correo,created_at').order('created_at',{ascending:false}).limit(20);
+if(pe){participants.textContent='No se pudieron cargar participantes.';return}
+people.textContent=p?.length||0;
+participants.innerHTML=p?.length?p.map(x=>{
+ const ns=n.filter(z=>z.participante_id===x.id).map(z=>String(z.numero).padStart(2,'0'));
+ const total=ns.length*Number(r.precio_numero);
+ const safeName=esc(x.nombre).replace(/'/g,'');
+ return '<div class="row"><b>'+esc(x.nombre)+'</b><br>'+esc(x.whatsapp)+(x.correo?' · '+esc(x.correo):'')+'<br><span class="gold">Números: '+(ns.join(', ')||'—')+'</span><div class="pay"><span class="muted">Total: $'+total.toLocaleString('es-MX')+'</span><br><button class="btn small" onclick="abrirPago(\''+x.id+'\',\''+safeName+'\','+total+')">Registrar pago</button></div><small>'+new Date(x.created_at).toLocaleString('es-MX')+'</small></div>';
+}).join(''):'Sin participantes';
+status.textContent=r.nombre+' · $'+Number(r.precio_numero).toLocaleString('es-MX')}db.auth.onAuthStateChange((e,s)=>{if(s)sesion();else mostrarLogin()});sesion();setInterval(()=>{if(!app.classList.contains('hidden'))cargar()},10000);</script><div id="payModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarPago()" style="float:right">×</button><h2>Registrar pago</h2><p id="payPerson"></p><div class="field"><label>Monto recibido</label><input id="payAmount" type="number" min="0.01" step="0.01"></div><div class="field"><label>Método</label><select id="payMethod"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Otro</option></select></div><button class="btn" onclick="guardarPago()">Confirmar pago</button><p id="payMsg"></p></div></div></body></html>+(total-nuevoPagado).toLocaleString('es-MX'));
+ }
+ await cargar();
+}
+function numerosActuales(pid){
+ return nGlobal.filter(z=>z.participante_id===pid && (z.estado==='apartado'||z.estado==='vendido'));
+}
+let nGlobal=[];
+async function cargar(){const {data:r,error}=await db.from('rifas').select('*').eq('estado','activa').limit(1).maybeSingle();if(error||!r){status.textContent='No se pudo cargar la rifa.';return}rifa=r;await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});const {data:n,error:ne}=await db.from('numeros').select('id,numero,estado,apartado_hasta,participante_id').eq('rifa_id',r.id).order('numero');if(ne){status.textContent='No se pudieron cargar los números.';return}disp.textContent=n.filter(x=>estado(x)==='disponible').length;apart.textContent=n.filter(x=>estado(x)==='apartado').length;vend.textContent=n.filter(x=>x.estado==='vendido').length;nums.innerHTML=n.map(x=>{const st=estado(x);let b='';if(st==='apartado')b='<button class="btn small danger" onclick="liberar(\''+x.id+'\')">Liberar</button>';if(st==='disponible')b='<button class="btn small" onclick="vender(\''+x.id+'\')">Vendido</button>';if(st==='vendido')b='<button class="btn small secondary" onclick="liberar(\''+x.id+'\')">Liberar</button>';return '<div class="ticket '+st+'"><b>'+String(x.numero).padStart(2,'0')+'</b><div class="actions">'+b+'</div></div>'}).join('');const {data:p,error:pe}=await db.from('participantes').select('id,nombre,whatsapp,correo,created_at').order('created_at',{ascending:false}).limit(20);
+if(pe){participants.textContent='No se pudieron cargar participantes.';return}
+people.textContent=p?.length||0;
+participants.innerHTML=p?.length?p.map(x=>{
+ const ns=n.filter(z=>z.participante_id===x.id).map(z=>String(z.numero).padStart(2,'0'));
+ const total=ns.length*Number(r.precio_numero);
+ const safeName=esc(x.nombre).replace(/'/g,'');
+ return '<div class="row"><b>'+esc(x.nombre)+'</b><br>'+esc(x.whatsapp)+(x.correo?' · '+esc(x.correo):'')+'<br><span class="gold">Números: '+(ns.join(', ')||'—')+'</span><div class="pay"><span class="muted">Total: $'+total.toLocaleString('es-MX')+'</span><br><button class="btn small" onclick="abrirPago(\''+x.id+'\',\''+safeName+'\','+total+')">Registrar pago</button></div><small>'+new Date(x.created_at).toLocaleString('es-MX')+'</small></div>';
+}).join(''):'Sin participantes';
+status.textContent=r.nombre+' · $'+Number(r.precio_numero).toLocaleString('es-MX')}db.auth.onAuthStateChange((e,s)=>{if(s)sesion();else mostrarLogin()});sesion();setInterval(()=>{if(!app.classList.contains('hidden'))cargar()},10000);</script><div id="payModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarPago()" style="float:right">×</button><h2>Registrar pago</h2><p id="payPerson"></p><div class="field"><label>Monto recibido</label><input id="payAmount" type="number" min="0.01" step="0.01"></div><div class="field"><label>Método</label><select id="payMethod"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Otro</option></select></div><button class="btn" onclick="guardarPago()">Confirmar pago</button><p id="payMsg"></p></div></div></body></html>+pagado.toLocaleString('es-MX')+' · Saldo: 
+status.textContent=r.nombre+' · $'+Number(r.precio_numero).toLocaleString('es-MX')}db.auth.onAuthStateChange((e,s)=>{if(s)sesion();else mostrarLogin()});sesion();setInterval(()=>{if(!app.classList.contains('hidden'))cargar()},10000);</script><div id="payModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarPago()" style="float:right">×</button><h2>Registrar pago</h2><p id="payPerson"></p><div class="field"><label>Monto recibido</label><input id="payAmount" type="number" min="0.01" step="0.01"></div><div class="field"><label>Método</label><select id="payMethod"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Otro</option></select></div><button class="btn" onclick="guardarPago()">Confirmar pago</button><p id="payMsg"></p></div></div></body></html>+saldo.toLocaleString('es-MX')+'.</span>';return}
+ const ins=await db.from('pagos').insert({rifa_id:rifa.id,participante_id:payParticipant,monto:monto,metodo:document.getElementById('payMethod').value,estado:'confirmado'});
+ if(ins.error){document.getElementById('payMsg').innerHTML='<span class="error">'+esc(ins.error.message)+'</span>';return}
+ const nuevoPagado=pagado+monto;
+ if(nuevoPagado>=total){
+   const upd=await db.from('numeros').update({estado:'vendido',apartado_hasta:null}).eq('rifa_id',rifa.id).eq('participante_id',payParticipant).eq('estado','apartado');
+   if(upd.error){document.getElementById('payMsg').innerHTML='<span class="error">Pago guardado, pero no se pudieron actualizar los números.</span>';return}
+   cerrarPago();alert('Pago completo registrado y números vendidos.');
+ }else{
+   cerrarPago();alert('Abono registrado. Saldo pendiente: 
+async function cargar(){const {data:r,error}=await db.from('rifas').select('*').eq('estado','activa').limit(1).maybeSingle();if(error||!r){status.textContent='No se pudo cargar la rifa.';return}rifa=r;await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});const {data:n,error:ne}=await db.from('numeros').select('id,numero,estado,apartado_hasta,participante_id').eq('rifa_id',r.id).order('numero');if(ne){status.textContent='No se pudieron cargar los números.';return}disp.textContent=n.filter(x=>estado(x)==='disponible').length;apart.textContent=n.filter(x=>estado(x)==='apartado').length;vend.textContent=n.filter(x=>x.estado==='vendido').length;nums.innerHTML=n.map(x=>{const st=estado(x);let b='';if(st==='apartado')b='<button class="btn small danger" onclick="liberar(\''+x.id+'\')">Liberar</button>';if(st==='disponible')b='<button class="btn small" onclick="vender(\''+x.id+'\')">Vendido</button>';if(st==='vendido')b='<button class="btn small secondary" onclick="liberar(\''+x.id+'\')">Liberar</button>';return '<div class="ticket '+st+'"><b>'+String(x.numero).padStart(2,'0')+'</b><div class="actions">'+b+'</div></div>'}).join('');const {data:p,error:pe}=await db.from('participantes').select('id,nombre,whatsapp,correo,created_at').order('created_at',{ascending:false}).limit(20);
+if(pe){participants.textContent='No se pudieron cargar participantes.';return}
+people.textContent=p?.length||0;
+participants.innerHTML=p?.length?p.map(x=>{
+ const ns=n.filter(z=>z.participante_id===x.id).map(z=>String(z.numero).padStart(2,'0'));
+ const total=ns.length*Number(r.precio_numero);
+ const safeName=esc(x.nombre).replace(/'/g,'');
+ return '<div class="row"><b>'+esc(x.nombre)+'</b><br>'+esc(x.whatsapp)+(x.correo?' · '+esc(x.correo):'')+'<br><span class="gold">Números: '+(ns.join(', ')||'—')+'</span><div class="pay"><span class="muted">Total: $'+total.toLocaleString('es-MX')+'</span><br><button class="btn small" onclick="abrirPago(\''+x.id+'\',\''+safeName+'\','+total+')">Registrar pago</button></div><small>'+new Date(x.created_at).toLocaleString('es-MX')+'</small></div>';
+}).join(''):'Sin participantes';
+status.textContent=r.nombre+' · $'+Number(r.precio_numero).toLocaleString('es-MX')}db.auth.onAuthStateChange((e,s)=>{if(s)sesion();else mostrarLogin()});sesion();setInterval(()=>{if(!app.classList.contains('hidden'))cargar()},10000);</script><div id="payModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarPago()" style="float:right">×</button><h2>Registrar pago</h2><p id="payPerson"></p><div class="field"><label>Monto recibido</label><input id="payAmount" type="number" min="0.01" step="0.01"></div><div class="field"><label>Método</label><select id="payMethod"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Otro</option></select></div><button class="btn" onclick="guardarPago()">Confirmar pago</button><p id="payMsg"></p></div></div></body></html>+(total-nuevoPagado).toLocaleString('es-MX'));
+ }
+ await cargar();
+}
+function numerosActuales(pid){
+ return nGlobal.filter(z=>z.participante_id===pid && (z.estado==='apartado'||z.estado==='vendido'));
+}
+let nGlobal=[];
+async function cargar(){const {data:r,error}=await db.from('rifas').select('*').eq('estado','activa').limit(1).maybeSingle();if(error||!r){status.textContent='No se pudo cargar la rifa.';return}rifa=r;await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});const {data:n,error:ne}=await db.from('numeros').select('id,numero,estado,apartado_hasta,participante_id').eq('rifa_id',r.id).order('numero');if(ne){status.textContent='No se pudieron cargar los números.';return}disp.textContent=n.filter(x=>estado(x)==='disponible').length;apart.textContent=n.filter(x=>estado(x)==='apartado').length;vend.textContent=n.filter(x=>x.estado==='vendido').length;nums.innerHTML=n.map(x=>{const st=estado(x);let b='';if(st==='apartado')b='<button class="btn small danger" onclick="liberar(\''+x.id+'\')">Liberar</button>';if(st==='disponible')b='<button class="btn small" onclick="vender(\''+x.id+'\')">Vendido</button>';if(st==='vendido')b='<button class="btn small secondary" onclick="liberar(\''+x.id+'\')">Liberar</button>';return '<div class="ticket '+st+'"><b>'+String(x.numero).padStart(2,'0')+'</b><div class="actions">'+b+'</div></div>'}).join('');const {data:p,error:pe}=await db.from('participantes').select('id,nombre,whatsapp,correo,created_at').order('created_at',{ascending:false}).limit(20);
+if(pe){participants.textContent='No se pudieron cargar participantes.';return}
+people.textContent=p?.length||0;
+participants.innerHTML=p?.length?p.map(x=>{
+ const ns=n.filter(z=>z.participante_id===x.id).map(z=>String(z.numero).padStart(2,'0'));
+ const total=ns.length*Number(r.precio_numero);
+ const safeName=esc(x.nombre).replace(/'/g,'');
+ return '<div class="row"><b>'+esc(x.nombre)+'</b><br>'+esc(x.whatsapp)+(x.correo?' · '+esc(x.correo):'')+'<br><span class="gold">Números: '+(ns.join(', ')||'—')+'</span><div class="pay"><span class="muted">Total: $'+total.toLocaleString('es-MX')+'</span><br><button class="btn small" onclick="abrirPago(\''+x.id+'\',\''+safeName+'\','+total+')">Registrar pago</button></div><small>'+new Date(x.created_at).toLocaleString('es-MX')+'</small></div>';
+}).join(''):'Sin participantes';
+status.textContent=r.nombre+' · $'+Number(r.precio_numero).toLocaleString('es-MX')}db.auth.onAuthStateChange((e,s)=>{if(s)sesion();else mostrarLogin()});sesion();setInterval(()=>{if(!app.classList.contains('hidden'))cargar()},10000);</script><div id="payModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarPago()" style="float:right">×</button><h2>Registrar pago</h2><p id="payPerson"></p><div class="field"><label>Monto recibido</label><input id="payAmount" type="number" min="0.01" step="0.01"></div><div class="field"><label>Método</label><select id="payMethod"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Otro</option></select></div><button class="btn" onclick="guardarPago()">Confirmar pago</button><p id="payMsg"></p></div></div></body></html>+saldo.toLocaleString('es-MX')+'</span><br><b>'+estadoPago+'</b><br>'+(saldo>0?'<button class="btn small" onclick="abrirPago(\''+x.id+'\',\''+safeName+'\','+saldo+')">Registrar pago</button>':'')+'</div><small>'+new Date(x.created_at).toLocaleString('es-MX')+'</small></div>';
+}).join(''):'Sin participantes';
+status.textContent=r.nombre+' · $'+Number(r.precio_numero).toLocaleString('es-MX')}db.auth.onAuthStateChange((e,s)=>{if(s)sesion();else mostrarLogin()});sesion();setInterval(()=>{if(!app.classList.contains('hidden'))cargar()},10000);</script><div id="payModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarPago()" style="float:right">×</button><h2>Registrar pago</h2><p id="payPerson"></p><div class="field"><label>Monto recibido</label><input id="payAmount" type="number" min="0.01" step="0.01"></div><div class="field"><label>Método</label><select id="payMethod"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Otro</option></select></div><button class="btn" onclick="guardarPago()">Confirmar pago</button><p id="payMsg"></p></div></div></body></html>+saldo.toLocaleString('es-MX')+'.</span>';return}
+ const ins=await db.from('pagos').insert({rifa_id:rifa.id,participante_id:payParticipant,monto:monto,metodo:document.getElementById('payMethod').value,estado:'confirmado'});
+ if(ins.error){document.getElementById('payMsg').innerHTML='<span class="error">'+esc(ins.error.message)+'</span>';return}
+ const nuevoPagado=pagado+monto;
+ if(nuevoPagado>=total){
+   const upd=await db.from('numeros').update({estado:'vendido',apartado_hasta:null}).eq('rifa_id',rifa.id).eq('participante_id',payParticipant).eq('estado','apartado');
+   if(upd.error){document.getElementById('payMsg').innerHTML='<span class="error">Pago guardado, pero no se pudieron actualizar los números.</span>';return}
+   cerrarPago();alert('Pago completo registrado y números vendidos.');
+ }else{
+   cerrarPago();alert('Abono registrado. Saldo pendiente: 
+async function cargar(){const {data:r,error}=await db.from('rifas').select('*').eq('estado','activa').limit(1).maybeSingle();if(error||!r){status.textContent='No se pudo cargar la rifa.';return}rifa=r;await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});const {data:n,error:ne}=await db.from('numeros').select('id,numero,estado,apartado_hasta,participante_id').eq('rifa_id',r.id).order('numero');if(ne){status.textContent='No se pudieron cargar los números.';return}disp.textContent=n.filter(x=>estado(x)==='disponible').length;apart.textContent=n.filter(x=>estado(x)==='apartado').length;vend.textContent=n.filter(x=>x.estado==='vendido').length;nums.innerHTML=n.map(x=>{const st=estado(x);let b='';if(st==='apartado')b='<button class="btn small danger" onclick="liberar(\''+x.id+'\')">Liberar</button>';if(st==='disponible')b='<button class="btn small" onclick="vender(\''+x.id+'\')">Vendido</button>';if(st==='vendido')b='<button class="btn small secondary" onclick="liberar(\''+x.id+'\')">Liberar</button>';return '<div class="ticket '+st+'"><b>'+String(x.numero).padStart(2,'0')+'</b><div class="actions">'+b+'</div></div>'}).join('');const {data:p,error:pe}=await db.from('participantes').select('id,nombre,whatsapp,correo,created_at').order('created_at',{ascending:false}).limit(20);
+if(pe){participants.textContent='No se pudieron cargar participantes.';return}
+people.textContent=p?.length||0;
+participants.innerHTML=p?.length?p.map(x=>{
+ const ns=n.filter(z=>z.participante_id===x.id).map(z=>String(z.numero).padStart(2,'0'));
+ const total=ns.length*Number(r.precio_numero);
+ const safeName=esc(x.nombre).replace(/'/g,'');
+ return '<div class="row"><b>'+esc(x.nombre)+'</b><br>'+esc(x.whatsapp)+(x.correo?' · '+esc(x.correo):'')+'<br><span class="gold">Números: '+(ns.join(', ')||'—')+'</span><div class="pay"><span class="muted">Total: $'+total.toLocaleString('es-MX')+'</span><br><button class="btn small" onclick="abrirPago(\''+x.id+'\',\''+safeName+'\','+total+')">Registrar pago</button></div><small>'+new Date(x.created_at).toLocaleString('es-MX')+'</small></div>';
+}).join(''):'Sin participantes';
+status.textContent=r.nombre+' · $'+Number(r.precio_numero).toLocaleString('es-MX')}db.auth.onAuthStateChange((e,s)=>{if(s)sesion();else mostrarLogin()});sesion();setInterval(()=>{if(!app.classList.contains('hidden'))cargar()},10000);</script><div id="payModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarPago()" style="float:right">×</button><h2>Registrar pago</h2><p id="payPerson"></p><div class="field"><label>Monto recibido</label><input id="payAmount" type="number" min="0.01" step="0.01"></div><div class="field"><label>Método</label><select id="payMethod"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Otro</option></select></div><button class="btn" onclick="guardarPago()">Confirmar pago</button><p id="payMsg"></p></div></div></body></html>+(total-nuevoPagado).toLocaleString('es-MX'));
+ }
+ await cargar();
+}
+function numerosActuales(pid){
+ return nGlobal.filter(z=>z.participante_id===pid && (z.estado==='apartado'||z.estado==='vendido'));
+}
+let nGlobal=[];
 async function cargar(){const {data:r,error}=await db.from('rifas').select('*').eq('estado','activa').limit(1).maybeSingle();if(error||!r){status.textContent='No se pudo cargar la rifa.';return}rifa=r;await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});const {data:n,error:ne}=await db.from('numeros').select('id,numero,estado,apartado_hasta,participante_id').eq('rifa_id',r.id).order('numero');if(ne){status.textContent='No se pudieron cargar los números.';return}disp.textContent=n.filter(x=>estado(x)==='disponible').length;apart.textContent=n.filter(x=>estado(x)==='apartado').length;vend.textContent=n.filter(x=>x.estado==='vendido').length;nums.innerHTML=n.map(x=>{const st=estado(x);let b='';if(st==='apartado')b='<button class="btn small danger" onclick="liberar(\''+x.id+'\')">Liberar</button>';if(st==='disponible')b='<button class="btn small" onclick="vender(\''+x.id+'\')">Vendido</button>';if(st==='vendido')b='<button class="btn small secondary" onclick="liberar(\''+x.id+'\')">Liberar</button>';return '<div class="ticket '+st+'"><b>'+String(x.numero).padStart(2,'0')+'</b><div class="actions">'+b+'</div></div>'}).join('');const {data:p,error:pe}=await db.from('participantes').select('id,nombre,whatsapp,correo,created_at').order('created_at',{ascending:false}).limit(20);
 if(pe){participants.textContent='No se pudieron cargar participantes.';return}
 people.textContent=p?.length||0;
