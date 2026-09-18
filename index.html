@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="version" content="2026-09-18-2041">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="version" content="2026-09-18-2045">
 <title>Rifando Ando</title>
 <style>
 *{box-sizing:border-box}
@@ -67,7 +67,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <div class="prize">🏆</div>
 <div class="official">PRIMER SORTEO OFICIAL</div>
 <div class="grand-label">💰 GRAN PREMIO 💰</div>
-<div class="grand-amount" id="grandAmount">$1,000.00</div>
+<div class="grand-amount" id="grandAmount">$1,000 MXN</div>
 <div class="winner-text">✨ ¡PUEDE SER TUYO! ✨</div>
 <div class="raffle-info"><span>🎟️ <b>$15</b> por boleto</span><span>🔢 <b>100</b> números</span></div>
 <h2 id="raffleName">Primer sorteo oficial</h2>
@@ -171,7 +171,7 @@ async function cargarRifa(){
   raffleName.textContent=r.nombre||'Primer sorteo oficial';
   priceEl.textContent='$'+Number(r.precio_numero).toLocaleString('es-MX')+' por número';
   const ga=document.getElementById('grandAmount');
-  if(ga) ga.textContent=r.premio||'$1,000.00';
+  if(ga) ga.textContent='$1,000 MXN';
 
   const {data:n,error:ne}=await db.from('numeros').select('numero,estado,apartado_hasta').eq('rifa_id',r.id).order('numero');
   if(ne){
