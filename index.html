@@ -188,7 +188,7 @@ async function cargarRifa(){
   raffleName.textContent='Sorteo #'+(r.numero_sorteo||1);
   priceEl.textContent='
   const ga=document.getElementById('grandAmount');
-  if(ga) ga.innerHTML='$1,000<span class="decimals">.⁰⁰</span>';
+  if(ga) ga.innerHTML='$150<span class="decimals">.⁰⁰</span>';
 
   const {data:n,error:ne}=await db.from('numeros').select('numero,estado,apartado_hasta').eq('rifa_id',r.id).order('numero');
   if(ne){
@@ -288,7 +288,7 @@ cargarRifa();
 </body>
 </html>+Number(r.precio_numero).toFixed(2)+' por número';
   const ga=document.getElementById('grandAmount');
-  if(ga) ga.innerHTML='$1,000<span class="decimals">.⁰⁰</span>';
+  if(ga) ga.innerHTML='$150<span class="decimals">.⁰⁰</span>';
 
   const {data:n,error:ne}=await db.from('numeros').select('numero,estado,apartado_hasta').eq('rifa_id',r.id).order('numero');
   if(ne){
