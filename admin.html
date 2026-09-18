@@ -21,7 +21,7 @@
 <div id="app" class="wrap hidden">
 <header style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
 <h1>RIFANDO <span class="gold">ANDO</span> · ADMIN</h1>
-<div><a class="btn secondary" href="index.html">Ver página</a> <button class="btn" onclick="salir()">Salir</button></div>
+<div><a class="btn secondary" href="index.html">Ver página</a> <button class="btn danger" onclick="restablecerSorteo()">🔄 Restablecer sorteo</button> <button class="btn" onclick="salir()">Salir</button></div>
 </header>
 <p id="status">Cargando...</p>
 
@@ -87,6 +87,17 @@ async function sesion(){
  const {data:{session}}=await db.auth.getSession();
  if(!session){mostrarLogin();return}
  loginView.classList.add('hidden');app.classList.remove('hidden');await cargar();
+}
+async function restablecerSorteo(){
+ if(!rifa)return;
+ if(!confirm('⚠️ PRIMERA CONFIRMACIÓN\\n\\nVas a restablecer TODA la rifa. Se eliminarán participantes y pagos y todos los números volverán a disponibles.\\n\\n¿Continuar?'))return;
+ if(!confirm('⚠️ SEGUNDA CONFIRMACIÓN\\n\\nEsta acción NO se puede deshacer desde el administrador.\\n\\n¿Realmente quieres restablecer la rifa?'))return;
+ const palabra=prompt('⚠️ TERCERA CONFIRMACIÓN\\n\\nEscribe RESTABLECER para confirmar:');
+ if(palabra!=='RESTABLECER'){alert('Restablecimiento cancelado.');return}
+ const {data,error}=await db.rpc('restablecer_rifa',{p_rifa_id:rifa.id});
+ if(error){alert('No se pudo restablecer: '+error.message);return}
+ alert('✅ Sorteo restablecido.\\n\\n'+data.numeros+' números disponibles.\\n'+data.participantes+' participantes eliminados.\\n'+data.pagos+' pagos eliminados.');
+ await cargar();
 }
 async function liberar(id){
  if(!confirm('¿Liberar este número?'))return;
