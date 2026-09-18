@@ -173,25 +173,8 @@ function activarTiempoReal(){
     .on('postgres_changes',{event:'*',schema:'public',table:'numeros',filter:'rifa_id=eq.'+rifa.id},()=>cargarRifa())
     .subscribe();
 }
-async function mostrarGanadorPublico(){
-  const box=document.getElementById('publicWinner');
-  const {data:w}=await db.from('ganadores').select('numero,nombre_snapshot,created_at').eq('rifa_id',rifa?.id||'').maybeSingle();
-  if(!w){box.classList.add('hidden');return}
-  box.classList.remove('hidden');
-  document.getElementById('publicWinnerNumber').textContent=String(w.numero).padStart(2,'0');
-  document.getElementById('publicWinnerName').textContent=w.nombre_snapshot;
-}
-async function cargarHistorialGanadores(){
-  const el=document.getElementById('winnerHistory');
-  const {data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifas(numero_sorteo)').order('created_at',{ascending:false});
-  if(error){el.innerHTML='<div class="winner-empty">No se pudo cargar el historial.</div>';return}
-  if(!data?.length){el.innerHTML='<div class="winner-empty">Aún no hay ganadores registrados.</div>';return}
-  el.innerHTML=data.map(w=>{
-    const sorteo=w.rifas?.numero_sorteo||'?';
-    const fecha=new Date(w.created_at).toLocaleDateString('es-MX');
-    return '<div class="winner-card"><div><div class="wname">Sorteo #'+sorteo+' · '+w.nombre_snapshot+'</div><div class="wdate">'+fecha+'</div></div><div class="wnum">#'+String(w.numero).padStart(2,'0')+'</div></div>';
-  }).join('');
-} 
+async function mostrarGanadorPublico(){const box=document.getElementById('publicWinner');const {data:w}=await db.from('ganadores').select('numero,nombre_snapshot,created_at').eq('rifa_id',rifa?.id||'').maybeSingle();if(!w){box.classList.add('hidden');return}box.classList.remove('hidden');document.getElementById('publicWinnerNumber').textContent=String(w.numero).padStart(2,'0');document.getElementById('publicWinnerName').textContent=w.nombre_snapshot}
+async function cargarHistorialGanadores(){const el=document.getElementById('winnerHistory');const {data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifas(numero_sorteo)').order('created_at',{ascending:false});if(error){el.innerHTML='<div class="winner-empty">No se pudo cargar el historial.</div>';return}if(!data?.length){el.innerHTML='<div class="winner-empty">Aún no hay ganadores registrados.</div>';return}el.innerHTML=data.map(w=>{const sorteo=w.rifas?.numero_sorteo||'?';const fecha=new Date(w.created_at).toLocaleDateString('es-MX');return '<div class="winner-card"><div><div class="wname">Sorteo #'+sorteo+' · '+w.nombre_snapshot+'</div><div class="wdate">'+fecha+'</div></div><div class="wnum">#'+String(w.numero).padStart(2,'0')+'</div></div>'}).join('')}
 async function cargarRifa(){
   const {data:r,error:re}=await db.from('rifas').select('*').eq('estado','activa').order('created_at',{ascending:true}).limit(1).maybeSingle();
   if(re||!r){
