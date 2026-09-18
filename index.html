@@ -121,7 +121,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <p>Tus números:</p>
 <div class="numbers" id="confirmNumbers"></div>
 <p>Total: <b class="gold" id="confirmTotal"></b></p>
-<a class="btn" id="waConfirm" href="#" target="_blank" rel="noopener" style="display:inline-block;margin:8px 4px">Confirmar por WhatsApp</a>
+<a class="btn" id="waConfirm" href="#" target="_blank" rel="noopener" style="display:inline-block;margin:8px 4px">💳 Enviar datos de pago por WhatsApp</a>
 <button class="btn" onclick="cerrarFormulario()" style="margin:8px 4px">Cerrar</button>
 </div>
 </div>
@@ -277,7 +277,22 @@ async function confirmar(e){
   document.getElementById('confirmName').textContent=name;
   document.getElementById('confirmNumbers').textContent=displayNumbers;
   document.getElementById('confirmTotal').textContent='$'+displayTotal;
-  const message='Hola Rifando Ando, confirmo mi apartado de los números '+displayNumbers+' por un total de $'+displayTotal+'. Mi nombre es '+name+'.';
+  const message='¡Hola! 😀 Te comparto mis datos para que puedas hacer el pago de tus boletos👇\n\n🎟️ Números apartados: '+displayNumbers+'\n💰 Total a pagar: 
+  document.getElementById('waConfirm').href='https://wa.me/528123859824?text='+encodeURIComponent(message);
+  formView.style.display='none';
+  confirmation.classList.add('show');
+  sel.clear();
+  btn.disabled=false;
+  btn.textContent='Solicitar apartado';
+  await cargarRifa();
+}
+modal.addEventListener('click',e=>{
+  if(e.target===modal) cerrarFormulario();
+});
+cargarRifa();
+</script>
+</body>
+</html>+displayTotal+'\n\n🏦 DATOS PARA EL PAGO\n\n- CLABE: 722969010050807387\n- Beneficiario: Miguel Angel Velasco Lazaro\n- Institución: Mercado Pago W\n\n📲 Cuando realices el pago, envíame tu comprobante por este mismo WhatsApp para confirmar tus boletos.\n\n¡Gracias por participar en Rifando Ando! 🍀🎟️';
   document.getElementById('waConfirm').href='https://wa.me/528123859824?text='+encodeURIComponent(message);
   formView.style.display='none';
   confirmation.classList.add('show');
