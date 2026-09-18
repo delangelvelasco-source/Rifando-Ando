@@ -4,13 +4,13 @@ let rifa=null,sel=new Set();
 function nums(){return [...sel].sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0'))}
 function update(){count.textContent=sel.size;total.textContent=rifa?(sel.size*Number(rifa.precio_numero)).toLocaleString('es-MX'):'0'}
 async function cargarRifa(){
- status.textContent='Cargando números...';
+ 
  const {data:r,error:re}=await db.from('rifas').select('*').eq('estado','activa').order('created_at',{ascending:true}).limit(1).maybeSingle();
  if(re||!r){status.textContent='No hay una rifa activa disponible.';return}
- rifa=r; raffleName.textContent=r.nombre; price.textContent='</body></html>+Number(r.precio_numero).toLocaleString('es-MX')+' por número';
- if(r.fecha_sorteo) drawText.textContent='Sorteo: '+new Date(r.fecha_sorteo).toLocaleDateString('es-MX');
+ rifa=r; priceEl.textContent='
+ 
  const {data:n,error:ne}=await db.from('numeros').select('numero,estado,apartado_hasta').eq('rifa_id',r.id).order('numero');
- if(ne){status.textContent='No se pudieron cargar los números.';return}
+ if(ne){tickets.innerHTML='<p style="color:#aaa">No se pudieron cargar los números.</p>';return}
  tickets.innerHTML='';let busy=0;
  n.forEach(x=>{
   const active=x.estado==='disponible'||(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)<=new Date());
@@ -19,16 +19,68 @@ async function cargarRifa(){
   if(active)b.onclick=()=>{sel.has(x.numero)?sel.delete(x.numero):sel.add(x.numero);b.classList.toggle('selected');update()};
   tickets.appendChild(b);
  });
- const pct=n.length?Math.round((busy/n.length)*100):0;
- soldText.textContent=pct+'% ocupados';progress.style.width=pct+'%';status.textContent='Números sincronizados.';update();
+ const pct=n.length?Math.round((busy/n.length)*100):0; meta.innerHTML='<span>'+pct+'% ocupados</span><span>Sorteo próximamente</span>'; bar.style.width=pct+'%'; update();
 }
-function abrirFormulario(){if(!sel.size){alert('Primero elige al menos un número, compa.');return}formNumbers.textContent=nums().join(', ');formError.textContent='';modal.classList.add('open')}
+function abrirFormulario(){if(!sel.size){alert('Primero elige al menos un número, compa.');return}formNumbers.textContent=nums().join(', ');modal.classList.add('open')}
 function cerrarFormulario(){modal.classList.remove('open')}
 async function confirmar(e){
- e.preventDefault();formError.textContent='';submitBtn.disabled=true;submitBtn.textContent='Apartando...';
+ e.preventDefault();const submitBtn=e.submitter;submitBtn.disabled=true;submitBtn.textContent='Apartando...';
  const selected=[...sel];
  const {data,error}=await db.rpc('apartar_numeros',{p_rifa_id:rifa.id,p_nombre:nombre.value,p_whatsapp:whatsapp.value,p_correo:correo.value,p_numeros:selected});
- if(error){formError.textContent=error.message;submitBtn.disabled=false;submitBtn.textContent='Solicitar apartado';await cargarRifa();return}
+ if(error){alert('No se pudo apartar: '+error.message);submitBtn.disabled=false;submitBtn.textContent='Solicitar apartado';await cargarRifa();return}
+ confirmName.textContent=nombre.value;confirmNumbers.textContent=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');
+ confirmTotal.textContent='formView.style.display='none';confirmation.classList.add('show');sel.clear();await cargarRifa();
+}
+cargarRifa();
+</script></body></html>+Number(r.precio_numero).toLocaleString('es-MX')+' por número';
+ 
+ const {data:n,error:ne}=await db.from('numeros').select('numero,estado,apartado_hasta').eq('rifa_id',r.id).order('numero');
+ if(ne){tickets.innerHTML='<p style="color:#aaa">No se pudieron cargar los números.</p>';return}
+ tickets.innerHTML='';let busy=0;
+ n.forEach(x=>{
+  const active=x.estado==='disponible'||(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)<=new Date());
+  if(!active)busy++;
+  const b=document.createElement('button');b.className='ticket'+(!active?' sold':'');b.textContent=String(x.numero).padStart(2,'0');
+  if(active)b.onclick=()=>{sel.has(x.numero)?sel.delete(x.numero):sel.add(x.numero);b.classList.toggle('selected');update()};
+  tickets.appendChild(b);
+ });
+ const pct=n.length?Math.round((busy/n.length)*100):0; meta.innerHTML='<span>'+pct+'% ocupados</span><span>Sorteo próximamente</span>'; bar.style.width=pct+'%'; update();
+}
+function abrirFormulario(){if(!sel.size){alert('Primero elige al menos un número, compa.');return}formNumbers.textContent=nums().join(', ');modal.classList.add('open')}
+function cerrarFormulario(){modal.classList.remove('open')}
+async function confirmar(e){
+ e.preventDefault();const submitBtn=e.submitter;submitBtn.disabled=true;submitBtn.textContent='Apartando...';
+ const selected=[...sel];
+ const {data,error}=await db.rpc('apartar_numeros',{p_rifa_id:rifa.id,p_nombre:nombre.value,p_whatsapp:whatsapp.value,p_correo:correo.value,p_numeros:selected});
+ if(error){alert('No se pudo apartar: '+error.message);submitBtn.disabled=false;submitBtn.textContent='Solicitar apartado';await cargarRifa();return}
+ confirmName.textContent=nombre.value;confirmNumbers.textContent=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');
+ confirmTotal.textContent='</body></html>+Number(data.total).toLocaleString('es-MX');formView.style.display='none';confirmation.classList.add('show');sel.clear();await cargarRifa();
+}
+cargarRifa();
+</script></body></html>+Number(data.total).toLocaleString('es-MX');formView.style.display='none';confirmation.classList.add('show');sel.clear();await cargarRifa();
+}
+cargarRifa();
+</script></body></html>+Number(r.precio_numero).toLocaleString('es-MX')+' por número';
+ 
+ const {data:n,error:ne}=await db.from('numeros').select('numero,estado,apartado_hasta').eq('rifa_id',r.id).order('numero');
+ if(ne){tickets.innerHTML='<p style="color:#aaa">No se pudieron cargar los números.</p>';return}
+ tickets.innerHTML='';let busy=0;
+ n.forEach(x=>{
+  const active=x.estado==='disponible'||(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)<=new Date());
+  if(!active)busy++;
+  const b=document.createElement('button');b.className='ticket'+(!active?' sold':'');b.textContent=String(x.numero).padStart(2,'0');
+  if(active)b.onclick=()=>{sel.has(x.numero)?sel.delete(x.numero):sel.add(x.numero);b.classList.toggle('selected');update()};
+  tickets.appendChild(b);
+ });
+ const pct=n.length?Math.round((busy/n.length)*100):0; meta.innerHTML='<span>'+pct+'% ocupados</span><span>Sorteo próximamente</span>'; bar.style.width=pct+'%'; update();
+}
+function abrirFormulario(){if(!sel.size){alert('Primero elige al menos un número, compa.');return}formNumbers.textContent=nums().join(', ');modal.classList.add('open')}
+function cerrarFormulario(){modal.classList.remove('open')}
+async function confirmar(e){
+ e.preventDefault();const submitBtn=e.submitter;submitBtn.disabled=true;submitBtn.textContent='Apartando...';
+ const selected=[...sel];
+ const {data,error}=await db.rpc('apartar_numeros',{p_rifa_id:rifa.id,p_nombre:nombre.value,p_whatsapp:whatsapp.value,p_correo:correo.value,p_numeros:selected});
+ if(error){alert('No se pudo apartar: '+error.message);submitBtn.disabled=false;submitBtn.textContent='Solicitar apartado';await cargarRifa();return}
  confirmName.textContent=nombre.value;confirmNumbers.textContent=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');
  confirmTotal.textContent='</body></html>+Number(data.total).toLocaleString('es-MX');formView.style.display='none';confirmation.classList.add('show');sel.clear();await cargarRifa();
 }
