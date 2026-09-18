@@ -19,7 +19,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 .card h2{margin-bottom:5px}.price{font-size:30px;font-weight:900;color:#d9a936}
 .meta{display:flex;justify-content:space-between;color:#999;margin:12px 0;gap:10px}.bar{height:8px;background:#292929;border-radius:20px}.bar i{display:block;width:0;height:100%;background:#d9a936;border-radius:20px}
 .section{max-width:1100px;margin:auto;padding:45px 22px}.section h2{font-size:34px}
-.quick-info{padding-top:18px}.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.quick-card{display:flex;gap:14px;align-items:flex-start;padding:18px;border:1px solid #292929;border-radius:17px;background:#111}.quick-icon{min-width:40px;height:40px;border-radius:12px;background:#d9a936;color:#111;display:grid;place-items:center;font-weight:1000}.quick-card h3{margin:1px 0 6px}.quick-card p{margin:0;color:#999;line-height:1.45;font-size:14px}.rules-box{margin-top:15px;padding:20px;border:1px solid #5e4816;border-radius:17px;background:linear-gradient(135deg,#17130a,#111)}.rules-box h3{margin:0 0 10px;color:#f5d36a}.rules-box ul{margin:0;padding-left:20px;color:#bbb;line-height:1.55}.rules-box li{margin:5px 0}.rules-box b{color:#fff}
+.quick-info{padding-top:18px}.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.quick-card{display:flex;gap:14px;align-items:flex-start;padding:18px;border:1px solid #292929;border-radius:17px;background:#111}.quick-icon{min-width:40px;height:40px;border-radius:12px;background:#d9a936;color:#111;display:grid;place-items:center;font-weight:1000}.quick-card h3{margin:1px 0 6px}.quick-card p{margin:0;color:#999;line-height:1.45;font-size:14px}.rules-box{margin-top:15px;padding:14px 16px;border:1px solid #5e4816;border-radius:14px;background:linear-gradient(135deg,#17130a,#111)}.rules-box h3{margin:0 0 8px;color:#f5d36a;font-size:16px}.rules-inline{display:flex;flex-wrap:wrap;gap:7px;color:#aaa;font-size:12px}.rules-inline span{padding:6px 9px;border:1px solid #292929;border-radius:8px;background:#0d0d0d}.rules-inline b{color:#fff}.rules-box.compact{padding:12px 14px}
 @media(max-width:760px){.quick-grid{grid-template-columns:1fr}.quick-info{padding-top:12px}}
 .legend{display:flex;flex-wrap:wrap;gap:18px;margin:-8px 0 18px;color:#aaa;font-size:14px}.legend span{display:flex;align-items:center;gap:7px}.legend i{width:12px;height:12px;border-radius:50%;display:inline-block}.lg-green{background:#1fc94b}.lg-yellow{background:#d9a936}.lg-orange{background:#f97316}.lg-gray{background:#555}.tickets{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}.ticket{padding:15px 3px;min-height:58px;border:1px solid #303030;border-radius:12px;background:#171717;color:#eee;font-size:22px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .ticket.selected{background:#d9a936!important;color:#111!important;border-color:#f5d36a!important;box-shadow:0 0 10px #d9a93655!important}.ticket.available{background:#0f6b2c;color:#fff;border-color:#20c957;box-shadow:0 0 7px #20c95733}.ticket.pending{background:#f97316;color:#fff;border-color:#fb923c;box-shadow:0 0 10px #f9731655}.ticket.sold{color:#555;background:#000;border-color:#202020;text-decoration:line-through;cursor:not-allowed}
@@ -86,15 +86,9 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <div class="quick-card"><div class="quick-icon">02</div><div><h3>Solicita tu apartado</h3><p>Captura tu nombre y WhatsApp para registrar tu solicitud.</p></div></div>
 <div class="quick-card"><div class="quick-icon">03</div><div><h3>Realiza tu pago</h3><p>Recibirás los datos de pago por WhatsApp. Tienes <b>30 minutos</b> para confirmar.</p></div></div>
 </div>
-<div class="rules-box">
+<div class="rules-box compact">
 <h3>📋 Reglas básicas</h3>
-<ul>
-<li>Los números seleccionados quedan apartados por un máximo de <b>30 minutos</b>.</li>
-<li>El apartado se conserva únicamente al completar y confirmar el pago dentro del plazo.</li>
-<li>Si el pago no se confirma en 30 minutos, los números podrán liberarse y quedar disponibles nuevamente.</li>
-<li>Después de pagar, envía tu comprobante por WhatsApp para confirmar tu participación.</li>
-<li>La disponibilidad de los números se actualiza en el sitio conforme se registran los apartados y pagos.</li>
-</ul>
+<div class="rules-inline"><span>⏰ <b>30 min</b> para confirmar</span><span>💳 Envía tu comprobante</span><span>🔄 Sin pago, se libera el número</span></div>
 </div>
 </section>
 
