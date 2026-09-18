@@ -296,19 +296,4 @@ modal.addEventListener('click',e=>{
 cargarRifa();
 </script>
 </body>
-</html>+displayTotal+'\n\n🏦 DATOS PARA EL PAGO\n\n- CLABE: 722969010050807387\n- Beneficiario: Miguel Angel Velasco Lazaro\n- Institución: Mercado Pago W\n\n📲 Cuando realices el pago, envíame tu comprobante por este mismo WhatsApp para confirmar tus boletos.\n\n¡Gracias por participar en Rifando Ando! 🍀🎟️';
-  document.getElementById('waConfirm').href='https://wa.me/528123859824?text='+encodeURIComponent(message);
-  formView.style.display='none';
-  confirmation.classList.add('show');
-  sel.clear();
-  btn.disabled=false;
-  btn.textContent='Solicitar apartado';
-  await cargarRifa();
-}
-modal.addEventListener('click',e=>{
-  if(e.target===modal) cerrarFormulario();
-});
-cargarRifa();
-</script>
-</body>
 </html>
