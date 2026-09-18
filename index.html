@@ -178,7 +178,7 @@ async function cargarRifa(){
   rifa=r;
   await mostrarGanadorPublico();
   await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});
-  raffleName.textContent=(r.nombre||'Primer sorteo oficial')+' · Sorteo #'+(r.numero_sorteo||1);
+  raffleName.textContent='Sorteo #'+(r.numero_sorteo||1);
   priceEl.textContent='$'+Number(r.precio_numero).toLocaleString('es-MX')+' por número';
   const ga=document.getElementById('grandAmount');
   if(ga) ga.innerHTML='$1,000<span class="decimals">.⁰⁰</span>';
