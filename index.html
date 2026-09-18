@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="version" content="2026-09-18-2105">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="version" content="2026-09-18-2115">
 <title>Rifando Ando</title>
 <style>
 *{box-sizing:border-box}
@@ -148,6 +148,7 @@ const correo=document.getElementById('correo');
 
 let rifa=null;
 let sel=new Set();
+let realtimeChannel=null;
 
 function nums(){
   return Array.from(sel).sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0'));
@@ -159,6 +160,13 @@ function update(){
 function resetConfirmation(){
   formView.style.display='';
   confirmation.classList.remove('show');
+}
+function activarTiempoReal(){
+  if(!rifa) return;
+  if(realtimeChannel) realtimeChannel.unsubscribe();
+  realtimeChannel=db.channel('rifa-numeros-'+rifa.id)
+    .on('postgres_changes',{event:'*',schema:'public',table:'numeros',filter:'rifa_id=eq.'+rifa.id},()=>cargarRifa())
+    .subscribe();
 }
 async function cargarRifa(){
   const {data:r,error:re}=await db.from('rifas').select('*').eq('estado','activa').order('created_at',{ascending:true}).limit(1).maybeSingle();
@@ -208,6 +216,7 @@ async function cargarRifa(){
   meta.innerHTML='<span>'+pct+'% ocupados</span><span>'+(r.fecha_sorteo?'Sorteo: '+new Date(r.fecha_sorteo).toLocaleDateString('es-MX'):'Sorteo próximamente')+'</span>';
   bar.style.width=pct+'%';
   update();
+  activarTiempoReal();
 }
 function abrirFormulario(){
   if(!sel.size){
