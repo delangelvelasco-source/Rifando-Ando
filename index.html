@@ -145,6 +145,7 @@ tickets.innerHTML='<p style="color:#aaa">No hay una rifa activa disponible.</p>'
 return;
 }
 rifa=r;
+await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});
 raffleName.textContent=r.nombre||'Rifa de lanzamiento';
 priceEl.textContent='$'+Number(r.precio_numero).toLocaleString('es-MX')+' por número';
 
