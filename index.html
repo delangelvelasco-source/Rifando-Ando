@@ -53,9 +53,9 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <a class="btn" href="#numeros">Quiero participar</a>
 </div>
 <div class="card">
-<div class="prize">🏆</div>
-<h2 id="raffleName">Rifa de lanzamiento</h2>
-<div class="price" id="price">$100 por número</div>
+<div class="prize">💰<span style="display:block;font-size:42px;margin-top:-10px">$1,000</span></div>
+<h2 id="raffleName">Primer sorteo oficial</h2>
+<div class="price" id="price">$15 por boleto</div>
 <div class="meta" id="meta"><span>0% ocupados</span><span>Sorteo próximamente</span></div>
 <div class="bar"><i id="progress"></i></div>
 </div>
@@ -146,7 +146,7 @@ return;
 }
 rifa=r;
 await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});
-raffleName.textContent=r.nombre||'Rifa de lanzamiento';
+raffleName.textContent=r.nombre||'Primer sorteo oficial';
 priceEl.textContent='$'+Number(r.precio_numero).toLocaleString('es-MX')+' por número';
 
 const {data:n,error:ne}=await db.from('numeros').select('numero,estado,apartado_hasta').eq('rifa_id',r.id).order('numero');
