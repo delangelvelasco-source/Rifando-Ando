@@ -1,1 +1,121 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin · Rifando Ando</title><style>body{margin:0;background:#080808;color:#fff;font-family:system-ui;padding:22px}.wrap{max-width:1100px;margin:auto}.gold{color:#d9a936}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:25px 0}.card,.panel{background:#151515;border:1px solid #303030;border-radius:18px;padding:18px}.num{font-size:32px;font-weight:900}.grid{display:grid;grid-template-columns:repeat(10,1fr);gap:7px}.ticket{padding:10px 3px;border-radius:8px;border:1px solid #333;background:#111;color:#fff}.apartado{background:#4b3b16}.vendido{background:#333;text-decoration:line-through;color:#888}@media(max-width:700px){.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(5,1fr)}}a,button{font:inherit}.btn{background:#d9a936;color:#111;border:0;border-radius:10px;padding:11px 15px;font-weight:800;text-decoration:none}.status{color:#aaa;margin:10px 0}.row{display:flex;justify-content:space-between;border-bottom:1px solid #292929;padding:12px 0}.error{color:#ff9999}</style></head><body><div class="wrap"><div class="top"><h1>RIFANDO <span class="gold">ANDO</span> · ADMIN</h1><a class="btn" href="index.html">Ver página</a></div><div id="status" class="status">Cargando...</div><div class="cards"><div class="card"><div>Disponibles</div><div class="num gold" id="disp">0</div></div><div class="card"><div>Apartados</div><div class="num" id="apart">0</div></div><div class="card"><div>Vendidos</div><div class="num" id="vend">0</div></div><div class="card"><div>Participantes</div><div class="num" id="people">0</div></div></div><div class="panel"><h2>Números</h2><div class="grid" id="nums"></div></div><div class="panel" style="margin-top:18px"><h2>Últimos participantes</h2><div id="participants">Cargando...</div></div></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script>const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);async function load(){const {data:r,error}=await db.from('rifas').select('*').eq('estado','activa').limit(1).maybeSingle();if(error||!r){status.innerHTML='<span class="error">No se pudo cargar la rifa.</span>';return}const {data:n}=await db.from('numeros').select('numero,estado,apartado_hasta').eq('rifa_id',r.id).order('numero');const d=n.filter(x=>x.estado==='disponible'||(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)<=new Date())).length;const a=n.filter(x=>x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)>new Date()).length;const v=n.filter(x=>x.estado==='vendido').length;disp.textContent=d;apart.textContent=a;vend.textContent=v;const ids=[...new Set(n.filter(x=>x.estado!=='disponible'&&x.participante_id).map(x=>x.participante_id))];nums.innerHTML=n.map(x=>'<div class="ticket '+(x.estado==='vendido'?'vendido':x.estado==='apartado'?'apartado':'')+'">'+String(x.numero).padStart(2,'0')+'</div>').join('');const {data:p}=await db.from('participantes').select('nombre,whatsapp,correo,created_at').order('created_at',{ascending:false}).limit(20);people.textContent=p?.length||0;participants.innerHTML=p?.length?p.map(x=>'<div class="row"><span><b>'+escapeHtml(x.nombre)+'</b><br><small>'+escapeHtml(x.whatsapp)+(x.correo?' · '+escapeHtml(x.correo):'')+'</small></span><small>'+new Date(x.created_at).toLocaleString('es-MX')+'</small></div>').join(''):'Sin participantes todavía';status.textContent=r.nombre+' · $'+Number(r.precio_numero).toLocaleString('es-MX')+' por número'}function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}load();setInterval(load,10000)</script></body></html>
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin · Rifando Ando</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080808;color:#fff;font-family:system-ui,-apple-system,sans-serif;padding:22px}
+.wrap{max-width:1100px;margin:auto}.gold{color:#d9a936}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:25px 0}.card,.panel{background:#151515;border:1px solid #303030;border-radius:18px;padding:18px}
+.num{font-size:32px;font-weight:900}.grid{display:grid;grid-template-columns:repeat(10,1fr);gap:7px}
+.ticket{padding:8px 3px;border-radius:8px;border:1px solid #333;background:#111;color:#fff;text-align:center;cursor:pointer}
+.apartado{background:#4b3b16}.vendido{background:#333;text-decoration:line-through;color:#888}.disponible{background:#111}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:#aaa;font-size:13px;margin:10px 0 18px}.dot{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px}
+a,button{font:inherit}.btn{background:#d9a936;color:#111;border:0;border-radius:10px;padding:11px 15px;font-weight:800;text-decoration:none;cursor:pointer}
+.btn.secondary{background:#292929;color:#fff}.btn.danger{background:#7a3030;color:#fff}.btn.small{padding:7px 9px;font-size:12px}
+.status{color:#aaa;margin:10px 0}.row{display:flex;justify-content:space-between;gap:15px;border-bottom:1px solid #292929;padding:12px 0}.row small{color:#aaa}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}.error{color:#ff9999}.ok{color:#9fdf9f}
+.participant{margin-top:5px}.notice{padding:12px;border-radius:10px;background:#201d14;color:#d9a936;margin-bottom:14px}
+@media(max-width:700px){.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(5,1fr)}.row{display:block}.row>small{display:block;margin-top:5px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><h1>RIFANDO <span class="gold">ANDO</span> · ADMIN</h1><a class="btn" href="index.html">Ver página</a></div>
+<div id="status" class="status">Cargando...</div>
+
+<div class="cards">
+<div class="card"><div>Disponibles</div><div class="num gold" id="disp">0</div></div>
+<div class="card"><div>Apartados</div><div class="num" id="apart">0</div></div>
+<div class="card"><div>Vendidos</div><div class="num" id="vend">0</div></div>
+<div class="card"><div>Participantes</div><div class="num" id="people">0</div></div>
+</div>
+
+<div class="panel">
+<h2>Números</h2>
+<div class="legend">
+<span><i class="dot" style="background:#111;border:1px solid #555"></i>Disponible</span>
+<span><i class="dot" style="background:#4b3b16"></i>Apartado</span>
+<span><i class="dot" style="background:#333"></i>Vendido</span>
+</div>
+<div class="notice">Toca un número para administrarlo. <b>Liberar</b> devuelve un apartado a disponible; <b>Vendido</b> lo marca como vendido.</div>
+<div class="grid" id="nums"></div>
+</div>
+
+<div class="panel" style="margin-top:18px">
+<h2>Últimos participantes</h2>
+<div id="participants">Cargando...</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let currentRifa=null;
+const statusEl=document.getElementById('status');
+
+function escapeHtml(s){
+return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+
+function estadoNumero(x){
+if(x.estado==='vendido')return 'vendido';
+if(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)>new Date())return 'apartado';
+return 'disponible';
+}
+
+async function cambiarNumero(id,accion){
+if(!currentRifa)return;
+let update={estado:accion,participante_id:null,apartado_hasta:null};
+if(accion==='vendido'){
+const ok=confirm('¿Marcar este número como VENDIDO?');
+if(!ok)return;
+}else{
+const ok=confirm('¿Liberar este número y dejarlo disponible?');
+if(!ok)return;
+}
+const {error}=await db.from('numeros').update(update).eq('id',id).eq('rifa_id',currentRifa.id);
+if(error){alert('No se pudo actualizar: '+error.message);return}
+await load();
+}
+
+async function load(){
+const {data:r,error}=await db.from('rifas').select('*').eq('estado','activa').order('created_at',{ascending:true}).limit(1).maybeSingle();
+if(error||!r){statusEl.innerHTML='<span class="error">No se pudo cargar la rifa.</span>';return}
+currentRifa=r;
+
+const {data:n,error:ne}=await db.from('numeros').select('id,numero,estado,apartado_hasta,participante_id').eq('rifa_id',r.id).order('numero');
+if(ne){statusEl.innerHTML='<span class="error">No se pudieron cargar los números.</span>';return}
+
+const now=new Date();
+const d=n.filter(x=>estadoNumero(x)==='disponible').length;
+const a=n.filter(x=>estadoNumero(x)==='apartado').length;
+const v=n.filter(x=>x.estado==='vendido').length;
+disp.textContent=d;apart.textContent=a;vend.textContent=v;
+
+nums.innerHTML=n.map(x=>{
+const st=estadoNumero(x);
+let action='';
+if(st==='apartado')action='<button class="btn small danger" onclick="event.stopPropagation();cambiarNumero(\''+x.id+'\',\'disponible\')">Liberar</button>';
+if(st==='disponible')action='<button class="btn small" onclick="event.stopPropagation();cambiarNumero(\''+x.id+'\',\'vendido\')">Vendido</button>';
+if(st==='vendido')action='<button class="btn small secondary" onclick="event.stopPropagation();cambiarNumero(\''+x.id+'\',\'disponible\')">Liberar</button>';
+return '<div><div class="ticket '+st+'"><b>'+String(x.numero).padStart(2,'0')+'</b><div class="actions">'+action+'</div></div></div>';
+}).join('');
+
+const {data:p,error:pe}=await db.from('participantes').select('id,nombre,whatsapp,correo,created_at').order('created_at',{ascending:false}).limit(20);
+if(pe){participants.innerHTML='<span class="error">No se pudieron cargar participantes.</span>';return}
+people.textContent=p?.length||0;
+participants.innerHTML=p?.length?p.map(x=>{
+const myNums=n.filter(z=>z.participante_id===x.id).map(z=>String(z.numero).padStart(2,'0')).join(', ');
+return '<div class="row"><div><b>'+escapeHtml(x.nombre)+'</b><div class="participant">'+escapeHtml(x.whatsapp)+(x.correo?' · '+escapeHtml(x.correo):'')+'</div>'+(myNums?'<div class="gold" style="margin-top:5px">Números: '+escapeHtml(myNums)+'</div>':'')+'</div><small>'+new Date(x.created_at).toLocaleString('es-MX')+'</small></div>';
+}).join(''):'Sin participantes todavía';
+
+statusEl.textContent=r.nombre+' · $'+Number(r.precio_numero).toLocaleString('es-MX')+' por número · Actualización automática';
+}
+load();
+setInterval(load,10000);
+</script>
+</body>
+</html>
