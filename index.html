@@ -281,8 +281,8 @@ async function confirmar(e){
   document.getElementById('confirmName').textContent=name;
   document.getElementById('confirmNumbers').textContent=displayNumbers;
   document.getElementById('confirmTotal').textContent='$'+displayTotal;
-  const message='¡Hola! 😀 Te comparto mis datos para que puedas hacer el pago de tus boletos👇\n\n🎟️ Números apartados: '+displayNumbers+'\n💰 Total a pagar: 
-  document.getElementById('waConfirm').href='https://wa.me/528123859824?text='+encodeURIComponent(message);
+  const message='¡Hola! 😀 Te comparto mis datos para que puedas hacer el pago de tus boletos👇\\n\\n🎟️ Números apartados: '+displayNumbers+'\\n💰 Total a pagar: $'+displayTotal+'\\n\\n⏳ *TIEMPO PARA CONFIRMAR*\\n\\nTu selección queda apartada por un máximo de *30 minutos*. Para conservar tus números, es necesario completar el pago dentro de ese plazo. Si el pago no se confirma dentro de los 30 minutos, el apartado vencerá y los números podrán volver a estar disponibles para otros participantes.\\n\\n🏦 *DATOS PARA EL PAGO*\\n\\n- CLABE: 722969010050807387\\n- Beneficiario: Miguel Angel Velasco Lazaro\\n- Institución: Mercado Pago W\\n\\n📲 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tus boletos.\\n\\n¡Gracias por participar en *Rifando Ando*! 🍀🎟️';
+document.getElementById('waConfirm').href='https://wa.me/528123859824?text='+encodeURIComponent(message);
   formView.style.display='none';
   confirmation.classList.add('show');
   sel.clear();
