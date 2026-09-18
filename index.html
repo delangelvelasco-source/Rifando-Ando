@@ -230,8 +230,11 @@ async function cargarHistorialGanadores(){
   el.innerHTML=data.map(w=>{
     const s=w.rifas&&w.rifas.numero_sorteo?w.rifas.numero_sorteo:'?';
     const d=new Date(w.created_at).toLocaleDateString('es-MX');
-    const nombrePublico=(w.nombre_snapshot||'').trim().split(/\s+/)[0]||'Ganador';
-    return '<div class="winner-card"><div><div class="wname">Sorteo #'+s+' · '+nombrePublico+'</div><div class="wdate">'+d+'</div></div><div class="wnum">#'+String(w.numero).padStart(2,'0')+'</div></div>';
+    const partesNombre=(w.nombre_snapshot||'').trim().split(/\s+/).filter(Boolean);
+    const nombrePublico=partesNombre[0]||'Ganador';
+    const apellidoPublico=partesNombre[1] ? partesNombre[1].slice(0,3)+'...' : '';
+    const nombreVisible=apellidoPublico ? nombrePublico+' '+apellidoPublico : nombrePublico;
+    return '<div class="winner-card"><div><div class="wname">Sorteo #'+s+' · '+nombreVisible+'</div><div class="wdate">'+d+'</div></div><div class="wnum">#'+String(w.numero).padStart(2,'0')+'</div></div>';
   }).join('');
 }
 function abrirFormulario(){
