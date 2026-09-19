@@ -243,6 +243,28 @@ async function activarCanalSorteoPublico(){
   });
 }
 
+async function revisarSorteoRealPersistente(){
+  if(!rifa)return;
+  const {data,error}=await db.from('sorteo_eventos_en_vivo')
+    .select('id,start_at,duration_ms,numeros,estado,numero_ganador,nombre_ganador')
+    .eq('rifa_id',rifa.id)
+    .order('created_at',{ascending:false})
+    .limit(1)
+    .maybeSingle();
+  if(error||!data)return;
+  const startAt=new Date(data.start_at).getTime();
+  const duration=Number(data.duration_ms)||45000;
+  if(data.estado==='en_vivo' && startAt<=Date.now()+2000 && Date.now()<=startAt+duration+10000){
+    if(Number(lastDemoStartAt)!==startAt){
+      lastDemoStartAt=startAt;
+      activarSorteoPublico({rifa_id:rifa.id,numeros:Array.isArray(data.numeros)?data.numeros:[],demo:false,start_at:startAt,duration_ms:duration});
+    }
+  }
+  if(data.estado==='finalizado' && data.numero_ganador!=null){
+    revelarSorteoPublico({rifa_id:rifa.id,numero:data.numero_ganador,nombre:data.nombre_ganador||'Ganador',demo:false});
+  }
+}
+
 async function revisarPruebaPersistente(){
   if(!rifa)return;
   const {data,error}=await db.from('sorteo_pruebas')
@@ -407,7 +429,7 @@ modal.addEventListener('click',e=>{
   if(e.target===modal) cerrarFormulario();
 });
 cargarRifa();
-setInterval(revisarPruebaPersistente,1500);
+setInterval(()=>{revisarPruebaPersistente();revisarSorteoRealPersistente()},1500);
 </script>
 </body>
 </html>
