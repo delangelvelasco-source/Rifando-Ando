@@ -76,9 +76,14 @@ async function probarAnimacionClientes(){
     ch.subscribe(status=>{if(status==='SUBSCRIBED'||status==='CHANNEL_ERROR'||status==='TIMED_OUT')finish()});
     setTimeout(finish,5000);
   });
-  const startAt=Date.now()+1500;
+  const startAt=Date.now()+2500;
   const durationMs=45000;
-  await ch.send({type:'broadcast',event:'sorteo_inicio',payload:{rifa_id:rifa.id,numeros:lista,demo:true,start_at:startAt,duration_ms:durationMs}});
+  const inicioPayload={rifa_id:rifa.id,numeros:lista,demo:true,start_at:startAt,duration_ms:durationMs};
+  // Repetimos el aviso de inicio para que clientes con una conexión lenta no pierdan la señal.
+  for(let intento=0;intento<5;intento++){
+    await ch.send({type:'broadcast',event:'sorteo_inicio',payload:inicioPayload});
+    if(intento<4) await new Promise(r=>setTimeout(r,450));
+  }
   $('drawModal').classList.add('open');$('drawWinner').classList.add('hidden');$('drawStatus').textContent='🌐 PRUEBA EN CLIENTES · No se realizará ni registrará ningún sorteo.';$('drawGrid').innerHTML=lista.map(n=>'<div class="ticket"><b>'+String(n).padStart(2,'0')+'</b></div>').join('');
   await new Promise(r=>setTimeout(r,Math.max(0,startAt-Date.now())));
   const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;const started=Date.now();let i=0;
