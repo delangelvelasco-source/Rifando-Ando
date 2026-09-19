@@ -171,6 +171,7 @@ const whatsapp=document.getElementById('whatsapp');
 let rifa=null;
 let sel=new Set();
 let confirmWhatsAppClicked=false;
+let solicitudPendiente=false;
 let realtimeChannel=null;let drawPublicChannel=null;let drawAnimationTimer=null;let lastDemoStartAt=0;let lastRealEventId=null;
 
 function nums(){
@@ -405,6 +406,7 @@ async function cargarRifa(){
     b.textContent=String(x.numero).padStart(2,'0');
     if(free){
       b.addEventListener('click',()=>{
+        if(solicitudPendiente)return;
         if(sel.has(x.numero)){sel.delete(x.numero);b.classList.remove('selected')}
         else{sel.add(x.numero);b.classList.add('selected')}
         update();
@@ -417,6 +419,7 @@ async function cargarRifa(){
   bar.style.width=pct+'%';
   update();
   actualizarWhatsAppAyuda();
+  if(solicitudPendiente)bloquearNuevaSeleccion(true);
   activarTiempoReal();
 }
 async function cargarHistorialGanadores(){
@@ -449,6 +452,10 @@ function actualizarWhatsAppAyuda(){
   link.href='https://wa.me/528123859824?text='+encodeURIComponent(message);
 }
 function abrirFormulario(){
+  if(solicitudPendiente){
+    alert('Tienes una solicitud pendiente. Primero envía la confirmación por WhatsApp.');
+    return;
+  }
   if(!sel.size){
     alert('Primero elige al menos un número, compa.');
     return;
@@ -456,6 +463,14 @@ function abrirFormulario(){
   formNumbers.textContent=nums().join(', ');
   actualizarWhatsAppAyuda();
   modal.classList.add('open');
+}
+function bloquearNuevaSeleccion(bloquear){
+  solicitudPendiente=bloquear;
+  document.querySelectorAll('#tickets .ticket').forEach(b=>{
+    b.disabled=bloquear || b.classList.contains('sold') || b.classList.contains('pending');
+    b.style.opacity=bloquear?'0.55':'';
+    b.style.cursor=bloquear?'not-allowed':'';
+  });
 }
 function restaurarSolicitudPendiente(){
   try{
@@ -466,9 +481,14 @@ function restaurarSolicitudPendiente(){
       localStorage.removeItem('rifando_pendiente_whatsapp');
       return;
     }
+    const numerosPendientes=String(p.numbers||'').split(',').map(x=>parseInt(x.trim(),10)).filter(Number.isFinite);
+    sel=new Set(numerosPendientes);
+    solicitudPendiente=true;
     document.getElementById('confirmName').textContent=p.name||'';
     document.getElementById('confirmNumbers').textContent=p.numbers||'';
     document.getElementById('confirmTotal').textContent=p.total||'';
+    update();
+    bloquearNuevaSeleccion(true);
     const waConfirm=document.getElementById('waConfirm');
     const recoveredNumbers=String(p.numbers||'').trim();
     const recoveredMessage='Hola Rifando Ando, confirmo mi apartado de los números '+recoveredNumbers+' por un total de '+String(p.total||'')+'. Mi nombre es '+String(p.name||'')+'.';
@@ -478,6 +498,10 @@ function restaurarSolicitudPendiente(){
       if(confirmWhatsAppClicked)return false;
       confirmWhatsAppClicked=true;
       localStorage.removeItem('rifando_pendiente_whatsapp');
+      solicitudPendiente=false;
+      sel.clear();
+      bloquearNuevaSeleccion(false);
+      update();
       waConfirm.style.pointerEvents='none';
       waConfirm.style.opacity='.65';
       waConfirm.textContent='✅ Solicitud enviada por WhatsApp';
@@ -542,6 +566,10 @@ async function confirmar(e){
     if(confirmWhatsAppClicked)return false;
     confirmWhatsAppClicked=true;
     try{localStorage.removeItem('rifando_pendiente_whatsapp')}catch(e){}
+    solicitudPendiente=false;
+    sel.clear();
+    bloquearNuevaSeleccion(false);
+    update();
     waConfirm.style.pointerEvents='none';
     waConfirm.style.opacity='.65';
     waConfirm.textContent='✅ Solicitud enviada por WhatsApp';
