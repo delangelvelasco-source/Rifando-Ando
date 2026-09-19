@@ -163,7 +163,7 @@ const correo=document.getElementById('correo');
 
 let rifa=null;
 let sel=new Set();
-let realtimeChannel=null;let drawPublicChannel=null;let drawAnimationTimer=null;
+let realtimeChannel=null;let drawPublicChannel=null;let drawAnimationTimer=null;let lastDemoStartAt=0;
 
 function nums(){
   return Array.from(sel).sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0'));
@@ -185,6 +185,9 @@ function activarTiempoReal(){
 }
 function activarSorteoPublico(payload){
   if(!payload||payload.rifa_id!==rifa?.id)return;
+  // El administrador puede repetir la señal para conexiones lentas; no reiniciar la misma prueba.
+  if(payload.demo&&Number(payload.start_at)&&Number(payload.start_at)===lastDemoStartAt)return;
+  if(payload.demo&&Number(payload.start_at))lastDemoStartAt=Number(payload.start_at);
   const overlay=document.getElementById('publicDraw'),grid=document.getElementById('publicDrawGrid'),num=document.getElementById('publicDrawNumber'),status=document.getElementById('publicDrawStatus'),res=document.getElementById('publicDrawResult');
   const lista=(payload.numeros||[]).map(Number).sort((a,b)=>a-b);if(!lista.length)return;
   overlay.classList.add('open');res.classList.remove('show');status.textContent=payload.demo?'👁️ PRUEBA DE ANIMACIÓN · No es un sorteo real':'Participan '+lista.length+' números · selección en curso';grid.innerHTML=lista.map(n=>'<span>'+String(n).padStart(2,'0')+'</span>').join('');
