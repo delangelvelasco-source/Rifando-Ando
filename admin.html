@@ -58,7 +58,7 @@ const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: redu
 }
 async function abrirPruebaPublica(){
   if(!rifa)return;
-  const ok=confirm('🌐 PRUEBA EN CLIENTES\\n\\nAsegúrate de tener abiertas las páginas de los clientes antes de continuar.\\n\\nLa prueba durará 45 segundos y NO realizará ni registrará ningún sorteo.\\n\\n¿Iniciar la prueba ahora?');
+  const ok=confirm('🌐 PRUEBA EN CLIENTES\\n\\nAsegúrate de tener abiertas las páginas de los clientes.\\n\\nLa prueba durará 45 segundos y NO realizará ni registrará ningún sorteo.\\n\\n¿Iniciar la prueba ahora?');
   if(!ok)return;
   await probarAnimacionClientes();
 }
@@ -69,30 +69,28 @@ async function probarAnimacionClientes(){
   const lista=(sold||[]).map(x=>Number(x.numero));
   if(!lista.length){alert('No hay números vendidos para probar la animación.');return}
   const demo=lista[Math.floor(Math.random()*lista.length)];
-  const ch=db.channel('rifa-sorteo-publico-'+rifa.id);
-  await new Promise(resolve=>{
-    let done=false;
-    const finish=()=>{if(!done){done=true;resolve()}};
-    ch.subscribe(status=>{if(status==='SUBSCRIBED'||status==='CHANNEL_ERROR'||status==='TIMED_OUT')finish()});
-    setTimeout(finish,5000);
-  });
-  const startAt=Date.now()+2500;
+  const startAt=new Date(Date.now()+3000).toISOString();
   const durationMs=45000;
-  const inicioPayload={rifa_id:rifa.id,numeros:lista,demo:true,start_at:startAt,duration_ms:durationMs};
-  // Repetimos el aviso de inicio para que clientes con una conexión lenta no pierdan la señal.
-  for(let intento=0;intento<5;intento++){
-    await ch.send({type:'broadcast',event:'sorteo_inicio',payload:inicioPayload});
-    if(intento<4) await new Promise(r=>setTimeout(r,450));
-  }
-  $('drawModal').classList.add('open');$('drawWinner').classList.add('hidden');$('drawStatus').textContent='🌐 PRUEBA EN CLIENTES · No se realizará ni registrará ningún sorteo.';$('drawGrid').innerHTML=lista.map(n=>'<div class="ticket"><b>'+String(n).padStart(2,'0')+'</b></div>').join('');
-  await new Promise(r=>setTimeout(r,Math.max(0,startAt-Date.now())));
-  const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;const started=Date.now();let i=0;
+  const {error:te}=await db.from('sorteo_pruebas').insert({
+    rifa_id:rifa.id,start_at:startAt,duration_ms:durationMs,numeros:lista,numero_demo:demo
+  });
+  if(te){alert('No se pudo iniciar la prueba para los clientes: '+te.message);return}
+  $('drawModal').classList.add('open');$('drawWinner').classList.add('hidden');
+  $('drawStatus').textContent='🌐 PRUEBA EN CLIENTES · No se realizará ni registrará ningún sorteo.';
+  $('drawGrid').innerHTML=lista.map(n=>'<div class="ticket"><b>'+String(n).padStart(2,'0')+'</b></div>').join('');
+  const startMs=new Date(startAt).getTime();
+  await new Promise(r=>setTimeout(r,Math.max(0,startMs-Date.now())));
+  const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const started=Date.now();let i=0;
   if(!reduce){while(Date.now()-started<durationMs){$('drawNumber').textContent=String(lista[i%lista.length]).padStart(2,'0');i++;await new Promise(r=>setTimeout(r,55));}}else{await new Promise(r=>setTimeout(r,700));}
-  $('drawNumber').textContent=String(demo).padStart(2,'0');$('drawWinnerNumber').textContent=String(demo).padStart(2,'0');$('drawWinnerName').textContent='Prueba de animación · NO es un ganador real';$('drawWinner').classList.remove('hidden');$('drawStatus').textContent='🎉 PRUEBA COMPLETADA · No se modificó la base de datos.';
-  await ch.send({type:'broadcast',event:'sorteo_resultado',payload:{rifa_id:rifa.id,numero:demo,nombre:'Prueba de animación · NO es un ganador real',demo:true}});
-  await ch.unsubscribe();
+  $('drawNumber').textContent=String(demo).padStart(2,'0');
+  $('drawWinnerNumber').textContent=String(demo).padStart(2,'0');
+  $('drawWinnerName').textContent='Prueba de animación · NO es un ganador real';
+  $('drawWinner').classList.remove('hidden');
+  $('drawStatus').textContent='🎉 PRUEBA COMPLETADA · No se modificó la base de datos del sorteo.';
   setTimeout(()=>$('drawModal').classList.remove('open'),2500);
 }
+
 async function realizarSorteo(){if(!rifa)return;
 const {data:sold,error:se}=await db.from('numeros').select('numero,participante_id').eq('rifa_id',rifa.id).eq('estado','vendido').not('participante_id','is',null);
 if(se){alert('No se pudo verificar los números vendidos: '+se.message);return}
