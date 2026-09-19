@@ -347,6 +347,7 @@ async function mostrarGanadorPublico(){
   const {data:w,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').order('created_at',{ascending:false}).limit(1).maybeSingle();
   if(error||!w){box.classList.add('hidden');return}
   box.classList.remove('hidden');
+  const nombrePublico=formatearNombrePublico(w.nombre_snapshot||'Ganador');
   document.getElementById('publicWinnerNumber').textContent='#'+String(w.numero).padStart(2,'0');
   document.getElementById('publicWinnerName').textContent=nombrePublico;
   let codeEl=document.getElementById('publicWinnerCode');
