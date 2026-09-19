@@ -475,8 +475,12 @@ function restaurarSolicitudPendiente(){
     waConfirm.href='https://wa.me/528123859824?text='+encodeURIComponent(recoveredMessage);
     confirmWhatsAppClicked=false;
     waConfirm.onclick=()=>{
+      if(confirmWhatsAppClicked)return false;
       confirmWhatsAppClicked=true;
       localStorage.removeItem('rifando_pendiente_whatsapp');
+      waConfirm.style.pointerEvents='none';
+      waConfirm.style.opacity='.65';
+      waConfirm.textContent='✅ Solicitud enviada por WhatsApp';
       document.getElementById('modalClose')?.classList.remove('locked-close');
       document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
     };
@@ -535,8 +539,12 @@ async function confirmar(e){
   document.getElementById('modalClose')?.classList.add('locked-close');
   document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
   waConfirm.onclick=()=>{
+    if(confirmWhatsAppClicked)return false;
     confirmWhatsAppClicked=true;
     try{localStorage.removeItem('rifando_pendiente_whatsapp')}catch(e){}
+    waConfirm.style.pointerEvents='none';
+    waConfirm.style.opacity='.65';
+    waConfirm.textContent='✅ Solicitud enviada por WhatsApp';
     document.getElementById('modalClose')?.classList.remove('locked-close');
     document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
   };
