@@ -189,13 +189,17 @@ function activarSorteoPublico(payload){
   const lista=(payload.numeros||[]).map(Number).sort((a,b)=>a-b);if(!lista.length)return;
   overlay.classList.add('open');res.classList.remove('show');status.textContent=payload.demo?'👁️ PRUEBA DE ANIMACIÓN · No es un sorteo real':'Participan '+lista.length+' números · selección en curso';grid.innerHTML=lista.map(n=>'<span>'+String(n).padStart(2,'0')+'</span>').join('');
   const cells=[...grid.children];let i=0;clearInterval(drawAnimationTimer);clearTimeout(window.drawDemoRevealTimer);
-  const started=Date.now();
-  drawAnimationTimer=setInterval(()=>{
-    const elapsed=Date.now()-started,progress=Math.min(1,elapsed/45000);
-    const delay=70+Math.round(Math.pow(progress,3)*220);
-    cells.forEach(x=>x.classList.remove('active'));cells[i%cells.length].classList.add('active');num.textContent=cells[i%cells.length].textContent;i+=Math.max(1,Math.floor(i/18)+1);
-    if(delay>70){clearInterval(drawAnimationTimer);drawAnimationTimer=setInterval(()=>{cells.forEach(x=>x.classList.remove('active'));cells[i%cells.length].classList.add('active');num.textContent=cells[i%cells.length].textContent;i+=1},delay)}
-  },70);
+  const started=Date.now();let timerId=null;
+  const tick=()=>{
+    const elapsed=Date.now()-started;
+    if(elapsed>=45000){clearInterval(timerId);return}
+    const delay=elapsed<15000?60:elapsed<30000?120:elapsed<40000?220:500;
+    cells.forEach(x=>x.classList.remove('active'));
+    const cell=cells[i%cells.length];cell.classList.add('active');num.textContent=cell.textContent;
+    i++;
+    timerId=setTimeout(tick,delay);
+  };
+  tick();drawAnimationTimer={stop:()=>clearTimeout(timerId)};
   if(payload.demo){
     const demo=lista[Math.floor(lista.length/2)];
     window.drawDemoRevealTimer=setTimeout(()=>revelarSorteoPublico({rifa_id:rifa.id,numero:demo,nombre:'Prueba de animación · NO es un ganador real',demo:true}),45000);
