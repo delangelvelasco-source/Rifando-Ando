@@ -93,7 +93,8 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <div class="rules-inline"><span>⏰ <b>30 min</b> para confirmar</span><span>💳 Envía tu comprobante</span><span>🔄 Sin pago, se libera el número</span></div>
 </div>
 <div class="help-box">
-<p style="margin:0;color:#d9a936;font-weight:800;font-size:14px">💬 ¿Necesitas ayuda o confirmar tus números seleccionados? Escríbenos por WhatsApp.</p>
+<p>💬 ¿Necesitas ayuda o confirmar tus números seleccionados?</p>
+<a class="help-btn" id="helpWhatsApp" href="https://wa.me/528123859824?text=Hola%20Rifando%20Ando%2C%20necesito%20ayuda%20con%20mi%20participaci%C3%B3n." target="_blank" rel="noopener">📲 Ayuda / Confirmar mis números por WhatsApp</a>
 </div>
 </section>
 
@@ -415,6 +416,7 @@ async function cargarRifa(){
   meta.innerHTML='<span>'+pct+'% ocupados</span><span>'+(r.fecha_sorteo?'Sorteo: '+new Date(r.fecha_sorteo).toLocaleDateString('es-MX'):'Sorteo próximamente')+'</span>';
   bar.style.width=pct+'%';
   update();
+  actualizarWhatsAppAyuda();
   activarTiempoReal();
 }
 async function cargarHistorialGanadores(){
@@ -437,12 +439,22 @@ function continuarNavegacion(){
   if(sel.size){abrirFormulario();return;}
   document.getElementById('numeros')?.scrollIntoView({behavior:'smooth',block:'start'});
 }
+function actualizarWhatsAppAyuda(){
+  const link=document.getElementById('helpWhatsApp');
+  if(!link)return;
+  const seleccion=nums();
+  const message=seleccion.length
+    ? 'Hola Rifando Ando, necesito ayuda y quiero confirmar mis números seleccionados: '+seleccion.join(', ')+'.'
+    : 'Hola Rifando Ando, necesito ayuda con mi participación y quiero confirmar mis números seleccionados.';
+  link.href='https://wa.me/528123859824?text='+encodeURIComponent(message);
+}
 function abrirFormulario(){
   if(!sel.size){
     alert('Primero elige al menos un número, compa.');
     return;
   }
   formNumbers.textContent=nums().join(', ');
+  actualizarWhatsAppAyuda();
   modal.classList.add('open');
 }
 function cerrarFormulario(){
