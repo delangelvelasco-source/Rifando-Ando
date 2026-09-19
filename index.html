@@ -559,7 +559,7 @@ function restaurarSolicitudPendiente(){
     bloquearNuevaSeleccion(true);
     const waConfirm=document.getElementById('waConfirm');
     const recoveredNumbers=String(p.numbers||'').trim();
-    const recoveredMessage='Hola Rifando Ando, confirmo mi apartado de los números '+recoveredNumbers+' por un total de '+String(p.total||'')+'. Mi nombre es '+String(p.name||'')+'.\n\n💳 OPCIÓN DE PAGO EXCLUSIVA EN OXXO\n🏪 Realiza tu depósito en cualquier caja de OXXO.\n📋 Número para dictar al cajero:\n2242 1705 8093 5038\n\n🧾 Envía tu comprobante por este mismo WhatsApp para confirmar tu participación.';
+    const recoveredMessage='Hola Rifando Ando, confirmo mi apartado de los números '+recoveredNumbers+' por un total de '+String(p.total||'')+'. Mi nombre es '+String(p.name||'')+'.\n\n🏦 DATOS PARA TRANSFERENCIA\n\n• CLABE: 722969010050807387\n\n• Beneficiario: Miguel Velasco\n• Institución: Mercado Pago W\n\n🏦 DATOS PARA DEPÓSITO SOLO OXXO\n\nDicta al cajero el siguiente No:\n\n*2242 1705 8093 5038*\n\nCuenta Spin By Oxxo\n\n📲 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tu participación.';
     waConfirm.href='https://wa.me/528123859824?text='+encodeURIComponent(recoveredMessage);
     confirmWhatsAppClicked=false;
     waConfirm.onclick=()=>{
@@ -623,7 +623,63 @@ async function confirmar(e){
   document.getElementById('confirmName').textContent=name;
   document.getElementById('confirmNumbers').textContent=displayNumbers;
   document.getElementById('confirmTotal').textContent='$'+displayTotal;
-  const message='Hola Rifando Ando, confirmo mi apartado de los números '+displayNumbers+' por un total de $'+displayTotal+'. Mi nombre es '+name+'.\n\n💳 OPCIONES DE PAGO\n\n🏦 TRANSFERENCIA / DEPÓSITO BANCARIO\n📋 CLABE para copiar: `722969010050807387`\n👤 Beneficiario: Miguel Angel Velasco Lazaro\n🏦 Institución: Mercado Pago W\n\n🏪 DEPÓSITO EN OXXO\n📋 Número para dictar al cajero:\n`2242170580935038`\n📲 También puedes mostrar el QR en caja de OXXO.\n💰 Límite: hasta $5,000 por operación.\n🧾 Conserva tu ticket de pago.\n\n📲 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tu participación.';
+  const message='Hola Rifando Ando, confirmo mi apartado de los números '+displayNumbers+' por un total de ;
+  const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
+  const waConfirm=document.getElementById('waConfirm');
+  waConfirm.href=waLink;
+  confirmWhatsAppClicked=false;
+  document.getElementById('modalClose')?.classList.add('locked-close');
+  document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
+  waConfirm.onclick=()=>{
+    if(confirmWhatsAppClicked)return false;
+    confirmWhatsAppClicked=true;
+    try{localStorage.removeItem('rifando_pendiente_whatsapp')}catch(e){}
+    solicitudPendiente=false;
+    sel.clear();
+    bloquearNuevaSeleccion(false);
+    update();
+    waConfirm.style.pointerEvents='none';
+    waConfirm.style.opacity='.65';
+    waConfirm.textContent='✅ Solicitud enviada por WhatsApp';
+    document.getElementById('modalClose')?.classList.remove('locked-close');
+    document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
+  };
+  try{
+    localStorage.setItem('rifando_pendiente_whatsapp',JSON.stringify({
+      name:name,
+      numbers:displayNumbers,
+      total:'$'+displayTotal,
+      waLink:waLink,
+      timestamp:Date.now()
+    }));
+  }catch(e){}
+  formView.style.display='none';
+  confirmation.classList.add('show');
+  sel.clear();
+  btn.disabled=false;
+  btn.textContent='Solicitar apartado';
+  await cargarRifa();
+}
+document.getElementById('topContinue')?.addEventListener('click',()=>{
+  if(sel.size){abrirFormulario();}
+  else{document.getElementById('numeros')?.scrollIntoView({behavior:'smooth',block:'start'});}
+});
+modal.addEventListener('click',e=>{
+  if(e.target===modal) cerrarFormulario();
+});
+cargarRifa().catch(()=>{
+  raffleName.textContent='No se pudo cargar el sorteo';
+  priceEl.textContent='Intenta actualizar la página';
+  tickets.innerHTML='<p style="color:#aaa">No se pudieron cargar los números. Actualiza la página para intentar de nuevo.</p>';
+});
+mostrarGanadorPublico().catch(()=>{});
+setTimeout(restaurarSolicitudPendiente,300);
+setInterval(()=>{revisarPruebaPersistente();revisarSorteoRealPersistente()},1500);
+setInterval(()=>{if(rifa)actualizarInfoLoteria(rifa)},30000);
+setInterval(mostrarGanadorPublico,5000);
+</script>
+</body>
+</html>+displayTotal+'. Mi nombre es '+name+'.\n\n🏦 DATOS PARA TRANSFERENCIA\n\n• CLABE: 722969010050807387\n\n• Beneficiario: Miguel Velasco\n• Institución: Mercado Pago W\n\n🏦 DATOS PARA DEPÓSITO SOLO OXXO\n\nDicta al cajero el siguiente No:\n\n*2242 1705 8093 5038*\n\nCuenta Spin By Oxxo\n\n📲 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tu participación.';
   const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
   const waConfirm=document.getElementById('waConfirm');
   waConfirm.href=waLink;
