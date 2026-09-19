@@ -324,11 +324,15 @@ function formatearNombrePublico(nombre){
 async function mostrarGanadorPublico(){
   const box=document.getElementById('ultimo-ganador');
   if(!box)return;
-  const {data:w,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at').order('created_at',{ascending:false}).limit(1).maybeSingle();
+  const {data:w,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').order('created_at',{ascending:false}).limit(1).maybeSingle();
   if(error||!w){box.classList.add('hidden');return}
   box.classList.remove('hidden');
   document.getElementById('publicWinnerNumber').textContent='#'+String(w.numero).padStart(2,'0');
-  document.getElementById('publicWinnerName').textContent=w.nombre_snapshot||'Ganador';
+  document.getElementById('publicWinnerName').textContent=formatearNombrePublico(w.nombre_snapshot||'Ganador');
+  let codeEl=document.getElementById('publicWinnerCode');
+  if(!codeEl){codeEl=document.createElement('div');codeEl.id='publicWinnerCode';codeEl.style.cssText='margin-top:6px;color:#d9a936;font-size:14px;font-weight:800';document.getElementById('publicWinnerName').after(codeEl)}
+  const {data:rw}=await db.from('rifas').select('codigo_sorteo').eq('id',w.rifa_id).maybeSingle();
+  codeEl.textContent=rw?.codigo_sorteo?'ID del sorteo: '+rw.codigo_sorteo:'';
   const d=w.created_at?new Date(w.created_at).toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'}):'';
   let dateEl=document.getElementById('publicWinnerDate');
   if(!dateEl){dateEl=document.createElement('div');dateEl.id='publicWinnerDate';dateEl.style.cssText='margin-top:8px;color:#888;font-size:14px';box.appendChild(dateEl)}
@@ -396,14 +400,18 @@ async function cargarRifa(){
 }
 async function cargarHistorialGanadores(){
   const el=document.getElementById('winnerHistory');
-  const {data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifas(numero_sorteo)').order('created_at',{ascending:false});
+  const {data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').order('created_at',{ascending:false});
   if(error){el.innerHTML='<div class="winner-empty">No se pudo cargar el historial.</div>';return}
   if(!data||!data.length){el.innerHTML='<div class="winner-empty">Aún no hay ganadores registrados.</div>';return}
+  const rifaIds=[...new Set(data.map(w=>w.rifa_id).filter(Boolean))];
+  const {data:rifasData}=rifaIds.length?await db.from('rifas').select('id,codigo_sorteo,numero_sorteo').in('id',rifaIds):{data:[]};
+  const rifasMap=new Map((rifasData||[]).map(r=>[r.id,r]));
   el.innerHTML=data.map(w=>{
-    const s=w.rifas&&w.rifas.numero_sorteo?w.rifas.numero_sorteo:'?';
+    const r=rifasMap.get(w.rifa_id);
+    const codigo=r?.codigo_sorteo||('RA-'+String(r?.numero_sorteo||'?').padStart(4,'0'));
     const d=new Date(w.created_at).toLocaleDateString('es-MX');
     const nombreVisible=formatearNombrePublico(w.nombre_snapshot);
-    return '<div class="winner-card"><div><div class="wname">Sorteo #'+s+' · '+nombreVisible+'</div><div class="wdate">'+d+'</div></div><div class="wnum">#'+String(w.numero).padStart(2,'0')+'</div></div>';
+    return '<div class="winner-card"><div><div class="wname">'+codigo+' · '+nombreVisible+'</div><div class="wdate">'+d+'</div></div><div class="wnum">#'+String(w.numero).padStart(2,'0')+'</div></div>';
   }).join('');
 }
 function abrirFormulario(){
