@@ -222,6 +222,12 @@ async function activarCanalSorteoPublico(){
     setTimeout(finish,5000);
   });
 }
+function iniciarPruebaPublica(){
+  if(new URLSearchParams(location.search).get('prueba')!=='1'||!rifa)return;
+  const lista=Array.from(document.querySelectorAll('.ticket')).map((_,i)=>i).slice(0,100);
+  if(!lista.length)return;
+  activarSorteoPublico({rifa_id:rifa.id,numeros:lista,demo:true});
+}
 async function mostrarGanadorPublico(){const box=document.getElementById('publicWinner');const {data:w}=await db.from('ganadores').select('numero,nombre_snapshot,created_at').order('created_at',{ascending:false}).limit(1).maybeSingle();if(!w){box.classList.add('hidden');return}box.classList.remove('hidden');document.getElementById('publicWinnerNumber').textContent=String(w.numero).padStart(2,'0');document.getElementById('publicWinnerName').textContent=w.nombre_snapshot} 
 async function cargarRifa(){
   const {data:r,error:re}=await db.from('rifas').select('*').in('estado',['activa','sorteada']).order('created_at',{ascending:true}).limit(1).maybeSingle();
@@ -235,6 +241,8 @@ async function cargarRifa(){
   await activarCanalSorteoPublico();
   await mostrarGanadorPublico();
   await cargarHistorialGanadores();
+
+  setTimeout(()=>iniciarPruebaPublica(),800);
 
   if(r.estado==='sorteada'){
     tickets.innerHTML='<div style="grid-column:1/-1;padding:28px;text-align:center;border:1px solid #3a2d0d;border-radius:16px;background:#111"><div style="font-size:48px">🏆</div><h3>¡El sorteo ya fue realizado!</h3><p style="color:#aaa">Consulta el ganador y el historial más abajo.</p></div>';
