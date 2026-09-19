@@ -123,7 +123,6 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <form onsubmit="confirmar(event)">
 <div class="field"><label>Nombre completo</label><input id="nombre" required maxlength="80"></div>
 <div class="field"><label>WhatsApp</label><input id="whatsapp" required type="tel" maxlength="20"></div>
-<div class="field"><label>Correo (opcional)</label><input id="correo" type="email" maxlength="120"></div>
 <p>Tu selección: <span class="numbers" id="formNumbers"></span></p>
 <button class="btn" type="submit" style="width:100%">Solicitar apartado</button>
 </form>
@@ -163,7 +162,6 @@ const confirmation=document.getElementById('confirmation');
 const formNumbers=document.getElementById('formNumbers');
 const nombre=document.getElementById('nombre');
 const whatsapp=document.getElementById('whatsapp');
-const correo=document.getElementById('correo');
 
 let rifa=null;
 let sel=new Set();
@@ -448,7 +446,7 @@ async function confirmar(e){
   const selected=Array.from(sel);
   const name=nombre.value.trim();
   const phone=whatsapp.value.trim();
-  const email=correo.value.trim();
+  const email='';
   if(!name||!phone){
     alert('Completa tu nombre y WhatsApp, compa.');
     return;
