@@ -58,8 +58,8 @@ const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: redu
 }
 async function abrirPruebaPublica(){
   if(!rifa)return;
-  window.open('index.html','_blank');
-  await new Promise(r=>setTimeout(r,4000));
+  const ok=confirm('🌐 PRUEBA EN CLIENTES\\n\\nAsegúrate de tener abiertas las páginas de los clientes antes de continuar.\\n\\nLa prueba durará 45 segundos y NO realizará ni registrará ningún sorteo.\\n\\n¿Iniciar la prueba ahora?');
+  if(!ok)return;
   await probarAnimacionClientes();
 }
 async function probarAnimacionClientes(){
