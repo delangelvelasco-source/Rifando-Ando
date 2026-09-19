@@ -470,7 +470,9 @@ function restaurarSolicitudPendiente(){
     document.getElementById('confirmNumbers').textContent=p.numbers||'';
     document.getElementById('confirmTotal').textContent=p.total||'';
     const waConfirm=document.getElementById('waConfirm');
-    waConfirm.href=p.waLink||'#';
+    const recoveredNumbers=String(p.numbers||'').trim();
+    const recoveredMessage='Hola Rifando Ando, confirmo mi apartado de los números '+recoveredNumbers+' por un total de '+String(p.total||'')+'. Mi nombre es '+String(p.name||'')+'.';
+    waConfirm.href='https://wa.me/528123859824?text='+encodeURIComponent(recoveredMessage);
     confirmWhatsAppClicked=false;
     waConfirm.onclick=()=>{
       confirmWhatsAppClicked=true;
