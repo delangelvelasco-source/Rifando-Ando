@@ -514,9 +514,10 @@ function actualizarWhatsAppAyuda(){
   const link=document.getElementById('helpWhatsApp');
   if(!link)return;
   const seleccion=nums();
+  const pago='\\n\\n🏦 DATOS PARA TRANSFERENCIA\\n\\n• CLABE: 722969010050807387\\n• Beneficiario: Miguel Velasco\\n• Institución: Mercado Pago W\\n\\n🏦 DATOS PARA DEPÓSITO SOLO OXXO\\n\\nDicta al cajero el siguiente No:\\n\\n*2242 1705 8093 5038*\\n\\nCuenta Spin By Oxxo\\n\\n📲 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tu participación.';
   const message=seleccion.length
-    ? 'Hola Rifando Ando, necesito ayuda y quiero confirmar mis números seleccionados: '+seleccion.join(', ')+'.'
-    : 'Hola Rifando Ando, necesito ayuda con mi participación y quiero confirmar mis números seleccionados.';
+    ? 'Hola Rifando Ando, necesito ayuda y quiero confirmar mis números seleccionados: '+seleccion.join(', ')+'.'+pago
+    : 'Hola Rifando Ando, necesito ayuda con mi participación y quiero confirmar mis números seleccionados.'+pago;
   link.href='https://wa.me/528123859824?text='+encodeURIComponent(message);
 }
 function abrirFormulario(){
