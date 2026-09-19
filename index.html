@@ -481,7 +481,7 @@ async function confirmar(e){
   const message='Hola Rifando Ando, confirmo mi apartado de los números '+displayNumbers+' por un total de $'+displayTotal+'. Mi nombre es '+name+'.';
   const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
   document.getElementById('waConfirm').href=waLink;
-  const paymentMessage='Hola Rifando Ando, me puedes confirmar que puedo pagar en la cuenta 722969010050807387 de Mercado Libre?';
+  const paymentMessage='Hola Rifando Ando, me puedes confirmar que puedo pagar por Mercado Pago a nombre de Miguel Velasco, en la cuenta 722969010050807387?';
   document.getElementById('waPaymentConfirm').href='https://wa.me/528123859824?text='+encodeURIComponent(paymentMessage);
   formView.style.display='none';
   confirmation.classList.add('show');
