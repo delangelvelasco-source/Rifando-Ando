@@ -185,14 +185,27 @@ function activarTiempoReal(){
 }
 async function mostrarGanadorPublico(){const box=document.getElementById('publicWinner');const {data:w}=await db.from('ganadores').select('numero,nombre_snapshot,created_at').order('created_at',{ascending:false}).limit(1).maybeSingle();if(!w){box.classList.add('hidden');return}box.classList.remove('hidden');document.getElementById('publicWinnerNumber').textContent=String(w.numero).padStart(2,'0');document.getElementById('publicWinnerName').textContent=w.nombre_snapshot} 
 async function cargarRifa(){
-  const {data:r,error:re}=await db.from('rifas').select('*').eq('estado','activa').order('created_at',{ascending:true}).limit(1).maybeSingle();
+  const {data:r,error:re}=await db.from('rifas').select('*').in('estado',['activa','sorteada']).order('created_at',{ascending:true}).limit(1).maybeSingle();
   if(re||!r){
     tickets.innerHTML='<p style="color:#aaa">No hay una rifa activa disponible.</p>';
+    await mostrarGanadorPublico();
+    await cargarHistorialGanadores();
     return;
   }
   rifa=r;
   await mostrarGanadorPublico();
   await cargarHistorialGanadores();
+
+  if(r.estado==='sorteada'){
+    tickets.innerHTML='<div style="grid-column:1/-1;padding:28px;text-align:center;border:1px solid #3a2d0d;border-radius:16px;background:#111"><div style="font-size:48px">🏆</div><h3>¡El sorteo ya fue realizado!</h3><p style="color:#aaa">Consulta el ganador y el historial más abajo.</p></div>';
+    raffleName.textContent=r.nombre||'Sorteo';
+    priceEl.textContent='$'+Number(r.precio_numero).toLocaleString('es-MX')+' por número';
+    meta.innerHTML='<span>🎉 Sorteo realizado</span><span>'+(r.fecha_sorteo?'Fecha: '+new Date(r.fecha_sorteo).toLocaleDateString('es-MX'):'')+'</span>';
+    bar.style.width='100%';
+    update();
+    return;
+  }
+
   await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});
   raffleName.textContent=r.nombre||'Primer sorteo oficial';
   priceEl.textContent='$'+Number(r.precio_numero).toLocaleString('es-MX')+' por número';
@@ -216,18 +229,11 @@ async function cargarRifa(){
     b.textContent=String(x.numero).padStart(2,'0');
     if(free){
       b.addEventListener('click',()=>{
-        if(sel.has(x.numero)){
-          sel.delete(x.numero);
-          b.classList.remove('selected');
-        }else{
-          sel.add(x.numero);
-          b.classList.add('selected');
-        }
+        if(sel.has(x.numero)){sel.delete(x.numero);b.classList.remove('selected')}
+        else{sel.add(x.numero);b.classList.add('selected')}
         update();
       });
-    }else{
-      b.disabled=true;
-    }
+    }else b.disabled=true;
     tickets.appendChild(b);
   });
   const pct=n?.length?Math.round(busy/n.length*100):0;
