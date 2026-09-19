@@ -663,6 +663,7 @@ cargarRifa();
 mostrarGanadorPublico();
 setTimeout(restaurarSolicitudPendiente,300);
 setInterval(()=>{revisarPruebaPersistente();revisarSorteoRealPersistente()},1500);
+setInterval(()=>{if(rifa)actualizarInfoLoteria(rifa)},30000);
 setInterval(mostrarGanadorPublico,5000);
 </script>
 </body>
