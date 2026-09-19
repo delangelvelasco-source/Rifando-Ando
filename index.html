@@ -45,7 +45,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 @keyframes prizePulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.035);filter:brightness(1.3)}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.45}}
 @keyframes twinkle{from{opacity:.35}to{opacity:1}}
-.draw-public{position:fixed;inset:0;background:#050505f5;z-index:50;display:none;place-items:center;padding:18px}.draw-public.open{display:grid}.draw-public-box{width:min(1000px,100%);max-height:92vh;overflow:auto;background:#111;border:2px solid #6d5215;border-radius:24px;padding:25px;text-align:center;box-shadow:0 0 45px #d9a93633}.draw-public-number{font-size:clamp(80px,18vw,170px);line-height:.9;font-weight:1000;color:#d9a936;text-shadow:0 0 25px #d9a936}.draw-public-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:20px}.draw-public-grid span{padding:8px 3px;border:1px solid #303030;border-radius:8px;background:#171717;font-weight:900}.draw-public-grid span.active{background:#d9a936;color:#111;transform:scale(1.08)}.draw-public-result{display:none}.draw-public-result.show{display:block}@media(max-width:760px){.draw-public-grid{grid-template-columns:repeat(5,1fr)}}</style></head>
+.draw-public{position:fixed;inset:0;background:#050505f5;z-index:50;display:none;place-items:center;padding:18px}.draw-public.open{display:grid}.draw-public-box{width:min(1000px,100%);max-height:92vh;overflow:auto;background:#111;border:2px solid #6d5215;border-radius:24px;padding:25px;text-align:center;box-shadow:0 0 45px #d9a93633;position:relative}.draw-public-close{position:absolute;top:10px;right:14px;width:42px;height:42px;border:1px solid #4a4a4a;border-radius:50%;background:#171717;color:#fff;font-size:30px;line-height:1;cursor:pointer;z-index:2}.draw-public-close:hover{background:#262626;border-color:#d9a936;color:#d9a936}.draw-public-number{font-size:clamp(80px,18vw,170px);line-height:.9;font-weight:1000;color:#d9a936;text-shadow:0 0 25px #d9a936}.draw-public-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:20px}.draw-public-grid span{padding:8px 3px;border:1px solid #303030;border-radius:8px;background:#171717;font-weight:900}.draw-public-grid span.active{background:#d9a936;color:#111;transform:scale(1.08)}.draw-public-result{display:none}.draw-public-result.show{display:block}@media(max-width:760px){.draw-public-grid{grid-template-columns:repeat(5,1fr)}}</style></head>
 <body>
 <header>
 <div class="nav">
@@ -58,7 +58,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 </div>
 </header>
 
-<div id="publicDraw" class="draw-public"><div class="draw-public-box"><div style="font-size:46px">🎲</div><div class="official">SORTEO EN VIVO</div><h2 id="publicDrawStatus">Preparando selección...</h2><div id="publicDrawNumber" class="draw-public-number">--</div><div id="publicDrawGrid" class="draw-public-grid"></div><div id="publicDrawResult" class="draw-public-result"><div style="font-size:28px;color:#f5d36a;font-weight:1000">🏆 ¡TENEMOS GANADOR!</div><div id="publicDrawWinnerNumber" style="font-size:72px;font-weight:1000;color:#d9a936"></div><div id="publicDrawWinnerName" style="font-size:26px;font-weight:900"></div></div></div></div><main>
+<div id="publicDraw" class="draw-public" onclick="cerrarSorteoPublico(event)"><div class="draw-public-box"><button class="draw-public-close" type="button" onclick="cerrarSorteoPublico(event)" aria-label="Cerrar animación" title="Cerrar">×</button><div style="font-size:46px">🎲</div><div class="official">SORTEO EN VIVO</div><h2 id="publicDrawStatus">Preparando selección...</h2><div id="publicDrawNumber" class="draw-public-number">--</div><div id="publicDrawGrid" class="draw-public-grid"></div><div id="publicDrawResult" class="draw-public-result"><div style="font-size:28px;color:#f5d36a;font-weight:1000">🏆 ¡TENEMOS GANADOR!</div><div id="publicDrawWinnerNumber" style="font-size:72px;font-weight:1000;color:#d9a936"></div><div id="publicDrawWinnerName" style="font-size:26px;font-weight:900"></div></div></div></div><main>
 <div class="hero">
 <div>
 <div class="eyebrow">La rifa entre compas</div>
@@ -227,6 +227,13 @@ function activarSorteoPublico(payload){
     window.drawDemoRevealTimer=setTimeout(()=>revelarSorteoPublico({rifa_id:rifa.id,numero:demo,nombre:'Prueba de animación · NO es un ganador real',demo:true}),wait+duration);
   }
 }
+function cerrarSorteoPublico(event){
+  if(event){event.preventDefault();event.stopPropagation();if(event.target!==event.currentTarget && !event.target.closest('.draw-public-close'))return;}
+  clearTimeout(window.drawDemoRevealTimer);clearTimeout(window.ultimoSorteoReplayTimer);
+  if(drawAnimationTimer?.stop)drawAnimationTimer.stop();else if(drawAnimationTimer)clearTimeout(drawAnimationTimer);
+  drawAnimationTimer=null;
+  document.getElementById('publicDraw').classList.remove('open');
+}
 function revelarSorteoPublico(payload){
   if(!payload||payload.rifa_id!==rifa?.id)return;
   if(drawAnimationTimer?.stop)drawAnimationTimer.stop();else clearInterval(drawAnimationTimer);const n=String(payload.numero).padStart(2,'0');
@@ -313,6 +320,7 @@ async function revisarPruebaPersistente(){
 }
 
 async function reproducirUltimoSorteo(){
+  clearTimeout(window.ultimoSorteoReplayTimer);
   if(!rifa){alert('No hay un sorteo disponible.');return;}
   const {data:w,error:we}=await db.from('ganadores').select('numero,nombre_snapshot,rifa_id,created_at').order('created_at',{ascending:false}).limit(1).maybeSingle();
   if(we||!w){alert('Aún no hay un ganador registrado.');return;}
