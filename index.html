@@ -24,7 +24,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 .legend{display:flex;flex-wrap:wrap;gap:18px;margin:-8px 0 18px;color:#aaa;font-size:14px}.legend span{display:flex;align-items:center;gap:7px}.legend i{width:12px;height:12px;border-radius:50%;display:inline-block}.lg-green{background:#1fc94b}.lg-yellow{background:#d9a936}.lg-orange{background:#f97316}.lg-gray{background:#555}.tickets{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}.ticket{padding:16px 3px;min-height:64px;border:1px solid #303030;border-radius:12px;background:#171717;color:#eee;font-size:26px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .ticket.selected{background:#d9a936!important;color:#111!important;border-color:#f5d36a!important;box-shadow:0 0 10px #d9a93655!important}.ticket.available{background:#0f6b2c;color:#fff;border-color:#20c957;box-shadow:0 0 7px #20c95733}.ticket.pending{background:#f97316;color:#fff;border-color:#fb923c;box-shadow:0 0 10px #f9731655}.ticket.sold{color:#555;background:#000;border-color:#202020;text-decoration:line-through;cursor:not-allowed}
 .summary{margin-top:22px;padding:18px;border:1px solid #303030;border-radius:15px;background:#121212;display:flex;justify-content:space-between;align-items:center}
-.how{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.step{padding:22px;border:1px solid #292929;border-radius:17px;background:#111}.winner-history{display:grid;gap:12px}.winner-head{display:grid;grid-template-columns:1fr 1.25fr .9fr .65fr;gap:12px;padding:13px 18px;border:1px solid #6d5215;border-radius:14px;background:linear-gradient(135deg,#211a0b,#111);color:#f5d36a;font-size:14px;font-weight:1000}.winner-card{display:grid;grid-template-columns:1fr 1.25fr .9fr .65fr;gap:12px;align-items:center;padding:18px;border:1px solid #3a2d0d;border-radius:16px;background:#111}.winner-card .wnum{font-size:34px;font-weight:1000;color:#d9a936;text-align:right}.winner-card .wname{font-size:18px;font-weight:900}.winner-card .wprize{font-size:20px;font-weight:1000;color:#f5d36a}.winner-card .wdate{font-size:13px;color:#777;margin-top:4px}.winner-empty{padding:24px;text-align:center;border:1px dashed #383838;border-radius:16px;color:#888}.winner-whatsapp{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:#25d366;color:#071b0d;text-decoration:none;font-weight:1000;font-size:14px;border:0;cursor:pointer}.winner-whatsapp:hover{filter:brightness(1.08)}
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.step{padding:22px;border:1px solid #292929;border-radius:17px;background:#111}.winner-history{display:grid;gap:12px}.winner-head{display:grid;grid-template-columns:1fr 1.25fr .9fr .65fr;gap:12px;padding:13px 18px;border:1px solid #6d5215;border-radius:14px;background:linear-gradient(135deg,#211a0b,#111);color:#f5d36a;font-size:14px;font-weight:1000}.winner-card{display:grid;grid-template-columns:1fr 1.25fr .9fr .65fr;gap:12px;align-items:center;padding:18px;border:1px solid #3a2d0d;border-radius:16px;background:#111}.winner-card .wnum{font-size:34px;font-weight:1000;color:#d9a936;text-align:right}.winner-card .wname{font-size:18px;font-weight:900}.winner-card .wprize{font-size:20px;font-weight:1000;color:#f5d36a}.winner-card .wdate{font-size:13px;color:#777;margin-top:4px}.winner-empty{padding:24px;text-align:center;border:1px dashed #383838;border-radius:16px;color:#888}
 .step b{color:#d9a936}.step p{color:#999;line-height:1.5}.foot{border-top:1px solid #222;text-align:center;color:#777;padding:28px}
 .modal{position:fixed;inset:0;background:#000b;display:none;place-items:center;padding:18px;z-index:20}.modal.open{display:grid}
 .modal-box{width:min(600px,100%);background:#151515;border:1px solid #363636;border-radius:22px;padding:30px}.close{float:right;background:none;border:0;color:#aaa;font-size:28px;cursor:pointer}.locked-close{opacity:.3!important;cursor:not-allowed!important}
@@ -116,7 +116,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 </section>
 
 <section class="section">
-<div id="ultimo-ganador" class="box hidden" style="margin-bottom:25px;text-align:center;border-color:#d9a936"><div style="font-size:42px">🏆</div><h2>Último ganador</h2><div id="publicWinnerNumber" style="font-size:58px;font-weight:1000;color:#d9a936">--</div><div id="publicWinnerName" style="font-size:24px;font-weight:900"></div><a id="winnerWhatsApp" class="winner-whatsapp" href="#" target="_blank" rel="noopener" style="display:none">📲 Felicitar al ganador por WhatsApp</a><br><button class="btn" type="button" onclick="reproducirUltimoSorteo()" style="margin-top:16px">🎬 Ver animación del último sorteo</button></div>
+<div id="ultimo-ganador" class="box hidden" style="margin-bottom:25px;text-align:center;border-color:#d9a936"><div style="font-size:42px">🏆</div><h2>Último ganador</h2><div id="publicWinnerNumber" style="font-size:58px;font-weight:1000;color:#d9a936">--</div><div id="publicWinnerName" style="font-size:24px;font-weight:900"></div><button class="btn" type="button" onclick="reproducirUltimoSorteo()" style="margin-top:16px">🎬 Ver animación del último sorteo</button></div>
 </section>
 <section class="section" id="historial-ganadores"><h2>🏆 Historial de Ganadores</h2><div id="winnerHistory" class="winner-history"><div class="winner-empty">Aún no hay ganadores registrados.</div></div></section>
 </main>
@@ -344,29 +344,11 @@ function formatearNombrePublico(nombre){
 async function mostrarGanadorPublico(){
   const box=document.getElementById('ultimo-ganador');
   if(!box)return;
-  const {data:w,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id,participante_id').order('created_at',{ascending:false}).limit(1).maybeSingle();
+  const {data:w,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').order('created_at',{ascending:false}).limit(1).maybeSingle();
   if(error||!w){box.classList.add('hidden');return}
   box.classList.remove('hidden');
-  const nombreCompleto=w.nombre_snapshot||'Ganador';
-  const nombrePublico=formatearNombrePublico(nombreCompleto);
   document.getElementById('publicWinnerNumber').textContent='#'+String(w.numero).padStart(2,'0');
   document.getElementById('publicWinnerName').textContent=nombrePublico;
-  const waBtn=document.getElementById('winnerWhatsApp');
-  if(waBtn){
-    let telefono='';
-    if(w.participante_id){
-      const {data:p}=await db.from('participantes').select('whatsapp').eq('id',w.participante_id).maybeSingle();
-      telefono=String(p?.whatsapp||'').replace(/\\D/g,'');
-    }
-    if(telefono.length===10){
-      const mensaje='🎉 ¡Felicidades, '+nombreCompleto+'!\\n\\n🏆 Fuiste el ganador de *Rifando Ando* con el número *'+String(w.numero).padStart(2,'0')+'*.\\n\\n¡Muchas felicidades y gracias por participar! 🎟️';
-      waBtn.href='https://wa.me/52'+telefono+'?text='+encodeURIComponent(mensaje);
-      waBtn.style.display='inline-block';
-    }else{
-      waBtn.removeAttribute('href');
-      waBtn.style.display='none';
-    }
-  }
   let codeEl=document.getElementById('publicWinnerCode');
   if(!codeEl){codeEl=document.createElement('div');codeEl.id='publicWinnerCode';codeEl.style.cssText='margin-top:6px;color:#d9a936;font-size:14px;font-weight:800';document.getElementById('publicWinnerName').after(codeEl)}
   const {data:rw}=await db.from('rifas').select('codigo_sorteo').eq('id',w.rifa_id).maybeSingle();
@@ -508,18 +490,14 @@ async function cargarRifa(){
 }
 async function cargarHistorialGanadores(){
   const el=document.getElementById('winnerHistory');
-  const {data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id,participante_id').order('created_at',{ascending:false});
+  const {data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').order('created_at',{ascending:false});
   if(error){el.innerHTML='<div class="winner-empty">No se pudo cargar el historial.</div>';return}
   if(!data||!data.length){el.innerHTML='<div class="winner-empty">Aún no hay ganadores registrados.</div>';return}
   const rifaIds=[...new Set(data.map(w=>w.rifa_id).filter(Boolean))];
-  const participanteIds=[...new Set(data.map(w=>w.participante_id).filter(Boolean))];
   const {data:rifasData}=rifaIds.length?await db.from('rifas').select('id,codigo_sorteo,numero_sorteo,premio').in('id',rifaIds):{data:[]};
-  const {data:participantesData}=participanteIds.length?await db.from('participantes').select('id,whatsapp').in('id',participanteIds):{data:[]};
   const rifasMap=new Map((rifasData||[]).map(r=>[r.id,r]));
-  const participantesMap=new Map((participantesData||[]).map(p=>[p.id,p]));
   el.innerHTML='<div class="winner-head"><div>🎟️ No. de sorteo</div><div>👤 Nombre del ganador</div><div>💰 Monto ganado</div><div>⭐ # ganador</div></div>'+data.map(w=>{
     const r=rifasMap.get(w.rifa_id);
-    const p=participantesMap.get(w.participante_id);
     const codigo=r?.codigo_sorteo||('RA-'+String(r?.numero_sorteo||'?').padStart(4,'0'));
     const d=new Date(w.created_at).toLocaleDateString('es-MX');
     const nombreVisible=formatearNombrePublico(w.nombre_snapshot);
