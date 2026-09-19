@@ -52,7 +52,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <div style="display:flex;gap:8px;align-items:center">
 <a class="btn" href="#numeros">Elegir números</a>
 <a class="btn" href="#ultimo-ganador">🏆 Último ganador</a>
-<button class="btn" type="button" onclick="continuarNavegacion()">Continuar</button>
+<button class="btn" id="topContinue" type="button">Continuar</button>
 </div>
 </div>
 </header>
@@ -484,6 +484,10 @@ async function confirmar(e){
   btn.textContent='Solicitar apartado';
   await cargarRifa();
 }
+document.getElementById('topContinue')?.addEventListener('click',()=>{
+  if(sel.size){abrirFormulario();}
+  else{document.getElementById('numeros')?.scrollIntoView({behavior:'smooth',block:'start'});}
+});
 modal.addEventListener('click',e=>{
   if(e.target===modal) cerrarFormulario();
 });
