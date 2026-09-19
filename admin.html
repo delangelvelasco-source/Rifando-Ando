@@ -76,10 +76,13 @@ async function probarAnimacionClientes(){
     ch.subscribe(status=>{if(status==='SUBSCRIBED'||status==='CHANNEL_ERROR'||status==='TIMED_OUT')finish()});
     setTimeout(finish,5000);
   });
-  await ch.send({type:'broadcast',event:'sorteo_inicio',payload:{rifa_id:rifa.id,numeros:lista,demo:true}});
+  const startAt=Date.now()+1500;
+  const durationMs=45000;
+  await ch.send({type:'broadcast',event:'sorteo_inicio',payload:{rifa_id:rifa.id,numeros:lista,demo:true,start_at:startAt,duration_ms:durationMs}});
   $('drawModal').classList.add('open');$('drawWinner').classList.add('hidden');$('drawStatus').textContent='🌐 PRUEBA EN CLIENTES · No se realizará ni registrará ningún sorteo.';$('drawGrid').innerHTML=lista.map(n=>'<div class="ticket"><b>'+String(n).padStart(2,'0')+'</b></div>').join('');
+  await new Promise(r=>setTimeout(r,Math.max(0,startAt-Date.now())));
   const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;const started=Date.now();let i=0;
-  if(!reduce){while(Date.now()-started<45000){$('drawNumber').textContent=String(lista[i%lista.length]).padStart(2,'0');i++;await new Promise(r=>setTimeout(r,55));}}else{await new Promise(r=>setTimeout(r,700));}
+  if(!reduce){while(Date.now()-started<durationMs){$('drawNumber').textContent=String(lista[i%lista.length]).padStart(2,'0');i++;await new Promise(r=>setTimeout(r,55));}}else{await new Promise(r=>setTimeout(r,700));}
   $('drawNumber').textContent=String(demo).padStart(2,'0');$('drawWinnerNumber').textContent=String(demo).padStart(2,'0');$('drawWinnerName').textContent='Prueba de animación · NO es un ganador real';$('drawWinner').classList.remove('hidden');$('drawStatus').textContent='🎉 PRUEBA COMPLETADA · No se modificó la base de datos.';
   await ch.send({type:'broadcast',event:'sorteo_resultado',payload:{rifa_id:rifa.id,numero:demo,nombre:'Prueba de animación · NO es un ganador real',demo:true}});
   await ch.unsubscribe();
