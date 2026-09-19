@@ -644,6 +644,21 @@ async function confirmar(e){
     waConfirm.textContent='✅ Solicitud enviada por WhatsApp';
     document.getElementById('modalClose')?.classList.remove('locked-close');
     document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
+    // Después de abrir WhatsApp, cerrar y reiniciar el modal para poder continuar sin actualizar la página.
+    setTimeout(()=>{
+      modal.classList.remove('open');
+      confirmation.classList.remove('show');
+      formView.style.display='';
+      nombre.value='';
+      whatsapp.value='';
+      waConfirm.style.pointerEvents='';
+      waConfirm.style.opacity='';
+      waConfirm.textContent='📲 Enviar solicitud por WhatsApp';
+      waConfirm.href='#';
+      confirmWhatsAppClicked=false;
+      bloquearNuevaSeleccion(false);
+      cargarRifa().catch(()=>{});
+    },350);
   };
   try{
     localStorage.setItem('rifando_pendiente_whatsapp',JSON.stringify({
