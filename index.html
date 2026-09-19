@@ -193,9 +193,16 @@ function activarSorteoPublico(payload){
   const run=()=>{
     const elapsed=Date.now()-startAt;
     if(elapsed>=duration){if(timerId)clearTimeout(timerId);return}
-    const delay=elapsed<duration*.33?60:elapsed<duration*.67?120:elapsed<duration*.89?220:500;
+    const progress=elapsed/duration;
+    let delay;
+    const wave=Math.sin(progress*14)+0.45*Math.sin(progress*31);
+    if(progress>0.90) delay=260+Math.floor(Math.random()*420);
+    else if(wave>0.55) delay=45+Math.floor(Math.random()*45);
+    else if(wave<-0.35) delay=260+Math.floor(Math.random()*260);
+    else delay=80+Math.floor(Math.random()*110);
+    const jump=1+Math.floor(Math.random()*Math.min(10,cells.length));
     cells.forEach(x=>x.classList.remove('active'));
-    const cell=cells[i%cells.length];cell.classList.add('active');num.textContent=cell.textContent;i++;
+    const cell=cells[i%cells.length];cell.classList.add('active');num.textContent=cell.textContent;i=(i+jump)%cells.length;
     timerId=setTimeout(run,delay);
   };
   const wait=Math.max(0,startAt-Date.now());setTimeout(run,wait);drawAnimationTimer={stop:()=>clearTimeout(timerId)};
