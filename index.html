@@ -215,8 +215,15 @@ function revelarSorteoPublico(payload){
   if(!payload||payload.rifa_id!==rifa?.id)return;
   if(drawAnimationTimer?.stop)drawAnimationTimer.stop();else clearInterval(drawAnimationTimer);const n=String(payload.numero).padStart(2,'0');
   document.getElementById('publicDrawNumber').textContent=n;document.getElementById('publicDrawStatus').textContent=payload.demo?'👁️ PRUEBA COMPLETADA · No hubo sorteo':'🔐 Selección registrada oficialmente';
-  document.getElementById('publicDrawWinnerNumber').textContent=n;document.getElementById('publicDrawWinnerName').textContent=payload.nombre||'Ganador';
-  document.getElementById('publicDrawResult').classList.add('show');
+  const result=document.getElementById('publicDrawResult');
+  const cells=[...document.getElementById('publicDrawGrid').children];
+  cells.forEach(x=>x.classList.remove('active'));
+  const winnerCell=cells.find(x=>x.textContent===n);
+  if(winnerCell)winnerCell.classList.add('active');
+  document.getElementById('publicDrawWinnerNumber').textContent=n;
+  document.getElementById('publicDrawWinnerName').textContent=payload.demo?'Número mostrado únicamente para la prueba · NO es un ganador real':(payload.nombre||'Ganador');
+  result.querySelector('div[style*="TENEMOS GANADOR"]').textContent=payload.demo?'👁️ PRUEBA FINALIZADA':'🏆 ¡TENEMOS GANADOR!';
+  result.classList.add('show');
   setTimeout(()=>document.getElementById('publicDraw').classList.remove('open'),payload.demo?3500:6000);
 }
 async function activarCanalSorteoPublico(){
