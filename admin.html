@@ -72,7 +72,7 @@ async function probarAnimacionClientes(){
   await ch.send({type:'broadcast',event:'sorteo_inicio',payload:{rifa_id:rifa.id,numeros:lista,demo:true}});
   $('drawModal').classList.add('open');$('drawWinner').classList.add('hidden');$('drawStatus').textContent='🌐 PRUEBA EN CLIENTES · No se realizará ni registrará ningún sorteo.';$('drawGrid').innerHTML=lista.map(n=>'<div class="ticket"><b>'+String(n).padStart(2,'0')+'</b></div>').join('');
   const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;const started=Date.now();let i=0;
-  if(!reduce){while(Date.now()-started<60000){$('drawNumber').textContent=String(lista[i%lista.length]).padStart(2,'0');i++;await new Promise(r=>setTimeout(r,55));}}else{await new Promise(r=>setTimeout(r,700));}
+  if(!reduce){while(Date.now()-started<90000){$('drawNumber').textContent=String(lista[i%lista.length]).padStart(2,'0');i++;await new Promise(r=>setTimeout(r,55));}}else{await new Promise(r=>setTimeout(r,700));}
   $('drawNumber').textContent=String(demo).padStart(2,'0');$('drawWinnerNumber').textContent=String(demo).padStart(2,'0');$('drawWinnerName').textContent='Prueba de animación · NO es un ganador real';$('drawWinner').classList.remove('hidden');$('drawStatus').textContent='🎉 PRUEBA COMPLETADA · No se modificó la base de datos.';
   await ch.send({type:'broadcast',event:'sorteo_resultado',payload:{rifa_id:rifa.id,numero:demo,nombre:'Prueba de animación · NO es un ganador real',demo:true}});
   await ch.unsubscribe();
@@ -91,7 +91,7 @@ const btn=[...document.querySelectorAll('.btn')].find(x=>x.textContent.includes(
 const lista=(sold||[]).map(x=>Number(x.numero)).sort((a,b)=>a-b);
 $('drawModal').classList.add('open');$('drawWinner').classList.add('hidden');$('drawStatus').textContent='Participan '+lista.length+' números vendidos. La selección final se realiza en el servidor.';$('drawGrid').innerHTML=lista.map(n=>'<div class="ticket"><b>'+String(n).padStart(2,'0')+'</b></div>').join('');const publicDraw=db.channel('rifa-sorteo-publico-'+rifa.id);publicDraw.subscribe();await new Promise(r=>setTimeout(r,300));await publicDraw.send({type:'broadcast',event:'sorteo_inicio',payload:{rifa_id:rifa.id,numeros:lista}});
 const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-if(!reduce){let i=0;const started=Date.now();while(Date.now()-started<60000){$('drawNumber').textContent=String(lista[i%lista.length]).padStart(2,'0');i++;await new Promise(r=>setTimeout(r,55+Math.min(90,((Date.now()-started)/60000)*90)));}}else{$('drawNumber').textContent='🎲';await new Promise(r=>setTimeout(r,700));}
+if(!reduce){let i=0;const started=Date.now();while(Date.now()-started<90000){$('drawNumber').textContent=String(lista[i%lista.length]).padStart(2,'0');i++;await new Promise(r=>setTimeout(r,55+Math.min(90,((Date.now()-started)/90000)*90)));}}else{$('drawNumber').textContent='🎲';await new Promise(r=>setTimeout(r,700));}
 $('drawStatus').textContent='🔐 Confirmando selección aleatoria en el servidor...';
 const {data,error}=await db.rpc('realizar_sorteo',{p_rifa_id:rifa.id});
 if(error){$('drawStatus').textContent='❌ No se pudo completar el sorteo.';alert('No se pudo realizar el sorteo: '+error.message);setTimeout(()=>{$('drawModal').classList.remove('open')},1200);if(btn){btn.disabled=false;btn.textContent='🏆 Realizar sorteo'}return}
