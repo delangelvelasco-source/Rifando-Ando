@@ -5,12 +5,27 @@
 <div class="box"><h2>Números</h2><p class="muted">Apartado = dorado · Vendido = tachado.</p><div class="grid" id="nums"></div></div>
 <div id="winnerBox" class="box hidden" style="margin-top:18px;border-color:#d9a936;text-align:center"><div style="font-size:52px">🏆</div><h2>GANADOR DEL SORTEO</h2><div id="winnerNumber" style="font-size:64px;font-weight:1000;color:#d9a936">--</div><h3 id="winnerName" style="font-size:28px;margin:8px 0"></h3><p id="winnerDate" class="muted"></p></div><div class="box" style="margin-top:18px"><h2>Últimos participantes</h2><div id="participants">Cargando...</div></div></div>
 <div id="payModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarPago()" style="float:right">×</button><h2>Registrar pago</h2><p id="payPerson"></p><div class="field"><label>Monto recibido</label><input id="payAmount" type="number" min="0.01" step="0.01"></div><div class="field"><label>Método</label><select id="payMethod"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Otro</option></select></div><button class="btn" onclick="guardarPago()">Confirmar pago</button><p id="payMsg"></p></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script>
-const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY),$=id=>document.getElementById(id);let rifa=null,nGlobal=[],payParticipant=null,realtimeChannel=null;
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://unpkg.com/@supabase/supabase-js@2"></script><script src="config.js"></script><script>
+let db=null, $=id=>document.getElementById(id), rifa=null,nGlobal=[],payParticipant=null,realtimeChannel=null;
+async function initDb(){
+  if(db) return true;
+  if(!window.supabase){$('msg').textContent='⚠️ No se pudo cargar el sistema de acceso. Revisa tu conexión a internet y recarga la página.';return false}
+  try{db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);return true}
+  catch(e){$('msg').textContent='⚠️ Error al iniciar el acceso: '+(e.message||e);return false}
+}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function estado(x){if(x.estado==='vendido')return'vendido';if(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)>new Date())return'apartado';return'disponible'}
 function numerosActuales(pid){return nGlobal.filter(z=>z.participante_id===pid&&(z.estado==='apartado'||z.estado==='vendido'))}
-async function entrar(){ $('msg').textContent='Entrando...';const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('pass').value});if(error){$('msg').innerHTML='<span class="error">'+esc(error.message)+'</span>';return}await sesion()}
+async function entrar(){
+  $('msg').textContent='Conectando...';
+  const ok=await initDb(); if(!ok)return;
+  try{
+    const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('pass').value});
+    if(error){$('msg').innerHTML='<span class="error">⚠️ '+esc(error.message)+'</span>';return}
+    $('msg').textContent='✅ Acceso correcto. Cargando...';
+    await sesion();
+  }catch(e){$('msg').innerHTML='<span class="error">⚠️ '+esc(e?.message||e)+'</span>'}
+}
 async function salir(){await db.auth.signOut();mostrarLogin()}
 function mostrarLogin(){$('app').classList.add('hidden');$('login').classList.remove('hidden')}
 async function sesion(){const {data:{session}}=await db.auth.getSession();if(!session){mostrarLogin();return}$('login').classList.add('hidden');$('app').classList.remove('hidden');await cargar()}
@@ -34,5 +49,11 @@ function activarTiempoReal(){
 }
 async function cargar(){const {data:r,error:re}=await db.from('rifas').select('*').in('estado',['activa','sorteada','cerrada']).order('created_at',{ascending:true}).limit(1).maybeSingle();if(re||!r){$('status').textContent='No se pudo cargar la rifa.';return}rifa=r;await mostrarGanador();await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});const {data:n,error:ne}=await db.from('numeros').select('id,numero,estado,apartado_hasta,participante_id').eq('rifa_id',r.id).order('numero');if(ne){$('status').textContent='No se pudieron cargar los números.';return}nGlobal=n||[];$('disp').textContent=n.filter(x=>estado(x)==='disponible').length;$('apart').textContent=n.filter(x=>estado(x)==='apartado').length;$('vend').textContent=n.filter(x=>x.estado==='vendido').length;$('nums').innerHTML=n.map(x=>{const st=estado(x);let b='';if(st==='apartado')b='<button class="btn small danger" onclick="liberar(\''+x.id+'\')">Liberar</button>';if(st==='disponible')b='<button class="btn small" onclick="vender(\''+x.id+'\')">Vendido</button>';if(st==='vendido')b='<button class="btn small secondary" onclick="liberar(\''+x.id+'\')">Liberar</button>';return '<div class="ticket '+st+'"><b>'+String(x.numero).padStart(2,'0')+'</b><div class="actions">'+b+'</div></div>'}).join('');
 const {data:p,error:pe}=await db.from('participantes').select('id,nombre,whatsapp,correo,created_at').order('created_at',{ascending:false}).limit(20);if(pe){$('participants').textContent='No se pudieron cargar participantes.';return}$('people').textContent=p?.length||0;const ids=(p||[]).map(x=>x.id);const {data:payments}=ids.length?await db.from('pagos').select('participante_id,monto,estado').eq('rifa_id',r.id).in('participante_id',ids):{data:[]};const paidBy={};(payments||[]).forEach(q=>{if(q.estado==='confirmado')paidBy[q.participante_id]=(paidBy[q.participante_id]||0)+Number(q.monto||0)});$('participants').innerHTML=p?.length?p.map(x=>{const ns=nGlobal.filter(z=>z.participante_id===x.id&&(z.estado==='apartado'||z.estado==='vendido')).map(z=>String(z.numero).padStart(2,'0'));const total=ns.length*Number(r.precio_numero),pagado=paidBy[x.id]||0,saldo=Math.max(0,total-pagado);const ep=total===0?'Sin números':saldo===0?'Pagado':pagado>0?'Abono':'Pendiente';const safe=esc(x.nombre).replace(/'/g,'');return '<div class="row"><b>'+esc(x.nombre)+'</b><br>'+esc(x.whatsapp)+(x.correo?' · '+esc(x.correo):'')+'<br><span class="gold">Números: '+(ns.join(', ')||'—')+'</span><div class="pay"><span>Total: $'+total.toLocaleString('es-MX')+'</span><br><span>Pagado: $'+pagado.toLocaleString('es-MX')+' · Saldo: $'+saldo.toLocaleString('es-MX')+'</span><br><b>'+ep+'</b><br>'+(saldo>0&&total>0?'<button class="btn small" onclick="abrirPago(\''+x.id+'\',\''+safe+'\','+saldo+')">Registrar pago</button>':'')+(ns.length?'<button class="btn small secondary" onclick="enviarWhatsApp(\''+safe+'\',\''+esc(x.whatsapp)+'\',\''+ns.join(', ')+'\','+total+','+pagado+','+saldo+')">📲 WhatsApp</button>':'')+'</div><small>'+new Date(x.created_at).toLocaleString('es-MX')+'</small></div>'}).join(''):'Sin participantes';$('status').textContent=r.nombre+' · $'+Number(r.precio_numero).toLocaleString('es-MX')+' por número'}
-db.auth.onAuthStateChange((e,s)=>{if(s)sesion();else mostrarLogin()});sesion();setInterval(()=>{if(!$('app').classList.contains('hidden'))cargar()},30000);
+async function iniciarAdmin(){
+  if(!(await initDb()))return;
+  db.auth.onAuthStateChange((e,s)=>{if(s)sesion();else mostrarLogin()});
+  await sesion();
+  setInterval(()=>{if(!$('app').classList.contains('hidden'))cargar()},30000);
+}
+iniciarAdmin();
 </script></body></html>
