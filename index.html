@@ -624,7 +624,7 @@ async function confirmar(e){
   document.getElementById('confirmName').textContent=name;
   document.getElementById('confirmNumbers').textContent=displayNumbers;
   document.getElementById('confirmTotal').textContent='$'+displayTotal;
-  const message='Hola Rifando Ando, confirmo mi apartado de los números '+displayNumbers+' por un total de $'+displayTotal+'. Mi nombre es '+name+'.\n\n🏦 DATOS PARA TRANSFERENCIA\n\n• CLABE: 722969010050807387\n\n• Beneficiario: Miguel Velasco\n• Institución: Mercado Pago W\n\n🏦 DATOS PARA DEPÓSITO SOLO OXXO\n\nDicta al cajero el siguiente No:\n\n*2242 1705 8093 5038*\n\nCuenta Spin By Oxxo\n\n📲 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tu participación.';
+  const message='Hola Rifando Ando, confirmo mi apartado de los números '+displayNumbers+' por un total de $'+displayTotal+'. Mi nombre es '+name+'.';
   const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
   const waConfirm=document.getElementById('waConfirm');
   waConfirm.href=waLink;
