@@ -189,25 +189,24 @@ function activarSorteoPublico(payload){
   const lista=(payload.numeros||[]).map(Number).sort((a,b)=>a-b);if(!lista.length)return;
   overlay.classList.add('open');res.classList.remove('show');status.textContent=payload.demo?'👁️ PRUEBA DE ANIMACIÓN · No es un sorteo real':'Participan '+lista.length+' números · selección en curso';grid.innerHTML=lista.map(n=>'<span>'+String(n).padStart(2,'0')+'</span>').join('');
   const cells=[...grid.children];let i=0;clearInterval(drawAnimationTimer);clearTimeout(window.drawDemoRevealTimer);
-  const started=Date.now();let timerId=null;
-  const tick=()=>{
-    const elapsed=Date.now()-started;
-    if(elapsed>=45000){clearInterval(timerId);return}
-    const delay=elapsed<15000?60:elapsed<30000?120:elapsed<40000?220:500;
+  const duration=Number(payload.duration_ms)||45000;const startAt=Number(payload.start_at)||Date.now();let timerId=null;
+  const run=()=>{
+    const elapsed=Date.now()-startAt;
+    if(elapsed>=duration){if(timerId)clearTimeout(timerId);return}
+    const delay=elapsed<duration*.33?60:elapsed<duration*.67?120:elapsed<duration*.89?220:500;
     cells.forEach(x=>x.classList.remove('active'));
-    const cell=cells[i%cells.length];cell.classList.add('active');num.textContent=cell.textContent;
-    i++;
-    timerId=setTimeout(tick,delay);
+    const cell=cells[i%cells.length];cell.classList.add('active');num.textContent=cell.textContent;i++;
+    timerId=setTimeout(run,delay);
   };
-  tick();drawAnimationTimer={stop:()=>clearTimeout(timerId)};
+  const wait=Math.max(0,startAt-Date.now());setTimeout(run,wait);drawAnimationTimer={stop:()=>clearTimeout(timerId)};
   if(payload.demo){
     const demo=lista[Math.floor(lista.length/2)];
-    window.drawDemoRevealTimer=setTimeout(()=>revelarSorteoPublico({rifa_id:rifa.id,numero:demo,nombre:'Prueba de animación · NO es un ganador real',demo:true}),45000);
+    window.drawDemoRevealTimer=setTimeout(()=>revelarSorteoPublico({rifa_id:rifa.id,numero:demo,nombre:'Prueba de animación · NO es un ganador real',demo:true}),wait+duration);
   }
 }
 function revelarSorteoPublico(payload){
   if(!payload||payload.rifa_id!==rifa?.id)return;
-  clearInterval(drawAnimationTimer);const n=String(payload.numero).padStart(2,'0');
+  if(drawAnimationTimer?.stop)drawAnimationTimer.stop();else clearInterval(drawAnimationTimer);const n=String(payload.numero).padStart(2,'0');
   document.getElementById('publicDrawNumber').textContent=n;document.getElementById('publicDrawStatus').textContent=payload.demo?'👁️ PRUEBA COMPLETADA · No hubo sorteo':'🔐 Selección registrada oficialmente';
   document.getElementById('publicDrawWinnerNumber').textContent=n;document.getElementById('publicDrawWinnerName').textContent=payload.nombre||'Ganador';
   document.getElementById('publicDrawResult').classList.add('show');
