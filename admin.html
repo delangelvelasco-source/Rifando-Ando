@@ -37,7 +37,8 @@ async function probarAnimacionSorteo(){
   $('drawModal').classList.add('open');$('drawWinner').classList.add('hidden');
   $('drawStatus').textContent='DEMO · Esta prueba no realiza ni guarda ningún sorteo.';
   $('drawGrid').innerHTML=lista.map(n=>'<div class="ticket"><b>'+String(n).padStart(2,'0')+'</b></div>').join('');
-  const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  await new Promise(r=>setTimeout(r,Math.max(0,drawStartAt-Date.now())));
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if(reduce){$('drawNumber').textContent='🎲';await new Promise(r=>setTimeout(r,900));}
   else{
     let i=0;
@@ -90,7 +91,8 @@ if(apartadosActivos>0){alert('⚠️ Todavía hay '+apartadosActivos+' número(s
 if(!confirm('🏆 VERIFICACIÓN DEL SORTEO\n\nNúmeros vendidos elegibles: '+vendidos+'\nApartados activos: 0\n\nSe mostrarán todos los números participantes y comenzará una animación. El ganador final será seleccionado y registrado por el servidor.\n\n¿Realizar el sorteo ahora?'))return;
 const btn=[...document.querySelectorAll('.btn')].find(x=>x.textContent.includes('Realizar sorteo'));if(btn){btn.disabled=true;btn.textContent='🎲 Sorteando...'}
 const lista=(sold||[]).map(x=>Number(x.numero)).sort((a,b)=>a-b);
-$('drawModal').classList.add('open');$('drawWinner').classList.add('hidden');$('drawStatus').textContent='Participan '+lista.length+' números vendidos. La selección final se realiza en el servidor.';$('drawGrid').innerHTML=lista.map(n=>'<div class="ticket"><b>'+String(n).padStart(2,'0')+'</b></div>').join('');const publicDraw=db.channel('rifa-sorteo-publico-'+rifa.id);publicDraw.subscribe();await new Promise(r=>setTimeout(r,300));await publicDraw.send({type:'broadcast',event:'sorteo_inicio',payload:{rifa_id:rifa.id,numeros:lista}});
+const drawStartAt=Date.now()+1500;
+$('drawModal').classList.add('open');$('drawWinner').classList.add('hidden');$('drawStatus').textContent='Participan '+lista.length+' números vendidos. La selección final se realiza en el servidor.';$('drawGrid').innerHTML=lista.map(n=>'<div class="ticket"><b>'+String(n).padStart(2,'0')+'</b></div>').join('');const publicDraw=db.channel('rifa-sorteo-publico-'+rifa.id);publicDraw.subscribe();await new Promise(r=>setTimeout(r,300));await publicDraw.send({type:'broadcast',event:'sorteo_inicio',payload:{rifa_id:rifa.id,numeros:lista,start_at:drawStartAt,duration_ms:45000}});
 const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if(!reduce){let i=0;const started=Date.now();while(Date.now()-started<45000){$('drawNumber').textContent=String(lista[i%lista.length]).padStart(2,'0');i++;await new Promise(r=>setTimeout(r,55+Math.min(90,((Date.now()-started)/45000)*90)));}}else{$('drawNumber').textContent='🎲';await new Promise(r=>setTimeout(r,700));}
 $('drawStatus').textContent='🔐 Confirmando selección aleatoria en el servidor...';
