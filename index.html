@@ -559,7 +559,7 @@ function restaurarSolicitudPendiente(){
     bloquearNuevaSeleccion(true);
     const waConfirm=document.getElementById('waConfirm');
     const recoveredNumbers=String(p.numbers||'').trim();
-    const recoveredMessage='Hola Rifando Ando, confirmo mi apartado de los números '+recoveredNumbers+' por un total de '+String(p.total||'')+'. Mi nombre es '+String(p.name||'')+'.\n\n💳 OPCIÓN DE PAGO EXCLUSIVA EN OXXO\n🏪 Realiza tu depósito en cualquier caja de OXXO.\n📲 Puedes mostrar el QR de pago en caja o dictar este número: 2242 1705 8093 5038\n💰 Límite: hasta $5,000 por operación.\n🧾 Conserva tu ticket y envía tu comprobante por este mismo WhatsApp para confirmar tu participación.';
+    const recoveredMessage='Hola Rifando Ando, confirmo mi apartado de los números '+recoveredNumbers+' por un total de '+String(p.total||'')+'. Mi nombre es '+String(p.name||'')+'.\n\n💳 OPCIÓN DE PAGO EXCLUSIVA EN OXXO\n🏪 Realiza tu depósito en cualquier caja de OXXO.\n📋 Número para dictar al cajero:\n2242 1705 8093 5038\n\n🧾 Envía tu comprobante por este mismo WhatsApp para confirmar tu participación.';
     waConfirm.href='https://wa.me/528123859824?text='+encodeURIComponent(recoveredMessage);
     confirmWhatsAppClicked=false;
     waConfirm.onclick=()=>{
@@ -623,7 +623,7 @@ async function confirmar(e){
   document.getElementById('confirmName').textContent=name;
   document.getElementById('confirmNumbers').textContent=displayNumbers;
   document.getElementById('confirmTotal').textContent='$'+displayTotal;
-  const message='Hola Rifando Ando, confirmo mi apartado de los números '+displayNumbers+' por un total de $'+displayTotal+'. Mi nombre es '+name+'.\n\n💳 OPCIONES DE PAGO\n\n🏦 TRANSFERENCIA / DEPÓSITO BANCARIO\n📋 CLABE para copiar: `722969010050807387`\n👤 Beneficiario: Miguel Angel Velasco Lazaro\n🏦 Institución: Mercado Pago W\n\n🏪 DEPÓSITO EN OXXO\n📋 Número para copiar o dictar al cajero:\n`2242170580935038`\n📲 También puedes mostrar el QR en caja de OXXO.\n💰 Límite: hasta $5,000 por operación.\n🧾 Conserva tu ticket de pago.\n\n📲 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tu participación.';
+  const message='Hola Rifando Ando, confirmo mi apartado de los números '+displayNumbers+' por un total de $'+displayTotal+'. Mi nombre es '+name+'.\n\n💳 OPCIONES DE PAGO\n\n🏦 TRANSFERENCIA / DEPÓSITO BANCARIO\n📋 CLABE para copiar: `722969010050807387`\n👤 Beneficiario: Miguel Angel Velasco Lazaro\n🏦 Institución: Mercado Pago W\n\n🏪 DEPÓSITO EN OXXO\n📋 Número para dictar al cajero:\n`2242170580935038`\n\n📲 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tu participación.';
   const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
   const waConfirm=document.getElementById('waConfirm');
   waConfirm.href=waLink;
