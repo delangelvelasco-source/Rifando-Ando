@@ -560,7 +560,7 @@ function restaurarSolicitudPendiente(){
     bloquearNuevaSeleccion(true);
     const waConfirm=document.getElementById('waConfirm');
     const recoveredNumbers=String(p.numbers||'').trim();
-    const recoveredMessage='Hola Rifando Ando, confirmo mi apartado de los números '+recoveredNumbers+' por un total de '+String(p.total||'')+'. Mi nombre es '+String(p.name||'')+'.\n\n🏦 DATOS PARA TRANSFERENCIA\n\n• CLABE: 722969010050807387\n\n• Beneficiario: Miguel Velasco\n• Institución: Mercado Pago W\n\n🏦 DATOS PARA DEPÓSITO SOLO OXXO\n\nDicta al cajero el siguiente No:\n\n*2242 1705 8093 5038*\n\nCuenta Spin By Oxxo\n\n📲 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tu participación.';
+    const recoveredMessage='🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado de los siguientes números:\n\n🎫 '+recoveredNumbers+'\n💰 Total: '+String(p.total||'')+'\n👤 Nombre: '+String(p.name||'')+'\n\n✅ Quedo atento para continuar con mi participación.\n🍀 ¡Gracias y mucha suerte!';
     waConfirm.href='https://wa.me/528123859824?text='+encodeURIComponent(recoveredMessage);
     confirmWhatsAppClicked=false;
     waConfirm.onclick=()=>{
