@@ -163,7 +163,7 @@ const correo=document.getElementById('correo');
 
 let rifa=null;
 let sel=new Set();
-let realtimeChannel=null;let drawPublicChannel=null;let drawAnimationTimer=null;let lastDemoStartAt=0;
+let realtimeChannel=null;let drawPublicChannel=null;let drawAnimationTimer=null;let lastDemoStartAt=0;let lastRealEventId=null;
 
 function nums(){
   return Array.from(sel).sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0'));
@@ -260,7 +260,8 @@ async function revisarSorteoRealPersistente(){
       activarSorteoPublico({rifa_id:rifa.id,numeros:Array.isArray(data.numeros)?data.numeros:[],demo:false,start_at:startAt,duration_ms:duration});
     }
   }
-  if(data.estado==='finalizado' && data.numero_ganador!=null){
+  if(data.estado==='finalizado' && data.numero_ganador!=null && data.id!==lastRealEventId){
+    lastRealEventId=data.id;
     revelarSorteoPublico({rifa_id:rifa.id,numero:data.numero_ganador,nombre:data.nombre_ganador||'Ganador',demo:false});
   }
 }
