@@ -156,7 +156,7 @@ async function cargarListaGanadores(){
   el.innerHTML=gs.map(g=>{
     const p=pm.get(g.participante_id)||{};
     const r=rm.get(g.rifa_id)||{};
-    const tel=String(p.whatsapp||'').replace(/\\D/g,'');
+    const tel=String(p.whatsapp||'').replace(/\D/g,'');
     const num=String(g.numero).padStart(2,'0');
     const fecha=new Date(g.created_at).toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit',year:'numeric'});
     const msg='🎉 ¡Felicidades, '+(g.nombre_snapshot||'Ganador')+'!\n\n🏆 Fuiste el ganador de *Rifando Ando* con el número *'+num+'*.\n\n'+(r.codigo_sorteo?'Sorteo: *'+r.codigo_sorteo+'*\n':'')+'¡Muchas felicidades y gracias por participar! 🎟️';
