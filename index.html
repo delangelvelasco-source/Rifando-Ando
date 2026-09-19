@@ -415,9 +415,8 @@ async function cargarRifa(){
   }
   rifa=r;
   actualizarInfoLoteria(r).catch(()=>{});
-  await activarCanalSorteoPublico();
-  await mostrarGanadorPublico();
-  await cargarHistorialGanadores();
+  // El canal de animación y los historiales no deben bloquear la carga principal.
+  activarCanalSorteoPublico().catch(()=>{});
 
   if(r.estado==='sorteada'){
     tickets.innerHTML='<div style="grid-column:1/-1;padding:28px;text-align:center;border:1px solid #3a2d0d;border-radius:16px;background:#111"><div style="font-size:48px">🏆</div><h3>¡El sorteo ya fue realizado!</h3><p style="color:#aaa">Consulta el ganador y el historial más abajo.</p></div>';
@@ -432,7 +431,7 @@ async function cargarRifa(){
     return;
   }
 
-  await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});
+  // Los apartados vencidos se consideran disponibles en la vista pública por su fecha de expiración.
   const precioFormateado='$'+Number(r.precio_numero).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
   raffleName.textContent=r.nombre||('Sorteo #'+(r.numero_sorteo||''));
   officialTitle.textContent=(r.nombre||'SORTEO OFICIAL').toUpperCase();
@@ -481,6 +480,9 @@ async function cargarRifa(){
   actualizarWhatsAppAyuda();
   if(solicitudPendiente)bloquearNuevaSeleccion(true);
   activarTiempoReal();
+  // Cargar extras después de pintar los números; si fallan, la rifa sigue funcionando.
+  mostrarGanadorPublico().catch(()=>{});
+  cargarHistorialGanadores().catch(()=>{});
 }
 async function cargarHistorialGanadores(){
   const el=document.getElementById('winnerHistory');
@@ -659,8 +661,12 @@ document.getElementById('topContinue')?.addEventListener('click',()=>{
 modal.addEventListener('click',e=>{
   if(e.target===modal) cerrarFormulario();
 });
-cargarRifa();
-mostrarGanadorPublico();
+cargarRifa().catch(()=>{
+  raffleName.textContent='No se pudo cargar el sorteo';
+  priceEl.textContent='Intenta actualizar la página';
+  tickets.innerHTML='<p style="color:#aaa">No se pudieron cargar los números. Actualiza la página para intentar de nuevo.</p>';
+});
+mostrarGanadorPublico().catch(()=>{});
 setTimeout(restaurarSolicitudPendiente,300);
 setInterval(()=>{revisarPruebaPersistente();revisarSorteoRealPersistente()},1500);
 setInterval(()=>{if(rifa)actualizarInfoLoteria(rifa)},30000);
