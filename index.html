@@ -580,28 +580,7 @@ async function confirmar(e){
     localStorage.setItem('rifando_pendiente_whatsapp',JSON.stringify({
       name:name,
       numbers:displayNumbers,
-      total:'
-  confirmation.classList.add('show');
-  sel.clear();
-  btn.disabled=false;
-  btn.textContent='Solicitar apartado';
-  await cargarRifa();
-}
-document.getElementById('topContinue')?.addEventListener('click',()=>{
-  if(sel.size){abrirFormulario();}
-  else{document.getElementById('numeros')?.scrollIntoView({behavior:'smooth',block:'start'});}
-});
-modal.addEventListener('click',e=>{
-  if(e.target===modal) cerrarFormulario();
-});
-cargarRifa();
-mostrarGanadorPublico();
-setTimeout(restaurarSolicitudPendiente,300);
-setInterval(()=>{revisarPruebaPersistente();revisarSorteoRealPersistente()},1500);
-setInterval(mostrarGanadorPublico,5000);
-</script>
-</body>
-</html>+displayTotal,
+      total:'$'+displayTotal,
       waLink:waLink,
       timestamp:Date.now()
     }));
@@ -622,6 +601,7 @@ modal.addEventListener('click',e=>{
 });
 cargarRifa();
 mostrarGanadorPublico();
+setTimeout(restaurarSolicitudPendiente,300);
 setInterval(()=>{revisarPruebaPersistente();revisarSorteoRealPersistente()},1500);
 setInterval(mostrarGanadorPublico,5000);
 </script>
