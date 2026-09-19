@@ -458,7 +458,9 @@ modal.addEventListener('click',e=>{
   if(e.target===modal) cerrarFormulario();
 });
 cargarRifa();
+mostrarGanadorPublico();
 setInterval(()=>{revisarPruebaPersistente();revisarSorteoRealPersistente()},1500);
+setInterval(mostrarGanadorPublico,5000);
 </script>
 </body>
 </html>
