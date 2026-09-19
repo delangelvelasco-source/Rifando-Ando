@@ -558,7 +558,7 @@ function restaurarSolicitudPendiente(){
     bloquearNuevaSeleccion(true);
     const waConfirm=document.getElementById('waConfirm');
     const recoveredNumbers=String(p.numbers||'').trim();
-    const recoveredMessage='🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado de los siguientes números:\n\n🎫 '+recoveredNumbers+'\n💰 Total: '+String(p.total||'')+'\n👤 Nombre: '+String(p.name||'')+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
+    const recoveredMessage='RIFANDO ANDO\n\nHola, confirmo mi apartado de los siguientes números:\n\nNúmeros: '+recoveredNumbers+'\nTotal: '+String(p.total||'')+'\nNombre: '+String(p.name||'')+'\n\nQuedo atento para continuar con mi participación.\n\nGracias';
     waConfirm.href='https://wa.me/528123859824?text='+encodeURIComponent(recoveredMessage);
     confirmWhatsAppClicked=false;
     waConfirm.onclick=()=>{
@@ -622,7 +622,7 @@ async function confirmar(e){
   document.getElementById('confirmName').textContent=name;
   document.getElementById('confirmNumbers').textContent=displayNumbers;
   document.getElementById('confirmTotal').textContent='$'+displayTotal;
-  const message='🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado de los siguientes números:\n\n🎫 '+displayNumbers+'\n💰 Total: $'+displayTotal+'.00\n👤 Nombre: '+name+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
+  const message='RIFANDO ANDO\n\nHola, confirmo mi apartado de los siguientes números:\n\nNúmeros: '+displayNumbers+'\nTotal: $'+displayTotal+'.00\nNombre: '+name+'\n\nQuedo atento para continuar con mi participación.\n\nGracias';
   const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
   const waConfirm=document.getElementById('waConfirm');
   waConfirm.href=waLink;
