@@ -103,7 +103,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 </section>
 
 <section class="section">
-<div id="ultimo-ganador" class="box hidden" style="margin-bottom:25px;text-align:center;border-color:#d9a936"><div style="font-size:42px">🏆</div><h2>Ganador del sorteo</h2><div id="publicWinnerNumber" style="font-size:58px;font-weight:1000;color:#d9a936">--</div><div id="publicWinnerName" style="font-size:24px;font-weight:900"></div></div><div class="how">
+<div id="ultimo-ganador" class="box hidden" style="margin-bottom:25px;text-align:center;border-color:#d9a936"><div style="font-size:42px">🏆</div><h2>Último ganador</h2><div id="publicWinnerNumber" style="font-size:58px;font-weight:1000;color:#d9a936">--</div><div id="publicWinnerName" style="font-size:24px;font-weight:900"></div><button class="btn" type="button" onclick="reproducirUltimoSorteo()" style="margin-top:16px">🎬 Ver animación del último sorteo</button></div><div class="how">
 <div class="step"><b>01</b><h3>Elige</h3><p>Selecciona tus números.</p></div>
 <div class="step"><b>02</b><h3>Confirma</h3><p>Registra tus datos para solicitar el apartado.</p></div>
 <div class="step"><b>03</b><h3>Participa</h3><p>Recibe tu confirmación y conserva tus números.</p></div>
@@ -298,6 +298,20 @@ async function revisarPruebaPersistente(){
       demo:true
     });
   },Math.max(0,startAt+duration-Date.now()));
+}
+
+async function reproducirUltimoSorteo(){
+  if(!rifa){alert('No hay un sorteo disponible.');return;}
+  const {data:w,error:we}=await db.from('ganadores').select('numero,nombre_snapshot,rifa_id,created_at').order('created_at',{ascending:false}).limit(1).maybeSingle();
+  if(we||!w){alert('Aún no hay un ganador registrado.');return;}
+  const {data:n,error:ne}=await db.from('numeros').select('numero').eq('rifa_id',w.rifa_id).order('numero');
+  if(ne||!n||!n.length){alert('No se pudo cargar la lista del último sorteo.');return;}
+  const lista=n.map(x=>Number(x.numero)).filter(Number.isFinite).sort((a,b)=>a-b);
+  const startAt=Date.now()+300;
+  activarSorteoPublico({rifa_id:rifa.id,numeros:lista,demo:false,start_at:startAt,duration_ms:45000});
+  window.ultimoSorteoReplayTimer=setTimeout(()=>{
+    revelarSorteoPublico({rifa_id:rifa.id,numero:Number(w.numero),nombre:w.nombre_snapshot||'Ganador',demo:false});
+  },45000);
 }
 
 async function mostrarGanadorPublico(){const box=document.getElementById('publicWinner');const {data:w}=await db.from('ganadores').select('numero,nombre_snapshot,created_at').order('created_at',{ascending:false}).limit(1).maybeSingle();if(!w){box.classList.add('hidden');return}box.classList.remove('hidden');document.getElementById('publicWinnerNumber').textContent=String(w.numero).padStart(2,'0');document.getElementById('publicWinnerName').textContent=w.nombre_snapshot} 
