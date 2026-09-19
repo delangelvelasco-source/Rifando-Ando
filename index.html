@@ -414,7 +414,7 @@ async function cargarRifa(){
     return;
   }
   rifa=r;
-  await actualizarInfoLoteria(r);
+  actualizarInfoLoteria(r).catch(()=>{});
   await activarCanalSorteoPublico();
   await mostrarGanadorPublico();
   await cargarHistorialGanadores();
@@ -474,7 +474,7 @@ async function cargarRifa(){
     tickets.appendChild(b);
   });
   const pct=n?.length?Math.round(busy/n.length*100):0;
-  if(r.metodo_sorteo==='loteria_nacional') await actualizarInfoLoteria(r);
+  if(r.metodo_sorteo==='loteria_nacional') actualizarInfoLoteria(r).catch(()=>{});
   meta.innerHTML='<span>'+pct+'% ocupados</span><span>'+(r.fecha_sorteo?'Sorteo: '+new Date(r.fecha_sorteo).toLocaleDateString('es-MX'):'Sorteo próximamente')+'</span>';
   bar.style.width=pct+'%';
   update();
