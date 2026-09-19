@@ -623,7 +623,7 @@ async function confirmar(e){
   document.getElementById('confirmName').textContent=name;
   document.getElementById('confirmNumbers').textContent=displayNumbers;
   document.getElementById('confirmTotal').textContent='$'+displayTotal;
-  const message='Hola Rifando Ando, confirmo mi apartado de los números '+displayNumbers+' por un total de $'+displayTotal+'. Mi nombre es '+name+'.\n\n💳 OPCIÓN DE PAGO EXCLUSIVA EN OXXO\n🏪 Realiza tu depósito en cualquier caja de OXXO.\n📲 Puedes mostrar el QR en caja o dictar este número: 2242 1705 8093 5038\n💰 Límite: hasta $5,000 por operación.\n🧾 Conserva tu ticket y envía tu comprobante por este mismo WhatsApp para confirmar tu participación.';
+  const message='Hola Rifando Ando, confirmo mi apartado de los números '+displayNumbers+' por un total de $'+displayTotal+'. Mi nombre es '+name+'.\n\n💳 OPCIONES DE PAGO\n\n🏦 Transferencia / depósito bancario\n- CLABE: 722969010050807387\n- Beneficiario: Miguel Angel Velasco Lazaro\n- Institución: Mercado Pago W\n\n🏪 Depósito en OXXO\n📲 Muestra el QR en caja de OXXO o dicta este número al cajero: 2242 1705 8093 5038\n💰 Límite: hasta $5,000 por operación.\n🧾 Conserva tu ticket de pago.\n\n📲 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tu participación.';
   const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
   const waConfirm=document.getElementById('waConfirm');
   waConfirm.href=waLink;
