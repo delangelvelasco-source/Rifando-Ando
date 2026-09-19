@@ -257,7 +257,6 @@ async function revisarPruebaPersistente(){
   const ahora=Date.now();
   if(startAt<=0||ahora>startAt+duration+5000)return;
   if(Number(lastDemoStartAt)===startAt)return;
-  lastDemoStartAt=startAt;
   activarSorteoPublico({
     rifa_id:rifa.id,
     numeros:Array.isArray(data.numeros)?data.numeros:[],
@@ -266,6 +265,7 @@ async function revisarPruebaPersistente(){
     start_at:startAt,
     duration_ms:duration
   });
+  lastDemoStartAt=startAt;
   window.drawDemoRevealTimer=setTimeout(()=>{
     revelarSorteoPublico({
       rifa_id:rifa.id,
