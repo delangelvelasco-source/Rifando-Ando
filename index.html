@@ -314,7 +314,20 @@ async function reproducirUltimoSorteo(){
   },45000);
 }
 
-async function mostrarGanadorPublico(){const box=document.getElementById('publicWinner');const {data:w}=await db.from('ganadores').select('numero,nombre_snapshot,created_at').order('created_at',{ascending:false}).limit(1).maybeSingle();if(!w){box.classList.add('hidden');return}box.classList.remove('hidden');document.getElementById('publicWinnerNumber').textContent=String(w.numero).padStart(2,'0');document.getElementById('publicWinnerName').textContent=w.nombre_snapshot} 
+async function mostrarGanadorPublico(){
+  const box=document.getElementById('publicWinner');
+  if(!box)return;
+  const {data:w,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at').order('created_at',{ascending:false}).limit(1).maybeSingle();
+  if(error||!w){box.classList.add('hidden');return}
+  box.classList.remove('hidden');
+  document.getElementById('publicWinnerNumber').textContent='#'+String(w.numero).padStart(2,'0');
+  document.getElementById('publicWinnerName').textContent=w.nombre_snapshot||'Ganador';
+  const d=w.created_at?new Date(w.created_at).toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'}):'';
+  let dateEl=document.getElementById('publicWinnerDate');
+  if(!dateEl){dateEl=document.createElement('div');dateEl.id='publicWinnerDate';dateEl.style.cssText='margin-top:8px;color:#888;font-size:14px';box.appendChild(dateEl)}
+  dateEl.textContent=d?'Sorteo realizado el '+d:'';
+}
+
 async function cargarRifa(){
   const {data:r,error:re}=await db.from('rifas').select('*').in('estado',['activa','sorteada']).order('created_at',{ascending:true}).limit(1).maybeSingle();
   if(re||!r){
