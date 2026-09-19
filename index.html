@@ -241,8 +241,10 @@ async function activarCanalSorteoPublico(){
 }
 function iniciarPruebaPublica(){
   if(new URLSearchParams(location.search).get('prueba')!=='1'||!rifa)return;
+  if(sessionStorage.getItem('rifando_prueba_ejecutada')==='1')return;
   const lista=Array.from(document.querySelectorAll('.ticket')).map((_,i)=>i).slice(0,100);
   if(!lista.length)return;
+  sessionStorage.setItem('rifando_prueba_ejecutada','1');
   activarSorteoPublico({rifa_id:rifa.id,numeros:lista,demo:true});
 }
 async function mostrarGanadorPublico(){const box=document.getElementById('publicWinner');const {data:w}=await db.from('ganadores').select('numero,nombre_snapshot,created_at').order('created_at',{ascending:false}).limit(1).maybeSingle();if(!w){box.classList.add('hidden');return}box.classList.remove('hidden');document.getElementById('publicWinnerNumber').textContent=String(w.numero).padStart(2,'0');document.getElementById('publicWinnerName').textContent=w.nombre_snapshot} 
