@@ -58,7 +58,7 @@ const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: redu
 }
 async function abrirPruebaPublica(){
   if(!rifa)return;
-  const ok=confirm('🌐 PRUEBA EN CLIENTES\\n\\nAsegúrate de tener abiertas las páginas de los clientes.\\n\\nLa prueba durará 45 segundos y NO realizará ni registrará ningún sorteo.\\n\\n¿Iniciar la prueba ahora?');
+  const ok=confirm('🌐 PRUEBA EN CLIENTES\n\nAsegúrate de tener abiertas las páginas de los clientes antes de continuar.\n\n⏱️ La prueba durará 45 segundos.\n\nℹ️ Esta es solo una prueba de sincronización. No realizará ni registrará ningún sorteo.\n\n¿Iniciar la prueba ahora?');
   if(!ok)return;
   await probarAnimacionClientes();
 }
