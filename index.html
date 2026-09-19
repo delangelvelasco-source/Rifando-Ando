@@ -191,14 +191,14 @@ function activarSorteoPublico(payload){
   const cells=[...grid.children];let i=0;clearInterval(drawAnimationTimer);clearTimeout(window.drawDemoRevealTimer);
   const started=Date.now();
   drawAnimationTimer=setInterval(()=>{
-    const elapsed=Date.now()-started,progress=Math.min(1,elapsed/90000);
+    const elapsed=Date.now()-started,progress=Math.min(1,elapsed/45000);
     const delay=70+Math.round(Math.pow(progress,3)*220);
     cells.forEach(x=>x.classList.remove('active'));cells[i%cells.length].classList.add('active');num.textContent=cells[i%cells.length].textContent;i+=Math.max(1,Math.floor(i/18)+1);
     if(delay>70){clearInterval(drawAnimationTimer);drawAnimationTimer=setInterval(()=>{cells.forEach(x=>x.classList.remove('active'));cells[i%cells.length].classList.add('active');num.textContent=cells[i%cells.length].textContent;i+=1},delay)}
   },70);
   if(payload.demo){
     const demo=lista[Math.floor(lista.length/2)];
-    window.drawDemoRevealTimer=setTimeout(()=>revelarSorteoPublico({rifa_id:rifa.id,numero:demo,nombre:'Prueba de animación · NO es un ganador real',demo:true}),90000);
+    window.drawDemoRevealTimer=setTimeout(()=>revelarSorteoPublico({rifa_id:rifa.id,numero:demo,nombre:'Prueba de animación · NO es un ganador real',demo:true}),45000);
   }
 }
 function revelarSorteoPublico(payload){
