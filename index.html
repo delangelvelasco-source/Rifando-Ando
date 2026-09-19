@@ -243,6 +243,39 @@ async function activarCanalSorteoPublico(){
   });
 }
 
+async function revisarPruebaPersistente(){
+  if(!rifa)return;
+  const {data,error}=await db.from('sorteo_pruebas')
+    .select('start_at,duration_ms,numeros,numero_demo')
+    .eq('rifa_id',rifa.id)
+    .order('start_at',{ascending:false})
+    .limit(1)
+    .maybeSingle();
+  if(error||!data)return;
+  const startAt=new Date(data.start_at).getTime();
+  const duration=Number(data.duration_ms)||45000;
+  const ahora=Date.now();
+  if(startAt<=0||ahora>startAt+duration+5000)return;
+  if(Number(lastDemoStartAt)===startAt)return;
+  lastDemoStartAt=startAt;
+  activarSorteoPublico({
+    rifa_id:rifa.id,
+    numeros:Array.isArray(data.numeros)?data.numeros:[],
+    numero_demo:Number(data.numero_demo),
+    demo:true,
+    start_at:startAt,
+    duration_ms:duration
+  });
+  window.drawDemoRevealTimer=setTimeout(()=>{
+    revelarSorteoPublico({
+      rifa_id:rifa.id,
+      numero:Number(data.numero_demo),
+      nombre:'Prueba de animación · NO es un ganador real',
+      demo:true
+    });
+  },Math.max(0,startAt+duration-Date.now()));
+}
+
 async function mostrarGanadorPublico(){const box=document.getElementById('publicWinner');const {data:w}=await db.from('ganadores').select('numero,nombre_snapshot,created_at').order('created_at',{ascending:false}).limit(1).maybeSingle();if(!w){box.classList.add('hidden');return}box.classList.remove('hidden');document.getElementById('publicWinnerNumber').textContent=String(w.numero).padStart(2,'0');document.getElementById('publicWinnerName').textContent=w.nombre_snapshot} 
 async function cargarRifa(){
   const {data:r,error:re}=await db.from('rifas').select('*').in('estado',['activa','sorteada']).order('created_at',{ascending:true}).limit(1).maybeSingle();
@@ -374,6 +407,7 @@ modal.addEventListener('click',e=>{
   if(e.target===modal) cerrarFormulario();
 });
 cargarRifa();
+setInterval(revisarPruebaPersistente,1500);
 </script>
 </body>
 </html>
