@@ -477,7 +477,29 @@ async function confirmar(e){
   document.getElementById('confirmName').textContent=name;
   document.getElementById('confirmNumbers').textContent=displayNumbers;
   document.getElementById('confirmTotal').textContent='$'+displayTotal;
-  const message='Hola Rifando Ando, confirmo mi apartado de los números '+displayNumbers+' por un total de $'+displayTotal+'. Mi nombre es '+name+'.';
+  const message='Hola Rifando Ando, confirmo mi apartado de los números '+displayNumbers+' por un total de 
+  confirmation.classList.add('show');
+  sel.clear();
+  btn.disabled=false;
+  btn.textContent='Solicitar apartado';
+  await cargarRifa();
+}
+document.getElementById('topContinue')?.addEventListener('click',()=>{
+  if(sel.size){abrirFormulario();}
+  else{document.getElementById('numeros')?.scrollIntoView({behavior:'smooth',block:'start'});}
+});
+modal.addEventListener('click',e=>{
+  if(e.target===modal) cerrarFormulario();
+});
+cargarRifa();
+mostrarGanadorPublico();
+setInterval(()=>{revisarPruebaPersistente();revisarSorteoRealPersistente()},1500);
+setInterval(mostrarGanadorPublico,5000);
+</script>
+</body>
+</html>+displayTotal+'. Mi nombre es '+name+'.';
+  const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
+  document.getElementById('waConfirm').href=waLink;
   formView.style.display='none';
   confirmation.classList.add('show');
   sel.clear();
