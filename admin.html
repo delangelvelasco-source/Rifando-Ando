@@ -63,8 +63,12 @@ async function probarAnimacionClientes(){
   if(!lista.length){alert('No hay números vendidos para probar la animación.');return}
   const demo=lista[Math.floor(Math.random()*lista.length)];
   const ch=db.channel('rifa-sorteo-publico-'+rifa.id);
-  ch.subscribe();
-  await new Promise(r=>setTimeout(r,500));
+  await new Promise(resolve=>{
+    let done=false;
+    const finish=()=>{if(!done){done=true;resolve()}};
+    ch.subscribe(status=>{if(status==='SUBSCRIBED'||status==='CHANNEL_ERROR'||status==='TIMED_OUT')finish()});
+    setTimeout(finish,5000);
+  });
   await ch.send({type:'broadcast',event:'sorteo_inicio',payload:{rifa_id:rifa.id,numeros:lista,demo:true}});
   $('drawModal').classList.add('open');$('drawWinner').classList.add('hidden');$('drawStatus').textContent='🌐 PRUEBA EN CLIENTES · No se realizará ni registrará ningún sorteo.';$('drawGrid').innerHTML=lista.map(n=>'<div class="ticket"><b>'+String(n).padStart(2,'0')+'</b></div>').join('');
   const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;const started=Date.now();let i=0;
