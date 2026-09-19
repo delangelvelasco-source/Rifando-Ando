@@ -457,6 +457,34 @@ function abrirFormulario(){
   actualizarWhatsAppAyuda();
   modal.classList.add('open');
 }
+function restaurarSolicitudPendiente(){
+  try{
+    const raw=localStorage.getItem('rifando_pendiente_whatsapp');
+    if(!raw)return;
+    const p=JSON.parse(raw);
+    if(!p||!p.timestamp||Date.now()-Number(p.timestamp)>30*60*1000){
+      localStorage.removeItem('rifando_pendiente_whatsapp');
+      return;
+    }
+    document.getElementById('confirmName').textContent=p.name||'';
+    document.getElementById('confirmNumbers').textContent=p.numbers||'';
+    document.getElementById('confirmTotal').textContent=p.total||'';
+    const waConfirm=document.getElementById('waConfirm');
+    waConfirm.href=p.waLink||'#';
+    confirmWhatsAppClicked=false;
+    waConfirm.onclick=()=>{
+      confirmWhatsAppClicked=true;
+      localStorage.removeItem('rifando_pendiente_whatsapp');
+      document.getElementById('modalClose')?.classList.remove('locked-close');
+      document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
+    };
+    formView.style.display='none';
+    confirmation.classList.add('show');
+    modal.classList.add('open');
+    document.getElementById('modalClose')?.classList.add('locked-close');
+    document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
+  }catch(e){}
+}
 function cerrarFormulario(){
   if(confirmation.classList.contains('show')&&!confirmWhatsAppClicked)return;
   modal.classList.remove('open');
@@ -506,9 +534,40 @@ async function confirmar(e){
   document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
   waConfirm.onclick=()=>{
     confirmWhatsAppClicked=true;
+    try{localStorage.removeItem('rifando_pendiente_whatsapp')}catch(e){}
     document.getElementById('modalClose')?.classList.remove('locked-close');
     document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
   };
+  try{
+    localStorage.setItem('rifando_pendiente_whatsapp',JSON.stringify({
+      name:name,
+      numbers:displayNumbers,
+      total:'
+  confirmation.classList.add('show');
+  sel.clear();
+  btn.disabled=false;
+  btn.textContent='Solicitar apartado';
+  await cargarRifa();
+}
+document.getElementById('topContinue')?.addEventListener('click',()=>{
+  if(sel.size){abrirFormulario();}
+  else{document.getElementById('numeros')?.scrollIntoView({behavior:'smooth',block:'start'});}
+});
+modal.addEventListener('click',e=>{
+  if(e.target===modal) cerrarFormulario();
+});
+cargarRifa();
+mostrarGanadorPublico();
+setTimeout(restaurarSolicitudPendiente,300);
+setInterval(()=>{revisarPruebaPersistente();revisarSorteoRealPersistente()},1500);
+setInterval(mostrarGanadorPublico,5000);
+</script>
+</body>
+</html>+displayTotal,
+      waLink:waLink,
+      timestamp:Date.now()
+    }));
+  }catch(e){}
   formView.style.display='none';
   confirmation.classList.add('show');
   sel.clear();
