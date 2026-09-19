@@ -5,8 +5,28 @@
 <div class="box"><h2>Números</h2><p class="muted">Apartado = dorado · Vendido = tachado.</p><div class="grid" id="nums"></div></div>
 <div id="winnerBox" class="box hidden" style="margin-top:18px;border-color:#d9a936;text-align:center"><div style="font-size:52px">🏆</div><h2>GANADOR DEL SORTEO</h2><div id="winnerNumber" style="font-size:64px;font-weight:1000;color:#d9a936">--</div><h3 id="winnerName" style="font-size:28px;margin:8px 0"></h3><p id="winnerDate" class="muted"></p></div><div class="box" style="margin-top:18px"><h2>Últimos participantes</h2><div id="participants">Cargando...</div></div></div>
 <div id="payModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarPago()" style="float:right">×</button><h2>Registrar pago</h2><p id="payPerson"></p><div class="field"><label>Monto recibido</label><input id="payAmount" type="number" min="0.01" step="0.01"></div><div class="field"><label>Método</label><select id="payMethod"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Otro</option></select></div><button class="btn" onclick="guardarPago()">Confirmar pago</button><p id="payMsg"></p></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script>
-const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY),$=id=>document.getElementById(id);let rifa=null,nGlobal=[],payParticipant=null,realtimeChannel=null;
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://unpkg.com/@supabase/supabase-js@2"></script><script src="config.js"></script>
+<script>
+window.__adminReady=false;
+window.__db=null;
+window.entrar=async function(){
+  const msg=document.getElementById('msg'),btn=document.getElementById('loginBtn');
+  msg.textContent='';
+  try{
+    if(!window.supabase){msg.textContent='⚠️ No se pudo cargar el sistema de acceso. Recarga la página.';return}
+    if(!window.SUPABASE_URL||!window.SUPABASE_KEY){msg.textContent='⚠️ No se pudo cargar la configuración.';return}
+    if(!window.__db) window.__db=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_KEY);
+    btn.disabled=true;btn.textContent='Entrando...';msg.textContent='Conectando...';
+    const {data,error}=await window.__db.auth.signInWithPassword({email:document.getElementById('email').value.trim(),password:document.getElementById('pass').value});
+    if(error){msg.textContent='⚠️ '+error.message;return}
+    msg.textContent='✅ Acceso correcto. Cargando...';
+    if(typeof window.sesion==='function'){await window.sesion()}else{location.reload()}
+  }catch(e){msg.textContent='⚠️ '+(e&&e.message?e.message:e)}
+  finally{btn.disabled=false;btn.textContent='Entrar'}
+};
+</script>
+<script>
+const db=window.__db||supabase.createClient(SUPABASE_URL,SUPABASE_KEY);window.__db=db,$=id=>document.getElementById(id);let rifa=null,nGlobal=[],payParticipant=null,realtimeChannel=null;
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function estado(x){if(x.estado==='vendido')return'vendido';if(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)>new Date())return'apartado';return'disponible'}
 function numerosActuales(pid){return nGlobal.filter(z=>z.participante_id===pid&&(z.estado==='apartado'||z.estado==='vendido'))}
