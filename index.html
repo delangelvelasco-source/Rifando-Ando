@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="version" content="2026-09-18-2115">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="version" content="2026-09-18-2355">
 <title>Rifando Ando</title>
 <style>
 *{box-sizing:border-box}
@@ -318,7 +318,7 @@ function formatearNombrePublico(nombre){
   const partes=(nombre||'').trim().split(/\s+/).filter(Boolean);
   if(!partes.length)return 'Ganador';
   if(partes.length===1)return partes[0];
-  return partes[0]+' '+partes[partes.length-1].charAt(0).toUpperCase()+'.';
+  return partes[0]+' '+partes[1].charAt(0).toUpperCase()+'.';
 }
 
 async function mostrarGanadorPublico(){
