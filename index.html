@@ -798,7 +798,10 @@ async function cargarRifa(){
     bar.style.width='0%';
   }
 
-  const {data:r,error:re}=await db.from('rifas').select('*').eq('id',requestedRifa).maybeSingle();
+  const cachedRifa=window.__rifaCache?.[requestedRifa];
+  const {data:r,error:re}=cachedRifa?{data:cachedRifa,error:null}:await db.from('rifas').select('*').eq('id',requestedRifa).maybeSingle();
+  if(r&&!window.__rifaCache)window.__rifaCache={};
+  if(r){window.__rifaCache[requestedRifa]=r;}
   if(loadSeq!==cargarRifaSeq)return;
   if(re||!r){
     tickets.innerHTML='<p style="color:#aaa">No hay una rifa activa disponible.</p>';
