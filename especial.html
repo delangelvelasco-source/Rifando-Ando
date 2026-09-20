@@ -604,9 +604,9 @@ function actualizarProcesoSorteo(r){
 }
 async function cargarHistorialGanadores(){
   const el=document.getElementById('winnerHistory');
-  if(!el||!rifa?.id)return;
+  if(!el)return;
   let data=null,error=null;
-  ({data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').eq('rifa_id',rifa.id).order('created_at',{ascending:false}));
+  ({data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').order('created_at',{ascending:false}));
   if(error){
     el.innerHTML='<div class="winner-empty">No se pudo cargar el historial.</div>';
     return;
@@ -615,14 +615,21 @@ async function cargarHistorialGanadores(){
     el.innerHTML='<div class="winner-empty">Aún no hay ganadores registrados.</div>';
     return;
   }
-  const premio=String(rifa.premio||'No disponible');
+  const rifaIds=[...new Set(data.map(w=>w.rifa_id).filter(Boolean))];
+  const {data:rifasHist}=await db.from('rifas').select('id,codigo_sorteo,numero_sorteo,premio,fecha_sorteo,loteria_fecha').in('id',rifaIds);
+  const rifaMap=new Map((rifasHist||[]).map(x=>[x.id,x]));
   el.innerHTML='<div class="winner-head"><div>🎟️ No. de sorteo</div><div>👤 Nombre del ganador</div><div>💰 Monto ganado</div><div>⭐ # ganador</div></div>'+data.map(w=>{
-    const codigo=rifa.codigo_sorteo||('RA-'+String(rifa.numero_sorteo||'?').padStart(4,'0'));
-    const d=w.created_at?(()=>{const dt=new Date(w.created_at);const fecha=dt.toLocaleDateString('es-MX',{timeZone:'America/Monterrey'});const hora=dt.toLocaleTimeString('es-MX',{timeZone:'America/Monterrey',hour:'2-digit',minute:'2-digit',hour12:false});return fecha+' · '+hora+' h';})():'';
+    const rh=rifaMap.get(w.rifa_id)||{};
+    const codigo=rh.codigo_sorteo||('RA-'+String(rh.numero_sorteo||'?').padStart(4,'0'));
+    const premio=String(rh.premio||'No disponible');
+    const fuenteFecha=rh.fecha_sorteo||rh.loteria_fecha||w.created_at;
+    const dt=fuenteFecha?new Date(fuenteFecha):null;
+    const d=dt&&!isNaN(dt)?dt.toLocaleDateString('es-MX',{timeZone:'America/Monterrey'})+' · '+dt.toLocaleTimeString('es-MX',{timeZone:'America/Monterrey',hour:'2-digit',minute:'2-digit',hour12:false})+' h':'';
     const nombreVisible=formatearNombrePublico(w.nombre_snapshot||'Ganador');
     return '<div class="winner-card"><div><div class="wname">'+codigo+'</div><div class="wdate">'+d+'</div></div><div class="wname">'+nombreVisible+'</div><div class="wprize">'+premio+'</div><div class="wnum">#'+String(w.numero).padStart(2,'0')+'</div></div>';
   }).join('');
 }
+
 function continuarNavegacion(){
   if(sel.size){abrirFormulario();return;}
   document.getElementById('numeros')?.scrollIntoView({behavior:'smooth',block:'start'});
