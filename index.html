@@ -480,7 +480,7 @@ function activarTiempoReal(){
   realtimeChannel=db.channel('rifa-numeros-'+channelRifaId)
     .on('postgres_changes',{event:'*',schema:'public',table:'numeros',filter:'rifa_id=eq.'+channelRifaId},()=>{
       if(!rifa || String(rifa.id)!==channelRifaId)return;
-      cargarRifa().catch(()=>{});
+      refrescarNumerosPublico(channelRifaId).catch(()=>{});
     })
     .subscribe();
 }
@@ -712,6 +712,43 @@ async function contarNumerosPublico(rifaId){
 async function contarVendidosPublico(rifaId){
   const {count,error}=await db.from('numeros').select('id',{count:'exact',head:true}).eq('rifa_id',rifaId).eq('estado','vendido');
   return error ? 0 : Number(count||0);
+}
+
+async function refrescarNumerosPublico(rifaId){
+  if(!rifa || String(rifa.id)!==String(rifaId))return;
+  const {data:n,error}=await cargarNumerosPublico(rifaId);
+  if(!rifa || String(rifa.id)!==String(rifaId))return;
+  if(error)return;
+  const disponibles=new Set();
+  let busy=0;
+  tickets.innerHTML='';
+  (n||[]).forEach(x=>{
+    const free=x.estado==='disponible'||(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)<=new Date());
+    if(free)disponibles.add(Number(x.numero)); else busy++;
+    const b=document.createElement('button');
+    b.type='button';
+    const stateClass=free?'available':(x.estado==='apartado'?'pending':'sold');
+    b.className='ticket '+stateClass;
+    b.textContent=String(x.numero).padStart(2,'0');
+    if(free){
+      if(sel.has(Number(x.numero)))b.classList.add('selected');
+      b.addEventListener('click',()=>{
+        if(solicitudPendiente)return;
+        if(sel.has(Number(x.numero))){sel.delete(Number(x.numero));b.classList.remove('selected')}
+        else{sel.add(Number(x.numero));b.classList.add('selected')}
+        update();
+      });
+    }else b.disabled=true;
+    tickets.appendChild(b);
+  });
+  sel.forEach(numero=>{if(!disponibles.has(Number(numero)))sel.delete(numero)});
+  document.getElementById('ticketInfoCount').textContent=String(n?.length||0);
+  const pct=n?.length?Math.round(busy/n.length*100):0;
+  meta.innerHTML='<span>'+pct+'% ocupados</span><span>'+(rifa.fecha_sorteo?'Sorteo: '+new Date(rifa.fecha_sorteo).toLocaleDateString('es-MX'):'Sorteo próximamente')+'</span>';
+  bar.style.width=pct+'%';
+  update();
+  actualizarWhatsAppAyuda();
+  if(solicitudPendiente)bloquearNuevaSeleccion(true);
 }
 
 async function cargarNumerosPublico(rifaId){
