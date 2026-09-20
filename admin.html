@@ -230,7 +230,7 @@ function calcularFechaSorteoDesdeUltimaVenta(numeros, tipo){
 }
 async function cargarSelectorRifas(){
   const {data:list,error}=await db.from('rifas').select('id,nombre,numero_sorteo,estado,precio_numero').in('estado',['activa','sorteada']);
-  if(list) list.sort((a,b)=>{const an=Number(a.numero_sorteo),bn=Number(b.numero_sorteo);if(Number.isFinite(an)&&Number.isFinite(bn))return an-bn;if(Number.isFinite(an))return -1;if(Number.isFinite(bn))return 1;return String(a.nombre||'').localeCompare(String(b.nombre||''),'es');});
+  if(list) list.sort((a,b)=>{const order={'Sorteo Regular':1,'Sorteo Especial':2,'Sorteo iPhone 18 Pro Max 256 GB':3};return (order[a.nombre]||99)-(order[b.nombre]||99);});
   if(error||!list)return;
   const selected=new URLSearchParams(window.location.search).get('rifa');
   $('adminRaffleNav').innerHTML=list.map(x=>{
