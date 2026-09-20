@@ -48,6 +48,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 .draw-public{position:fixed;inset:0;background:#050505f5;z-index:50;display:none;place-items:center;padding:18px}.draw-public.open{display:grid}.draw-public-box{width:min(1000px,100%);max-height:92vh;overflow:auto;background:#111;border:2px solid #6d5215;border-radius:24px;padding:25px;text-align:center;box-shadow:0 0 45px #d9a93633;position:relative}.draw-public-close{position:absolute;top:10px;right:14px;width:42px;height:42px;border:1px solid #4a4a4a;border-radius:50%;background:#171717;color:#fff;font-size:30px;line-height:1;cursor:pointer;z-index:2}.draw-public-close:hover{background:#262626;border-color:#d9a936;color:#d9a936}.draw-public-number{font-size:clamp(80px,18vw,170px);line-height:.9;font-weight:1000;color:#d9a936;text-shadow:0 0 25px #d9a936}.draw-public-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:20px}.draw-public-grid span{padding:8px 3px;border:1px solid #303030;border-radius:8px;background:#171717;font-weight:900}.draw-public-grid span.active{background:#d9a936;color:#111;transform:scale(1.08)}.draw-public-result{display:none}.draw-public-result.show{display:block}@media(max-width:760px){.draw-public-grid{grid-template-columns:repeat(5,1fr)}}.iphone-prize{height:280px!important;background:radial-gradient(circle,#3a3a3a,#101010 65%)!important;overflow:hidden}.iphone-prize img{width:100%;height:100%;object-fit:contain;display:block;padding:8px}@media(max-width:760px){.grand-prize .iphone-prize{height:110px!important}.iphone-prize img{padding:2px}}
 .raffle-links{margin-top:22px;max-width:560px}.raffle-links-title{font-size:17px;font-weight:1000;color:#d9a936;margin-bottom:10px}.raffle-links-list{display:grid;gap:9px}.raffle-link[data-rifa="4b23f516-7973-4a04-bff6-9b9b5cb90f4d"]{order:1}.raffle-link[data-rifa="60f9a81d-bdd6-4e28-b330-dc92cfe4d113"]{order:2}.raffle-link[data-rifa="9a9bca1f-3f22-4a1a-8813-70c7f5914f65"]{order:3}.raffle-link{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;border:1px solid #5e4816;border-radius:13px;background:#111;color:#fff;text-decoration:none;font-weight:900;transition:.2s}.raffle-link:hover{border-color:#d9a936;background:#18140a;transform:translateY(-1px)}.raffle-link.loading{opacity:.7;pointer-events:none}.raffle-link.active{background:#22c55e;color:#081108;border-color:#4ade80;box-shadow:0 0 0 2px rgba(34,197,94,.16),0 6px 18px rgba(34,197,94,.18)}.raffle-link-arrow{font-size:22px;color:#d9a936}.raffle-link.active .raffle-link-arrow{color:#081108}
 @media(max-width:760px){.raffle-links{margin-top:18px}.raffle-link{min-height:48px;padding:12px 14px;font-size:14px}}
+.trophy-art{width:100%;height:100%;display:block;filter:drop-shadow(0 12px 18px rgba(217,169,54,.35))}
 .trophy-stage{position:relative;width:260px;height:235px;display:block;perspective:900px;filter:drop-shadow(0 14px 22px rgba(217,169,54,.32))}
 .trophy-cup{position:absolute;left:50%;top:18px;width:150px;height:205px;transform:translateX(-50%);z-index:3;filter:drop-shadow(0 9px 12px rgba(0,0,0,.5))}
 .cup-bowl{position:absolute;left:20px;top:12px;width:110px;height:94px;border-radius:10px 10px 48px 48px;background:linear-gradient(90deg,#7b4304 0%,#c47a0b 12%,#f5c947 30%,#fff0a0 43%,#d99a1c 62%,#9a5605 86%,#603302 100%);border:3px solid #f5cd5b;box-shadow:inset 0 6px 9px #fff5aa55,inset 0 -12px 15px #6a370655,0 5px 15px #d9a93655;overflow:hidden}
@@ -114,24 +115,34 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <div class="prize iphone-prize" id="prizeVisual">
 <img id="prizeImage" src="iphone-18-pro-max.svg" alt="iPhone 18 Pro Max de 256 GB">
 <span id="prizeEmoji" class="trophy-stage" style="display:none" aria-hidden="true">
-  <span class="diamond-field">
-    <i class="diamond d1"></i><i class="diamond d2"></i><i class="diamond d3"></i>
-    <i class="diamond d4"></i><i class="diamond d5"></i><i class="diamond d6"></i>
-  </span>
-  <span class="trophy-cup">
-    <span class="cup-handle left"></span><span class="cup-handle right"></span>
-    <span class="cup-bowl">
-      <span class="cup-rim"></span>
-      <span class="cup-highlight"></span>
-      <span class="cup-crown">♛</span>
-      <span class="cup-laurel left-laurel">❮</span><span class="cup-laurel right-laurel">❯</span>
-    </span>
-    <span class="cup-stem"></span>
-    <span class="cup-neck"></span>
-    <span class="cup-pedestal"><b>RIFANDO<br>ANDO</b></span>
-  </span>
-</span>
-</div>
+<svg class="trophy-art" viewBox="0 0 520 520" role="img" aria-label="Copa dorada">
+<defs>
+ <linearGradient id="goldCup" x1="0" x2="1"><stop offset="0" stop-color="#8b4b03"/><stop offset=".2" stop-color="#e6a51d"/><stop offset=".42" stop-color="#fff0a0"/><stop offset=".62" stop-color="#d78b0b"/><stop offset=".82" stop-color="#ffdc61"/><stop offset="1" stop-color="#7d4202"/></linearGradient>
+ <linearGradient id="goldEdge" x1="0" x2="1"><stop stop-color="#7b4000"/><stop offset=".3" stop-color="#f6ca4c"/><stop offset=".55" stop-color="#fff0a0"/><stop offset=".8" stop-color="#c57908"/><stop offset="1" stop-color="#6c3800"/></linearGradient>
+ <linearGradient id="blackBase" y1="0" y2="1"><stop stop-color="#222"/><stop offset=".55" stop-color="#080808"/><stop offset="1" stop-color="#171717"/></linearGradient>
+ <filter id="goldGlow"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<ellipse cx="260" cy="468" rx="150" ry="17" fill="#d9a936" opacity=".25" filter="url(#goldGlow)"/>
+<path d="M126 112H394V224C394 318 342 365 260 365S126 318 126 224Z" fill="url(#goldCup)" stroke="#f8d66d" stroke-width="5"/>
+<ellipse cx="260" cy="112" rx="134" ry="24" fill="url(#goldEdge)" stroke="#f8d66d" stroke-width="5"/>
+<path d="M126 126H394" stroke="#fff1a0" stroke-width="5" opacity=".55"/>
+<path d="M130 142C82 133 51 161 56 211C61 259 91 280 135 274" fill="none" stroke="url(#goldEdge)" stroke-width="18" stroke-linecap="round"/>
+<path d="M390 142C438 133 469 161 464 211C459 259 429 280 385 274" fill="none" stroke="url(#goldEdge)" stroke-width="18" stroke-linecap="round"/>
+<path d="M133 143C94 142 80 167 86 201C91 226 106 239 132 238" fill="none" stroke="#ffe78a" stroke-width="4" opacity=".7"/>
+<path d="M387 143C426 142 440 167 434 201C429 226 414 239 388 238" fill="none" stroke="#ffe78a" stroke-width="4" opacity=".7"/>
+<path d="M203 190L218 169L238 186L260 153L282 186L302 169L317 190L306 231H214Z" fill="#e9b33a" stroke="#7c4302" stroke-width="5"/>
+<circle cx="218" cy="169" r="7" fill="#ffe88b"/><circle cx="238" cy="186" r="7" fill="#ffe88b"/><circle cx="260" cy="153" r="7" fill="#ffe88b"/><circle cx="282" cy="186" r="7" fill="#ffe88b"/><circle cx="302" cy="169" r="7" fill="#ffe88b"/>
+<path d="M224 231H296" stroke="#8b4b03" stroke-width="7" stroke-linecap="round"/>
+<path d="M235 360H285V414H235Z" fill="url(#goldCup)" stroke="#f8d66d" stroke-width="4"/>
+<ellipse cx="260" cy="414" rx="64" ry="15" fill="url(#goldEdge)" stroke="#f8d66d" stroke-width="4"/>
+<path d="M203 430H317L342 454H178Z" fill="url(#goldEdge)" stroke="#f8d66d" stroke-width="4"/>
+<path d="M170 454H350V488H170Z" fill="url(#blackBase)" stroke="#b7790d" stroke-width="5"/>
+<path d="M150 488H370V507H150Z" fill="url(#goldEdge)" stroke="#f8d66d" stroke-width="4"/>
+<rect x="202" y="458" width="116" height="22" rx="3" fill="#090909" stroke="#d9a936" stroke-width="2"/>
+<text x="260" y="474" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="900" letter-spacing="2" fill="#f5d36a">RIFANDO</text>
+</svg>
+<div class="diamond-field"><i class="diamond d1"></i><i class="diamond d2"></i><i class="diamond d3"></i><i class="diamond d4"></i><i class="diamond d5"></i><i class="diamond d6"></i></div>
+</span></div>
 <div class="official" id="officialTitle">SORTEO OFICIAL</div>
 <div class="grand-label">GRAN PREMIO</div>
 <div class="grand-amount" id="grandAmount" style="display:none">…<span class="decimals"></span></div>
