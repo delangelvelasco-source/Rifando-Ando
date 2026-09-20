@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#171717"/><stop offset="1" stop-color="#050505"/></linearGradient>
+ <linearGradient id="phone" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d7e2ef"/><stop offset=".45" stop-color="#7d93aa"/><stop offset="1" stop-color="#26384b"/></linearGradient>
+ <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#182b42"/><stop offset=".5" stop-color="#050b12"/><stop offset="1" stop-color="#274c70"/></linearGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="12" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="500" height="500" rx="42" fill="url(#bg)"/>
+<ellipse cx="250" cy="420" rx="130" ry="28" fill="#d9a936" opacity=".28" filter="url(#glow)"/>
+<g transform="translate(135 28) rotate(5 115 220)">
+ <rect x="0" y="0" width="230" height="444" rx="43" fill="url(#phone)" stroke="#e9f1fa" stroke-width="4"/>
+ <rect x="9" y="9" width="212" height="426" rx="36" fill="#05070a"/>
+ <rect x="17" y="17" width="196" height="410" rx="31" fill="url(#glass)"/>
+ <rect x="76" y="25" width="78" height="24" rx="13" fill="#020304"/>
+ <circle cx="115" cy="37" r="5" fill="#111"/>
+ <g transform="translate(28 55)">
+   <rect width="82" height="82" rx="19" fill="#273b51" stroke="#92a7bc" stroke-width="3"/>
+   <circle cx="25" cy="25" r="17" fill="#07101a" stroke="#8198ad" stroke-width="4"/>
+   <circle cx="57" cy="25" r="17" fill="#07101a" stroke="#8198ad" stroke-width="4"/>
+   <circle cx="25" cy="57" r="17" fill="#07101a" stroke="#8198ad" stroke-width="4"/>
+   <circle cx="57" cy="57" r="7" fill="#b9c9d8"/>
+ </g>
+ <path d="M37 310 Q115 260 193 310" fill="none" stroke="#9fb4c9" stroke-opacity=".28" stroke-width="3"/>
+ <text x="115" y="365" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-size="19" font-weight="700">iPhone 18 Pro Max</text>
+ <text x="115" y="389" text-anchor="middle" fill="#d9a936" font-family="Arial,sans-serif" font-size="14" font-weight="700">256 GB</text>
+</g>
+</svg>
