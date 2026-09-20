@@ -83,6 +83,20 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 }
 .trophy-stage:after{content:"";position:absolute;left:50%;bottom:5px;width:190px;height:22px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,#d9a93666 0%,#d9a93620 35%,transparent 72%);filter:blur(5px);z-index:1}
 @media(max-width:760px){.trophy-stage{width:100%;max-width:320px;height:280px;transform:none}}
+.diamond-field-public{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:visible}
+.iphone-prize{position:relative}
+.iphone-prize #prizeImage{position:relative;z-index:1}
+.diamond-public{position:absolute;left:50%;top:50%;display:block;border-radius:2px;clip-path:polygon(50% 0,100% 38%,72% 100%,28% 100%,0 38%);background:linear-gradient(135deg,#fff 0%,#e9f7ff 30%,#8fa2b5 48%,#fff 62%,#c9e3f4 80%,#fff 100%);filter:drop-shadow(0 0 5px #fff) drop-shadow(0 0 11px #d9a936);animation:diamondOrbitPublic 6s linear infinite;transform-origin:center}
+.diamond-public:after{content:"";position:absolute;inset:1px;clip-path:inherit;background:linear-gradient(135deg,transparent 35%,#fff 50%,transparent 65%);opacity:.85}
+.dp1{width:14px;height:14px;--angle:0deg}.dp2{width:11px;height:11px;--angle:51.43deg}.dp3{width:16px;height:16px;--angle:102.86deg}.dp4{width:12px;height:12px;--angle:154.29deg}.dp5{width:15px;height:15px;--angle:205.72deg}.dp6{width:11px;height:11px;--angle:257.15deg}.dp7{width:13px;height:13px;--angle:308.58deg}
+@keyframes diamondOrbitPublic{
+0%{transform:translate(-50%,-50%) rotate(45deg) translateX(118px)}
+25%{transform:translate(-50%,-50%) rotate(45deg) translateX(0) translateY(-74px)}
+50%{transform:translate(-50%,-50%) rotate(45deg) translateX(-118px)}
+75%{transform:translate(-50%,-50%) rotate(45deg) translateX(0) translateY(74px)}
+100%{transform:translate(-50%,-50%) rotate(45deg) translateX(118px)}
+}
+@media(max-width:760px){.diamond-field-public{inset:-4px}.diamond-public{animation-duration:6.5s}}
 .iphone-prize{display:flex;align-items:center;justify-content:center}.iphone-prize img{width:100%;height:100%;object-fit:contain}.iphone-prize span{font-size:64px}</style></head>
 <body>
 <header>
@@ -116,6 +130,9 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <div class="sparkles">✦ ✨ ✦ ✨ ✦</div>
 <div class="prize iphone-prize" id="prizeVisual">
 <img id="prizeImage" src="copa.PNG" alt="Copa dorada Rifando Ando">
+<div class="diamond-field-public" aria-hidden="true">
+<i class="diamond-public dp1"></i><i class="diamond-public dp2"></i><i class="diamond-public dp3"></i><i class="diamond-public dp4"></i><i class="diamond-public dp5"></i><i class="diamond-public dp6"></i><i class="diamond-public dp7"></i>
+</div>
 <span id="prizeEmoji" class="trophy-stage" style="display:none" aria-hidden="true">
 <svg class="trophy-art" viewBox="0 0 520 520" role="img" aria-label="Copa dorada">
 <defs>
