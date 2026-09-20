@@ -569,7 +569,9 @@ let cargarRifaSeq=0;
 async function cargarRifa(){
   const loadSeq=++cargarRifaSeq;
   const params=new URLSearchParams(window.location.search);
-  const requestedRifa=params.get('rifa')||window.__initialRifaId||'4b23f516-7973-4a04-bff6-9b9b5cb90f4d';
+  const requestedParam=params.get('rifa')||window.__initialRifaId||'4b23f516-7973-4a04-bff6-9b9b5cb90f4d';
+  const rifasPermitidas=['4b23f516-7973-4a04-bff6-9b9b5cb90f4d','60f9a81d-bdd6-4e28-b330-dc92cfe4d113','9a9bca1f-3f22-4a1a-8813-70c7f5914f65'];
+  const requestedRifa=rifasPermitidas.includes(String(requestedParam))?String(requestedParam):'4b23f516-7973-4a04-bff6-9b9b5cb90f4d';
 
   // Al cambiar de rifa, cualquier número seleccionado pertenece a la rifa anterior
   // y no debe sobrevivir ni mezclarse con la nueva. Este control también cubre
