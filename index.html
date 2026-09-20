@@ -557,7 +557,7 @@ async function cargarRifa(){
   cargarHistorialGanadores().catch(()=>{});
 }
 async function obtenerNombrePublicoRifa(r){return r?.id==='4b23f516-7973-4a04-bff6-9b9b5cb90f4d'?'Sorteo Regular':(r?.nombre||'Sorteo');}
-function cargarHistorialGanadores(){
+async function cargarHistorialGanadores(){
   const el=document.getElementById('winnerHistory');
   const {data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').order('created_at',{ascending:false});
   if(error){el.innerHTML='<div class="winner-empty">No se pudo cargar el historial.</div>';return}
