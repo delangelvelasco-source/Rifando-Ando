@@ -303,6 +303,7 @@ const whatsapp=document.getElementById('whatsapp');
 
 let rifa=null;
 let sel=new Set();
+let realtimeRifaId=null;
 let confirmWhatsAppClicked=false;
 let solicitudPendiente=false;
 let realtimeChannel=null;let drawPublicChannel=null;let drawAnimationTimer=null;let lastDemoStartAt=0;let lastRealEventId=null;
@@ -321,7 +322,13 @@ function resetConfirmation(){
 function activarTiempoReal(){
   if(!rifa) return;
   const channelRifaId=String(rifa.id);
-  if(realtimeChannel) realtimeChannel.unsubscribe();
+  if(realtimeChannel && realtimeRifaId===channelRifaId)return;
+  if(realtimeChannel){
+    realtimeChannel.unsubscribe();
+    realtimeChannel=null;
+    realtimeRifaId=null;
+  }
+  realtimeRifaId=channelRifaId;
   realtimeChannel=db.channel('rifa-numeros-'+channelRifaId)
     .on('postgres_changes',{event:'*',schema:'public',table:'numeros',filter:'rifa_id=eq.'+channelRifaId},()=>{
       if(!rifa || String(rifa.id)!==channelRifaId)return;
@@ -607,6 +614,7 @@ async function cargarRifa(){
     return;
   }
   rifa=r;
+  activarTiempoReal();
   document.querySelectorAll('.raffle-link[data-rifa]').forEach(a=>a.classList.remove('active'));
   const activeRaffleLink=document.querySelector('.raffle-link[data-rifa="'+CSS.escape(String(r.id))+'"]');
   if(activeRaffleLink) activeRaffleLink.classList.add('active');
