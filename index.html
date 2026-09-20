@@ -488,16 +488,7 @@ async function cargarRifa(){
 
   if(r.estado==='sorteada'){
     tickets.innerHTML='<div style="grid-column:1/-1;padding:28px;text-align:center;border:1px solid #3a2d0d;border-radius:16px;background:#111"><div style="font-size:48px">🏆</div><h3>¡El sorteo ya fue realizado!</h3><p style="color:#aaa">Consulta el ganador y el historial más abajo.</p></div>';
-    const precioFormateado='.textContent='SORTEO REGULAR';
-    priceEl.textContent=precioFormateado+' por número';
-    ticketInfoPrice.textContent=precioFormateado;
-    meta.innerHTML='<span>🎉 Sorteo realizado</span><span>'+(r.fecha_sorteo?'Fecha: '+new Date(r.fecha_sorteo).toLocaleDateString('es-MX'):'')+'</span>';
-    bar.style.width='100%';
-    update();
-    return;
-  }
-
-+Number(r.precio_numero).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const precioFormateado='$'+Number(r.precio_numero).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
     const nombrePublico=r.id==='4b23f516-7973-4a04-bff6-9b9b5cb90f4d'?'Sorteo Regular':(r.nombre||'Sorteo');
     raffleName.textContent=nombrePublico;
     officialTitle.textContent='SORTEO REGULAR';
@@ -510,10 +501,7 @@ async function cargarRifa(){
   }
 
   // Los apartados vencidos se consideran disponibles en la vista pública por su fecha de expiración.
-  const precioFormateado='.textContent='SORTEO OFICIAL';
-  priceEl.textContent=precioFormateado+' por número';
-  ticketInfoPrice.textContent=precioFormateado;
-+Number(r.precio_numero).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const precioFormateado='$'+Number(r.precio_numero).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
   const nombrePublico=r.id==='4b23f516-7973-4a04-bff6-9b9b5cb90f4d'?'Sorteo Regular':(r.nombre||'Sorteo');
   raffleName.textContent=nombrePublico;
   officialTitle.textContent='SORTEO OFICIAL';
