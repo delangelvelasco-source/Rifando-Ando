@@ -57,6 +57,33 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 #closedNotice{margin:12px 0;padding:12px 14px;border:1px solid #8a6518;border-radius:12px;background:#17130a;color:#f5d36a;text-align:center;font-weight:900}
 .closed-summary{opacity:.55}.closed-summary button{pointer-events:none}
 @media(max-width:760px){.draw-process{margin-top:18px;padding:14px}.draw-step{padding:9px 4px}}
+</style><style id="historial-ajuste">
+/* Historial de ganadores: tipografía más compacta y alineación uniforme */
+#historial-ganadores{text-align:center}
+#historial-ganadores h2{font-size:30px;line-height:1.2;margin:0 0 22px;text-align:center}
+#historial-ganadores .winner-head,
+#historial-ganadores .winner-card{grid-template-columns:1fr 1.25fr .9fr .65fr;text-align:center}
+#historial-ganadores .winner-head{font-size:12px;padding:11px 14px;gap:10px}
+#historial-ganadores .winner-card{padding:15px 14px;gap:10px}
+#historial-ganadores .winner-card>div{display:flex;flex-direction:column;align-items:center;justify-content:center}
+#historial-ganadores .winner-card .wname{font-size:16px;line-height:1.2}
+#historial-ganadores .winner-card .wprize{font-size:18px;line-height:1.2}
+#historial-ganadores .winner-card .wnum{font-size:30px;text-align:center}
+#historial-ganadores .winner-card .wdate{font-size:11px;line-height:1.2}
+#historial-ganadores .winner-empty{font-size:15px}
+.foot{font-size:13px;line-height:1.35;padding:24px 18px}
+.foot a{font-size:13px}
+@media(max-width:760px){
+  #historial-ganadores h2{font-size:27px}
+  #historial-ganadores .winner-head{font-size:9px;padding:9px 7px;gap:5px}
+  #historial-ganadores .winner-card{padding:13px 7px;gap:5px}
+  #historial-ganadores .winner-card .wname{font-size:13px}
+  #historial-ganadores .winner-card .wprize{font-size:14px}
+  #historial-ganadores .winner-card .wnum{font-size:24px}
+  #historial-ganadores .winner-card .wdate{font-size:10px}
+  .foot{font-size:11px;padding:20px 12px}
+  .foot a{font-size:11px}
+}
 </style></head>
 <body>
 <header>
