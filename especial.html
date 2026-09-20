@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="version" content="2026-09-18-2355">
+<title>Rifando Ando · Sorteo Especial</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080808;color:#fff;font-family:system-ui,-apple-system,sans-serif}
+header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;background:#080808ee;z-index:5}
+.nav{max-width:1100px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:15px}
+.logo{font-size:24px;font-weight:900}.logo span,.gold{color:#d9a936}
+.btn{background:#d9a936;color:#111;border:0;border-radius:12px;padding:13px 18px;font-weight:900;text-decoration:none;cursor:pointer}
+.hero{max-width:1100px;margin:auto;padding:65px 22px 45px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.eyebrow{color:#d9a936;font-size:13px;font-weight:900;letter-spacing:2px;text-transform:uppercase}
+.hero h1{font-size:clamp(48px,7vw,82px);line-height:.94;margin:14px 0}.hero p{color:#aaa;font-size:18px;line-height:1.6}
+.card{padding:22px;border:1px solid #303030;border-radius:24px;background:#151515}
+.prize{height:280px;border-radius:18px;background:radial-gradient(circle,#3a3a3a,#101010 65%);display:grid;place-items:center;font-size:90px}
+.card h2{margin-bottom:5px}.price{font-size:30px;font-weight:900;color:#d9a936}
+.meta{display:flex;justify-content:space-between;color:#999;margin:12px 0;gap:10px}.bar{height:8px;background:#292929;border-radius:20px}.bar i{display:block;width:0;height:100%;background:#d9a936;border-radius:20px}
+.section{max-width:1100px;margin:auto;padding:45px 22px}.section h2{font-size:34px}
+.quick-info{padding-top:18px}.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.quick-card{display:flex;gap:14px;align-items:flex-start;padding:18px;border:1px solid #292929;border-radius:17px;background:#111}.quick-icon{min-width:40px;height:40px;border-radius:12px;background:#d9a936;color:#111;display:grid;place-items:center;font-weight:1000}.quick-card h3{margin:1px 0 6px}.quick-card p{margin:0;color:#999;line-height:1.45;font-size:14px}.rules-box{margin-top:15px;padding:14px 16px;border:1px solid #5e4816;border-radius:14px;background:linear-gradient(135deg,#17130a,#111)}.rules-box h3{margin:0 0 8px;color:#f5d36a;font-size:16px}.rules-inline{display:flex;flex-wrap:wrap;gap:7px;color:#aaa;font-size:12px}.rules-inline span{padding:6px 9px;border:1px solid #292929;border-radius:8px;background:#0d0d0d}.rules-inline b{color:#fff}.rules-box.compact{padding:16px 18px;border-width:2px;box-shadow:0 0 18px #d9a93618}.rules-box.compact h3{font-size:20px;margin-bottom:12px}.rules-box.compact .rules-inline{gap:10px}.rules-box.compact .rules-inline span{font-size:16px;font-weight:800;padding:9px 12px}.lottery-info{margin-top:15px;padding:16px 18px;border:1px solid #5e4816;border-radius:16px;background:linear-gradient(135deg,#17130a,#111);box-shadow:0 0 18px #d9a93612}.lottery-info h3{margin:0 0 9px;color:#f5d36a;font-size:18px}.lottery-status{font-weight:900;font-size:16px;margin-bottom:8px}.lottery-details{display:grid;gap:5px;color:#bbb;font-size:14px;line-height:1.45}.lottery-details b{color:#fff}.lottery-note{margin-top:10px;color:#999;font-size:12px;line-height:1.4}.lottery-badge{display:inline-block;padding:6px 9px;border-radius:9px;background:#d9a936;color:#111;font-weight:1000;font-size:12px;margin-bottom:8px}.lottery-result{margin-top:10px;padding:10px;border-radius:10px;background:#0d0d0d;border:1px solid #292929;color:#aaa}.lottery-result b{color:#d9a936}padding:14px 16px;border:1px solid #5e4816;border-radius:14px;background:#111;text-align:center}.help-box p{margin:0 0 10px;color:#aaa;font-size:13px;line-height:1.45}.help-btn{display:inline-block;width:100%;max-width:430px;text-align:center;background:#d9a936;color:#111;border-radius:12px;padding:14px 18px;font-weight:1000;text-decoration:none;font-size:16px}
+@media(max-width:760px){.quick-grid{grid-template-columns:1fr}.quick-info{padding-top:12px}.winner-head{grid-template-columns:1fr 1.25fr .9fr .65fr;font-size:10px;padding:10px 9px;gap:6px}.winner-card{grid-template-columns:1fr 1.25fr .9fr .65fr;padding:14px 9px;gap:6px}.winner-card .wname{font-size:14px}.winner-card .wprize{font-size:15px}.winner-card .wnum{font-size:24px}.winner-card .wdate{font-size:11px}}
+.legend{display:flex;flex-wrap:wrap;gap:18px;margin:-8px 0 18px;color:#aaa;font-size:14px}.legend span{display:flex;align-items:center;gap:7px}.legend i{width:12px;height:12px;border-radius:50%;display:inline-block}.lg-green{background:#1fc94b}.lg-yellow{background:#d9a936}.lg-orange{background:#f97316}.lg-gray{background:#555}.tickets{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}.ticket{padding:16px 3px;min-height:64px;border:1px solid #303030;border-radius:12px;background:#171717;color:#eee;font-size:26px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.ticket.selected{background:#d9a936!important;color:#111!important;border-color:#f5d36a!important;box-shadow:0 0 10px #d9a93655!important}.ticket.available{background:#0f6b2c;color:#fff;border-color:#20c957;box-shadow:0 0 7px #20c95733}.ticket.pending{background:#f97316;color:#fff;border-color:#fb923c;box-shadow:0 0 10px #f9731655}.ticket.sold{color:#555;background:#000;border-color:#202020;text-decoration:line-through;cursor:not-allowed}
+.summary{margin-top:22px;padding:18px;border:1px solid #303030;border-radius:15px;background:#121212;display:flex;justify-content:space-between;align-items:center}
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.step{padding:22px;border:1px solid #292929;border-radius:17px;background:#111}.winner-history{display:grid;gap:12px}.winner-head{display:grid;grid-template-columns:1fr 1.25fr .9fr .65fr;gap:12px;padding:13px 18px;border:1px solid #6d5215;border-radius:14px;background:linear-gradient(135deg,#211a0b,#111);color:#f5d36a;font-size:14px;font-weight:1000}.winner-card{display:grid;grid-template-columns:1fr 1.25fr .9fr .65fr;gap:12px;align-items:center;padding:18px;border:1px solid #3a2d0d;border-radius:16px;background:#111}.winner-card .wnum{font-size:34px;font-weight:1000;color:#d9a936;text-align:right}.winner-card .wname{font-size:18px;font-weight:900}.winner-card .wprize{font-size:20px;font-weight:1000;color:#f5d36a}.winner-card .wdate{font-size:13px;color:#777;margin-top:4px}.winner-empty{padding:24px;text-align:center;border:1px dashed #383838;border-radius:16px;color:#888}
+.step b{color:#d9a936}.step p{color:#999;line-height:1.5}.foot{border-top:1px solid #222;text-align:center;color:#777;padding:28px}
+.modal{position:fixed;inset:0;background:#000b;display:none;place-items:center;padding:18px;z-index:20}.modal.open{display:grid}
+.modal-box{width:min(600px,100%);background:#151515;border:1px solid #363636;border-radius:22px;padding:30px}.close{float:right;background:none;border:0;color:#aaa;font-size:28px;cursor:pointer}.locked-close{opacity:.3!important;cursor:not-allowed!important}
+.field{margin:18px 0}.field label{display:block;color:#bbb;font-size:18px;margin-bottom:9px}
+.field input{width:100%;padding:17px;border-radius:13px;border:2px solid #6d5215;background:#17130a;color:#fff;font-size:20px;min-height:58px;box-shadow:0 0 0 3px #d9a93612;transition:border-color .2s,box-shadow .2s,background .2s}.field input:focus{outline:none;border-color:#d9a936;box-shadow:0 0 0 4px #d9a93622;background:#1c180d}
+.notice{padding:16px;border-radius:12px;background:#201d14;color:#d9a936;font-size:17px;line-height:1.5}.confirmation{display:none;text-align:center}.confirmation.show{display:block}
+.numbers{font-weight:900;color:#d9a936;word-break:break-word;font-size:19px}
+@media(max-width:760px){.grand-prize{max-width:330px;padding:11px 10px 10px}.grand-prize .prize{height:110px;font-size:58px}.grand-amount{font-size:50px}.nav{align-items:flex-start}.logo{font-size:18px}.nav .btn{padding:11px 12px;font-size:13px}.hero{grid-template-columns:1fr;padding-top:42px}.tickets{grid-template-columns:repeat(5,1fr)}.how{grid-template-columns:1fr}.summary{flex-direction:row;gap:12px;text-align:left;padding:20px 16px;min-height:82px}.summary>div{font-size:19px;line-height:1.4;font-weight:700}.summary .btn{min-width:150px;min-height:56px;padding:15px 22px;font-size:17px;border-radius:14px}}
+@media(max-width:760px){.modal-box{width:calc(100% - 12px);padding:28px 24px;border-radius:24px}.modal-box h2{font-size:29px}.modal-box .field label{font-size:22px}.modal-box .field input{font-size:23px;min-height:64px;padding:17px;border-width:2px;box-shadow:0 0 0 3px #d9a93612}.modal-box .field input:focus{box-shadow:0 0 0 4px #d9a93622}.modal-box .notice{font-size:19px;padding:16px}.modal-box form>p{font-size:20px}.modal-box .field label{display:flex;align-items:center;gap:8px}.modal-box .field input::placeholder{color:#777;opacity:1}.modal-box form .btn{min-height:64px;font-size:20px}}
+@media(prefers-reduced-motion:reduce){.grand-prize *{animation:none!important}}\n</style>
+<style>
+.sparkles{position:absolute;top:10px;left:0;right:0;color:#f5d36a;font-size:20px;letter-spacing:12px;animation:twinkle 1s infinite alternate}.grand-prize{width:100%;max-width:350px;justify-self:center;padding:13px 12px 12px;background:radial-gradient(circle at 50% 35%,#33280d 0%,#151515 45%,#101010 100%);border:2px solid #9b7418;box-shadow:0 0 18px #d9a93655, inset 0 0 35px #d9a93612}.grand-prize .prize{height:125px;font-size:64px;margin-top:8px;border-radius:16px}.official{font-size:16px;font-weight:1000;letter-spacing:2px;color:#f5d36a;margin-top:5px}.grand-label{display:inline-block;margin:10px 0 3px;padding:7px 18px;border-radius:999px;background:#d9a936;color:#111;font-weight:1000;font-size:14px;letter-spacing:1px}.grand-amount{font-size:clamp(52px,10vw,78px);line-height:.95;font-weight:1000;color:#fff;letter-spacing:-4px;text-shadow:0 0 6px #fff,0 0 18px #d9a936,0 0 38px #d9a936;animation:prizePulse 1.1s ease-in-out infinite}.winner-text{font-size:clamp(21px,5vw,31px);font-weight:1000;font-style:italic;color:#f5d36a;margin:12px 0;animation:blink 1.35s ease-in-out infinite}.raffle-info{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:8px 0 13px}.raffle-info span{padding:7px 11px;border:1px solid #5e4816;border-radius:10px;background:#0d0d0d;color:#eee}.grand-prize h2{margin:8px 0 3px}.grand-prize .price{font-size:22px}.grand-prize .meta{margin-top:10px}.grand-prize{text-align:center;position:relative;overflow:hidden;border:1px solid #6d5215;box-shadow:0 0 25px #d9a93622}
+.grand-prize:before{content:'✨ ✦ ✨ ✦ ✨ ✦ ✨';position:absolute;inset:8px 0 auto;font-size:18px;color:#d9a936;letter-spacing:10px;animation:twinkle 1.2s infinite alternate}
+.official{margin-top:25px;color:#f5d36a;font-weight:900;font-size:18px;letter-spacing:1px}
+.grand-label{display:inline-block;margin:12px 0 4px;padding:7px 18px;border-radius:20px;background:#d9a936;color:#111;font-weight:1000;font-size:15px;letter-spacing:2px}
+.decimals{font-size:.5em;vertical-align:super;letter-spacing:-1px;margin-left:1px}.grand-amount{font-size:clamp(46px,10vw,68px);line-height:1;font-weight:1000;letter-spacing:-3px;color:#fff;text-shadow:0 0 8px #d9a936,0 0 25px #d9a936,0 0 45px #d9a936;animation:prizePulse 1.25s ease-in-out infinite}
+.winner-text{font-size:clamp(20px,5vw,32px);font-weight:900;font-style:italic;color:#f5d36a;margin:10px 0 14px;animation:blink 1.5s ease-in-out infinite}
+@keyframes prizePulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.035);filter:brightness(1.3)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.45}}
+@keyframes twinkle{from{opacity:.35}to{opacity:1}}
+.draw-public{position:fixed;inset:0;background:#050505f5;z-index:50;display:none;place-items:center;padding:18px}.draw-public.open{display:grid}.draw-public-box{width:min(1000px,100%);max-height:92vh;overflow:auto;background:#111;border:2px solid #6d5215;border-radius:24px;padding:25px;text-align:center;box-shadow:0 0 45px #d9a93633;position:relative}.draw-public-close{position:absolute;top:10px;right:14px;width:42px;height:42px;border:1px solid #4a4a4a;border-radius:50%;background:#171717;color:#fff;font-size:30px;line-height:1;cursor:pointer;z-index:2}.draw-public-close:hover{background:#262626;border-color:#d9a936;color:#d9a936}.draw-public-number{font-size:clamp(80px,18vw,170px);line-height:.9;font-weight:1000;color:#d9a936;text-shadow:0 0 25px #d9a936}.draw-public-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:20px}.draw-public-grid span{padding:8px 3px;border:1px solid #303030;border-radius:8px;background:#171717;font-weight:900}.draw-public-grid span.active{background:#d9a936;color:#111;transform:scale(1.08)}.draw-public-result{display:none}.draw-public-result.show{display:block}@media(max-width:760px){.draw-public-grid{grid-template-columns:repeat(5,1fr)}}</style></head>
+<body>
+<header>
+<div class="nav">
+<div class="logo">RIFANDO <span>ANDO</span> 🎟️</div>
+<div style="display:flex;gap:8px;align-items:center">
+<a class="btn" href="#numeros">Elegir números</a>
+<a class="btn" href="#ultimo-ganador">🏆 Último ganador</a>
+<a class="btn" href="index.html">🎟️ Sorteo oficial</a>\n<a class="btn" href="especial.html">🎟️ Sorteo Especial</a>
+<button class="btn" id="topContinue" type="button">Continuar</button>
+</div>
+</div>
+</header>
+
+<div id="publicDraw" class="draw-public" onclick="cerrarSorteoPublico(event)"><div class="draw-public-box"><button class="draw-public-close" type="button" onclick="cerrarSorteoPublico(event)" aria-label="Cerrar animación" title="Cerrar">×</button><div style="font-size:46px">🎲</div><div class="official">SORTEO EN VIVO</div><h2 id="publicDrawStatus">Preparando selección...</h2><div id="publicDrawNumber" class="draw-public-number">--</div><div id="publicDrawGrid" class="draw-public-grid"></div><div id="publicDrawResult" class="draw-public-result"><div style="font-size:28px;color:#f5d36a;font-weight:1000">🏆 ¡TENEMOS GANADOR!</div><div id="publicDrawWinnerNumber" style="font-size:72px;font-weight:1000;color:#d9a936"></div><div id="publicDrawWinnerName" style="font-size:26px;font-weight:900"></div></div></div></div><main>
+<div class="hero">
+<div>
+<div class="eyebrow">La rifa entre compas</div>
+<h1>¡Échale número, <span class="gold">compa!</span></h1>
+<p>Participa en nuestras rifas, elige tus números y cruza los dedos.</p>
+<a class="btn" href="#numeros">Quiero participar</a>
+</div>
+<div class="card grand-prize">
+<div class="sparkles">✦ ✨ ✦ ✨ ✦</div>
+<div class="prize">🏆</div>
+<div class="official" id="officialTitle">SORTEO OFICIAL</div>
+<div class="grand-label">💰 GRAN PREMIO 💰</div>
+<div class="grand-amount" id="grandAmount">…<span class="decimals"></span></div>
+<div class="winner-text">✨ ¡PUEDE SER TUYO! ✨</div>
+<div class="raffle-info"><span>🎟️ <b id="ticketInfoPrice">…</b> por boleto</span><span>🔢 <b id="ticketInfoCount">100</b> números</span></div>
+<h2 id="raffleName">Cargando sorteo…</h2>
+<div class="price" id="price">Cargando precio…</div>
+<div class="meta" id="meta"><span>0% ocupados</span><span>Sorteo próximamente</span></div>
+<div class="bar"><i id="progress"></i></div>
+</div>
+</div>
+
+<section class="section quick-info" id="como-participar">
+<h2>🎟️ Cómo funciona</h2>
+<div class="quick-grid">
+<div class="quick-card"><div class="quick-icon">01</div><div><h3>Elige tus números</h3><p>Selecciona los números disponibles que quieras participar.</p></div></div>
+<div class="quick-card"><div class="quick-icon">02</div><div><h3>Solicita tu apartado</h3><p>Captura tu nombre y WhatsApp para registrar tu solicitud.</p></div></div>
+<div class="quick-card"><div class="quick-icon">03</div><div><h3>Realiza tu pago</h3><p>Recibirás los datos de pago por WhatsApp. Tienes <b>30 minutos</b> para confirmar.</p></div></div>
+</div>
+<div class="rules-box compact">
+<h3>📋 Reglas básicas</h3>
+<div class="rules-inline"><span>⏰ <b>30 min</b> para confirmar</span><span>💳 Envía tu comprobante</span><span>🔄 Sin pago, se libera el número</span></div>
+</div>
+<div class="lottery-info" id="lotteryInfo" style="display:none">
+<div class="lottery-badge">🇲🇽 LOTERÍA NACIONAL</div>
+<h3>🎯 Cómo se determinará el ganador</h3>
+<div class="lottery-status" id="lotteryStatus"></div>
+<div class="lottery-details" id="lotteryDetails"></div>
+<div class="lottery-result" id="lotteryResult" style="display:none"></div>
+<div class="lottery-note">La información del sorteo se muestra según la configuración de esta rifa. El resultado ganador se comprobará con la publicación oficial de Lotería Nacional.</div>
+</div>
+<div class="help-box">
+<a class="help-btn" id="helpWhatsApp" href="https://wa.me/528123859824" target="_blank" rel="noopener">🟢 Ayuda o soporte por WhatsApp</a>
+</div>
+</section>
+
+<section class="section" id="numeros">
+<h2>Elige tus números</h2><div class="legend"><span><i class="lg-green"></i>Disponible</span><span><i class="lg-yellow"></i>Seleccionado</span><span><i class="lg-orange"></i>En proceso de compra</span><span><i class="lg-gray"></i>Vendido</span></div>
+<div class="tickets" id="tickets"><p style="color:#aaa">Cargando números...</p></div>
+<div class="summary">
+<div>Números: <b class="gold" id="count">0</b> · Total: <b class="gold">$<span id="total">0</span></b></div>
+<button class="btn" onclick="abrirFormulario()">Continuar</button>
+</div>
+</section>
+
+<section class="section">
+<div id="ultimo-ganador" class="box hidden" style="margin-bottom:25px;text-align:center;border-color:#d9a936"><div style="font-size:42px">🏆</div><h2>Último ganador</h2><div id="publicWinnerNumber" style="font-size:58px;font-weight:1000;color:#d9a936">--</div><div id="publicWinnerName" style="font-size:24px;font-weight:900"></div><button class="btn" type="button" onclick="reproducirUltimoSorteo()" style="margin-top:16px">🎬 Ver animación del último sorteo</button></div>
+</section>
+<section class="section" id="historial-ganadores"><h2>🏆 Historial de Ganadores</h2><div id="winnerHistory" class="winner-history"><div class="winner-empty">Aún no hay ganadores registrados.</div></div></section>
+</main>
+
+<footer class="foot">© 2026 Rifando Ando · La rifa entre compas<div style="margin-top:10px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap"><a href="reglas.html" style="color:#d9a936;text-decoration:none;font-weight:900">📜 Reglas, Bases, Términos y Condiciones</a><span style="color:#555">·</span><a href="aviso-privacidad.html" style="color:#d9a936;text-decoration:none;font-weight:900">🔒 Aviso de Privacidad</a></div>© 2026 Rifando Ando · La rifa entre compas</footer>
+
+<div class="modal" id="modal">
+<div class="modal-box">
+<button class="close" id="modalClose" onclick="cerrarFormulario()" aria-label="Cerrar" title="Primero envía la solicitud por WhatsApp">×</button>
+<div id="formView">
+<h2>Confirma tus números 🎟️</h2>
+<div class="notice">Tu selección será una <b>solicitud de apartado</b>.</div>
+<form onsubmit="confirmar(event)">
+<div class="field"><label>👤 Nombre y primer apellido</label><input id="nombre" required maxlength="60" placeholder="Ejemplo: Juan Pérez" autocomplete="name"></div>
+<div class="field"><label>📱 Número de WhatsApp</label><input id="whatsapp" required type="tel" maxlength="20" placeholder="Ejemplo: 812 123 4567" autocomplete="tel" inputmode="tel"></div>
+<p>Tu selección: <span class="numbers" id="formNumbers"></span></p>
+<button class="btn" type="submit" style="width:100%">Solicitar apartado</button>
+</form>
+</div>
+
+<div class="confirmation" id="confirmation">
+<div style="font-size:48px">🎉</div>
+<h2>¡Solicitud recibida!</h2>
+<p>Gracias, <b id="confirmName"></b>.</p>
+<p>Tus números:</p>
+<div class="numbers" id="confirmNumbers"></div>
+<p>Total: <b class="gold" id="confirmTotal"></b></p>
+<a class="btn" id="waConfirm" href="#" target="_blank" rel="noopener" style="display:inline-block;margin:8px 4px">📲 Enviar solicitud por WhatsApp</a><br>
+<button class="btn" id="confirmCloseBtn" onclick="cerrarFormulario()" style="margin:8px 4px" title="Primero envía la solicitud por WhatsApp">Cerrar</button>
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js?v=20260919-2020"></script>
+<script>
+'use strict';
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const tickets=document.getElementById('tickets');
+const count=document.getElementById('count');
+const total=document.getElementById('total');
+const priceEl=document.getElementById('price');
+const raffleName=document.getElementById('raffleName');
+const officialTitle=document.getElementById('officialTitle');
+const ticketInfoPrice=document.getElementById('ticketInfoPrice');
+const ticketInfoCount=document.getElementById('ticketInfoCount');
+const meta=document.getElementById('meta');
+const bar=document.getElementById('progress');
+const modal=document.getElementById('modal');
+const formView=document.getElementById('formView');
+const confirmation=document.getElementById('confirmation');
+const formNumbers=document.getElementById('formNumbers');
+const nombre=document.getElementById('nombre');
+const whatsapp=document.getElementById('whatsapp');
+
+let rifa=null;
+let sel=new Set();
+let confirmWhatsAppClicked=false;
+let solicitudPendiente=false;
+let realtimeChannel=null;let drawPublicChannel=null;let drawAnimationTimer=null;let lastDemoStartAt=0;let lastRealEventId=null;
+
+function nums(){
+  return Array.from(sel).sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0'));
+}
+function update(){
+  count.textContent=sel.size;
+  total.textContent=rifa ? (sel.size*Number(rifa.precio_numero)).toLocaleString('es-MX') : '0';
+}
+function resetConfirmation(){
+  formView.style.display='';
+  confirmation.classList.remove('show');
+}
+function activarTiempoReal(){
+  if(!rifa) return;
+  if(realtimeChannel) realtimeChannel.unsubscribe();
+  realtimeChannel=db.channel('rifa-numeros-'+rifa.id)
+    .on('postgres_changes',{event:'*',schema:'public',table:'numeros',filter:'rifa_id=eq.'+rifa.id},()=>cargarRifa())
+    .subscribe();
+}
+function activarSorteoPublico(payload){
+  if(!payload||payload.rifa_id!==rifa?.id)return;
+  // El administrador puede repetir la señal para conexiones lentas; no reiniciar la misma prueba.
+  if(payload.demo&&Number(payload.start_at)&&Number(payload.start_at)===lastDemoStartAt)return;
+  if(payload.demo&&Number(payload.start_at))lastDemoStartAt=Number(payload.start_at);
+  const overlay=document.getElementById('publicDraw'),grid=document.getElementById('publicDrawGrid'),num=document.getElementById('publicDrawNumber'),status=document.getElementById('publicDrawStatus'),res=document.getElementById('publicDrawResult');
+  const lista=(payload.numeros||[]).map(Number).sort((a,b)=>a-b);if(!lista.length)return;
+  overlay.classList.add('open');res.classList.remove('show');status.textContent=payload.demo?'👁️ PRUEBA DE ANIMACIÓN · No es un sorteo real':'Participan '+lista.length+' números · selección en curso';grid.innerHTML=lista.map(n=>'<span>'+String(n).padStart(2,'0')+'</span>').join('');
+  const cells=[...grid.children];let i=0;clearInterval(drawAnimationTimer);clearTimeout(window.drawDemoRevealTimer);
+  const duration=Number(payload.duration_ms)||45000;const startAt=Number(payload.start_at)||Date.now();let timerId=null;
+  const run=()=>{
+    const elapsed=Date.now()-startAt;
+    if(elapsed>=duration){if(timerId)clearTimeout(timerId);return}
+    const progress=elapsed/duration;
+    let delay;
+    const wave=Math.sin(progress*14)+0.45*Math.sin(progress*31);
+    if(progress>0.90) delay=260+Math.floor(Math.random()*420);
+    else if(wave>0.55) delay=45+Math.floor(Math.random()*45);
+    else if(wave<-0.35) delay=260+Math.floor(Math.random()*260);
+    else delay=80+Math.floor(Math.random()*110);
+    const jump=1+Math.floor(Math.random()*Math.min(10,cells.length));
+    cells.forEach(x=>x.classList.remove('active'));
+    const cell=cells[i%cells.length];cell.classList.add('active');num.textContent=cell.textContent;i=(i+jump)%cells.length;
+    timerId=setTimeout(run,delay);
+  };
+  const wait=Math.max(0,startAt-Date.now());setTimeout(run,wait);drawAnimationTimer={stop:()=>clearTimeout(timerId)};
+  if(payload.demo){
+    const demo=lista[Math.floor(lista.length/2)];
+    window.drawDemoRevealTimer=setTimeout(()=>revelarSorteoPublico({rifa_id:rifa.id,numero:demo,nombre:'Prueba de animación · NO es un ganador real',demo:true}),wait+duration);
+  }
+}
+function cerrarSorteoPublico(event){
+  if(event){event.preventDefault();event.stopPropagation();if(event.target!==event.currentTarget && !event.target.closest('.draw-public-close'))return;}
+  clearTimeout(window.drawDemoRevealTimer);clearTimeout(window.ultimoSorteoReplayTimer);
+  if(drawAnimationTimer?.stop)drawAnimationTimer.stop();else if(drawAnimationTimer)clearTimeout(drawAnimationTimer);
+  drawAnimationTimer=null;
+  document.getElementById('publicDraw').classList.remove('open');
+}
+function revelarSorteoPublico(payload){
+  if(!payload||payload.rifa_id!==rifa?.id)return;
+  if(drawAnimationTimer?.stop)drawAnimationTimer.stop();else clearInterval(drawAnimationTimer);const n=String(payload.numero).padStart(2,'0');
+  document.getElementById('publicDrawNumber').textContent=n;document.getElementById('publicDrawStatus').textContent=payload.demo?'👁️ PRUEBA COMPLETADA · No hubo sorteo':'🔐 Selección registrada oficialmente';
+  const result=document.getElementById('publicDrawResult');
+  const cells=[...document.getElementById('publicDrawGrid').children];
+  cells.forEach(x=>x.classList.remove('active'));
+  const winnerCell=cells.find(x=>x.textContent===n);
+  if(winnerCell)winnerCell.classList.add('active');
+  document.getElementById('publicDrawWinnerNumber').textContent=n;
+  document.getElementById('publicDrawWinnerName').textContent=payload.demo?'Número mostrado únicamente para la prueba · NO es un ganador real':formatearNombrePublico(payload.nombre||'Ganador');
+  result.querySelector('div[style*="TENEMOS GANADOR"]').textContent=payload.demo?'👁️ PRUEBA FINALIZADA':'🏆 ¡TENEMOS GANADOR!';
+  result.classList.add('show');
+  setTimeout(()=>document.getElementById('publicDraw').classList.remove('open'),payload.demo?3500:6000);
+}
+async function activarCanalSorteoPublico(){
+  if(!rifa)return;
+  if(drawPublicChannel)await drawPublicChannel.unsubscribe();
+  drawPublicChannel=db.channel('rifa-sorteo-publico-'+rifa.id)
+    .on('broadcast',{event:'sorteo_inicio'},({payload})=>activarSorteoPublico(payload))
+    .on('broadcast',{event:'sorteo_resultado'},({payload})=>revelarSorteoPublico(payload));
+  await new Promise(resolve=>{
+    let done=false;
+    const finish=()=>{if(!done){done=true;resolve()}};
+    drawPublicChannel.subscribe(status=>{if(status==='SUBSCRIBED'||status==='CHANNEL_ERROR'||status==='TIMED_OUT')finish()});
+    setTimeout(finish,5000);
+  });
+}
+
+async function revisarSorteoRealPersistente(){
+  if(!rifa)return;
+  const {data,error}=await db.from('sorteo_eventos_en_vivo')
+    .select('id,start_at,duration_ms,numeros,estado,numero_ganador,nombre_ganador')
+    .eq('rifa_id',rifa.id)
+    .order('created_at',{ascending:false})
+    .limit(1)
+    .maybeSingle();
+  if(error||!data)return;
+  const startAt=new Date(data.start_at).getTime();
+  const duration=Number(data.duration_ms)||45000;
+  if(data.estado==='en_vivo' && startAt<=Date.now()+2000 && Date.now()<=startAt+duration+10000){
+    if(Number(lastDemoStartAt)!==startAt){
+      lastDemoStartAt=startAt;
+      activarSorteoPublico({rifa_id:rifa.id,numeros:Array.isArray(data.numeros)?data.numeros:[],demo:false,start_at:startAt,duration_ms:duration});
+    }
+  }
+  if(data.estado==='finalizado' && data.numero_ganador!=null && data.id!==lastRealEventId){
+    lastRealEventId=data.id;
+    revelarSorteoPublico({rifa_id:rifa.id,numero:data.numero_ganador,nombre:data.nombre_ganador||'Ganador',demo:false});
+  }
+}
+
+async function revisarPruebaPersistente(){
+  if(!rifa)return;
+  const {data,error}=await db.from('sorteo_pruebas')
+    .select('start_at,duration_ms,numeros,numero_demo')
+    .eq('rifa_id',rifa.id)
+    .order('start_at',{ascending:false})
+    .limit(1)
+    .maybeSingle();
+  if(error||!data)return;
+  const startAt=new Date(data.start_at).getTime();
+  const duration=Number(data.duration_ms)||45000;
+  const ahora=Date.now();
+  if(startAt<=0||ahora>startAt+duration+5000)return;
+  if(Number(lastDemoStartAt)===startAt)return;
+  activarSorteoPublico({
+    rifa_id:rifa.id,
+    numeros:Array.isArray(data.numeros)?data.numeros:[],
+    numero_demo:Number(data.numero_demo),
+    demo:true,
+    start_at:startAt,
+    duration_ms:duration
+  });
+  lastDemoStartAt=startAt;
+  window.drawDemoRevealTimer=setTimeout(()=>{
+    revelarSorteoPublico({
+      rifa_id:rifa.id,
+      numero:Number(data.numero_demo),
+      nombre:'Prueba de animación · NO es un ganador real',
+      demo:true
+    });
+  },Math.max(0,startAt+duration-Date.now()));
+}
+
+async function reproducirUltimoSorteo(){
+  clearTimeout(window.ultimoSorteoReplayTimer);
+  if(!rifa){alert('No hay un sorteo disponible.');return;}
+  const {data:w,error:we}=await db.from('ganadores').select('numero,nombre_snapshot,rifa_id,created_at').order('created_at',{ascending:false}).limit(1).maybeSingle();
+  if(we||!w){alert('Aún no hay un ganador registrado.');return;}
+  const {data:n,error:ne}=await db.from('numeros').select('numero').eq('rifa_id',w.rifa_id).order('numero');
+  if(ne||!n||!n.length){alert('No se pudo cargar la lista del último sorteo.');return;}
+  const lista=n.map(x=>Number(x.numero)).filter(Number.isFinite).sort((a,b)=>a-b);
+  const startAt=Date.now()+300;
+  activarSorteoPublico({rifa_id:rifa.id,numeros:lista,demo:false,start_at:startAt,duration_ms:45000});
+  window.ultimoSorteoReplayTimer=setTimeout(()=>{
+    revelarSorteoPublico({rifa_id:rifa.id,numero:Number(w.numero),nombre:formatearNombrePublico(w.nombre_snapshot||'Ganador'),demo:false});
+  },45000);
+}
+
+function formatearNombrePublico(nombre){
+  const partes=(nombre||'').trim().split(/\s+/).filter(Boolean);
+  if(!partes.length)return 'Ganador';
+  if(partes.length===1)return partes[0];
+  return partes[0]+' '+partes[1].charAt(0).toUpperCase()+'.';
+}
+
+async function mostrarGanadorPublico(){
+  const box=document.getElementById('ultimo-ganador');
+  if(!box)return;
+  const {data:w,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').order('created_at',{ascending:false}).limit(1).maybeSingle();
+  if(error||!w){box.classList.add('hidden');return}
+  box.classList.remove('hidden');
+  const nombrePublico=formatearNombrePublico(w.nombre_snapshot||'Ganador');
+  document.getElementById('publicWinnerNumber').textContent='#'+String(w.numero).padStart(2,'0');
+  document.getElementById('publicWinnerName').textContent=nombrePublico;
+  let codeEl=document.getElementById('publicWinnerCode');
+  if(!codeEl){codeEl=document.createElement('div');codeEl.id='publicWinnerCode';codeEl.style.cssText='margin-top:6px;color:#d9a936;font-size:14px;font-weight:800';document.getElementById('publicWinnerName').after(codeEl)}
+  const {data:rw}=await db.from('rifas').select('codigo_sorteo').eq('id',w.rifa_id).maybeSingle();
+  codeEl.textContent=rw?.codigo_sorteo?'ID del sorteo: '+rw.codigo_sorteo:'';
+  const d=w.created_at?new Date(w.created_at).toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'}):'';
+  let dateEl=document.getElementById('publicWinnerDate');
+  if(!dateEl){dateEl=document.createElement('div');dateEl.id='publicWinnerDate';dateEl.style.cssText='margin-top:8px;color:#888;font-size:14px';box.appendChild(dateEl)}
+  dateEl.textContent=d?'Sorteo realizado el '+d:'';
+}
+
+async function actualizarInfoLoteria(r){
+  const box=document.getElementById('lotteryInfo');
+  const status=document.getElementById('lotteryStatus');
+  const details=document.getElementById('lotteryDetails');
+  const result=document.getElementById('lotteryResult');
+  if(!box||!status||!details||!result)return;
+  if(!r || r.metodo_sorteo!=='loteria_nacional'){
+    box.style.display='none'; return;
+  }
+  box.style.display='';
+  const tz='America/Monterrey';
+  const now=new Date();
+  const fmtDate=d=>new Intl.DateTimeFormat('es-MX',{timeZone:tz,day:'2-digit',month:'long',year:'numeric'}).format(d);
+  const fmtTime=d=>new Intl.DateTimeFormat('es-MX',{timeZone:tz,hour:'2-digit',minute:'2-digit',hour12:false}).format(d);
+  const drawType=r.loteria_tipo||'Tris Clásico';
+  const drawTime=drawType==='Tris Clásico'?'21:00':(drawType==='Tris de las Siete'?'19:00':drawType==='Tris Extra'?'17:00':drawType==='Tris de las Tres'?'15:00':'13:00');
+  const todayParts=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
+  const part=k=>todayParts.find(x=>x.type===k)?.value;
+  const today=part('year')+'-'+part('month')+'-'+part('day');
+  const targetDate=r.loteria_fecha ? new Date(r.loteria_fecha) : new Date(today+'T00:00:00-06:00');
+  const targetDay=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).format(targetDate);
+  const closeToday=new Date(targetDay+'T'+drawTime+':00-06:00');
+  const completeCount=await contarVendidosPublico(r.id);
+  const full=completeCount>=100;
+  let targetLabel=targetDay===today?'hoy':fmtDate(targetDate);
+  if(r.estado==='sorteada'){
+    status.textContent='🏆 Sorteo realizado';
+  }else if(full && now<closeToday){
+    status.textContent='🟢 ¡Rifa completa! Participará en el '+drawType+' de '+targetLabel+'.';
+  }else if(full && now>=closeToday){
+    status.textContent='🟡 Rifa completa después del cierre. Participará en el siguiente '+drawType+' disponible.';
+  }else{
+    status.textContent='🔵 Esta rifa se sorteará con '+drawType+'.';
+  }
+  details.innerHTML='<div>🎯 Modalidad: <b>'+drawType+'</b></div>'+
+    '<div>⏰ Hora del sorteo: <b>'+drawTime+' h</b> (hora de Monterrey)</div>'+
+    '<div>🔢 Regla: <b>últimas 2 cifras</b> del resultado oficial</div>'+
+    '<div>🎟️ Estado de la rifa: <b>'+completeCount+'/100 números pagados</b></div>';
+  if(r.estado==='sorteada' && r.loteria_resultado){
+    const resultText=String(r.loteria_resultado).padStart(5,'0');
+    const winner=resultText.slice(-2);
+    result.style.display='';
+    result.innerHTML='Resultado oficial: <b>'+resultText+'</b> · Número ganador: <b>'+winner+'</b>';
+  }else result.style.display='none';
+}
+async function contarVendidosPublico(rifaId){
+  const {count,error}=await db.from('numeros').select('id',{count:'exact',head:true}).eq('rifa_id',rifaId).eq('estado','vendido');
+  return error ? 0 : Number(count||0);
+}
+
+async function cargarNumerosPublico(rifaId){
+  let ultimoError=null;
+  for(let intento=1;intento<=3;intento++){
+    const {data,error}=await db.from('numeros')
+      .select('numero,estado,apartado_hasta')
+      .eq('rifa_id',rifaId)
+      .order('numero');
+    if(!error) return {data,error:null};
+    ultimoError=error;
+    if(intento<3) await new Promise(resolve=>setTimeout(resolve,500*intento));
+  }
+  return {data:null,error:ultimoError};
+}
+
+async function cargarRifa(){
+  const {data:r,error:re}=await db.from('rifas').select('*').eq('id','60f9a81d-bdd6-4e28-b330-dc92cfe4d113').maybeSingle();
+  if(re||!r){
+    tickets.innerHTML='<p style="color:#aaa">No hay una rifa activa disponible.</p>';
+    await mostrarGanadorPublico();
+    await cargarHistorialGanadores();
+    return;
+  }
+  rifa=r;
+  actualizarInfoLoteria(r).catch(()=>{});
+  // El canal de animación y los historiales no deben bloquear la carga principal.
+  activarCanalSorteoPublico().catch(()=>{});
+
+  if(r.estado==='sorteada'){
+    tickets.innerHTML='<div style="grid-column:1/-1;padding:28px;text-align:center;border:1px solid #3a2d0d;border-radius:16px;background:#111"><div style="font-size:48px">🏆</div><h3>¡El sorteo ya fue realizado!</h3><p style="color:#aaa">Consulta el ganador y el historial más abajo.</p></div>';
+    const precioFormateado='$'+Number(r.precio_numero).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
+    raffleName.textContent=r.nombre||'Sorteo';
+    officialTitle.textContent=(r.nombre||'SORTEO OFICIAL').toUpperCase();
+    priceEl.textContent=precioFormateado+' por número';
+    ticketInfoPrice.textContent=precioFormateado;
+    meta.innerHTML='<span>🎉 Sorteo realizado</span><span>'+(r.fecha_sorteo?'Fecha: '+new Date(r.fecha_sorteo).toLocaleDateString('es-MX'):'')+'</span>';
+    bar.style.width='100%';
+    update();
+    return;
+  }
+
+  // Los apartados vencidos se consideran disponibles en la vista pública por su fecha de expiración.
+  const precioFormateado='$'+Number(r.precio_numero).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
+  raffleName.textContent=r.nombre||('Sorteo #'+(r.numero_sorteo||''));
+  officialTitle.textContent=(r.nombre||'SORTEO OFICIAL').toUpperCase();
+  priceEl.textContent=precioFormateado+' por número';
+  ticketInfoPrice.textContent=precioFormateado;
+  const ga=document.getElementById('grandAmount');
+  if(ga){
+    const premioTexto=String(r.premio||'$0').trim();
+    const premioNumero=premioTexto.replace(/[^0-9.,]/g,'').replace(/,/g,'');
+    const premio=parseFloat(premioNumero);
+    const premioEntero=Number.isFinite(premio)?Math.floor(premio):0;
+    const premioDecimales=Number.isFinite(premio)?(premio%1).toFixed(2).slice(2):'00';
+    ga.innerHTML='$'+premioEntero.toLocaleString('es-MX')+'<span class="decimals">.'+premioDecimales+'</span>';
+  }
+
+  const {data:n,error:ne}=await cargarNumerosPublico(r.id);
+  if(ne){
+    console.error('Rifando Ando: error cargando números',ne);
+    tickets.innerHTML='<div style="grid-column:1/-1;padding:22px;text-align:center;border:1px solid #3a2d0d;border-radius:16px;background:#111"><b style="color:#d9a936">No se pudieron cargar los números.</b><p style="color:#aaa;margin:8px 0 0">Estamos intentando reconectar con el servidor. Actualiza la página en unos segundos.</p></div>';
+    return;
+  }
+  tickets.innerHTML='';
+  let busy=0;
+  (n||[]).forEach(x=>{
+    const free=x.estado==='disponible'||(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)<=new Date());
+    if(!free) busy++;
+    const b=document.createElement('button');
+    b.type='button';
+    const stateClass=free?'available':(x.estado==='apartado'?'pending':'sold');
+    b.className='ticket '+stateClass;
+    b.textContent=String(x.numero).padStart(2,'0');
+    if(free){
+      b.addEventListener('click',()=>{
+        if(solicitudPendiente)return;
+        if(sel.has(x.numero)){sel.delete(x.numero);b.classList.remove('selected')}
+        else{sel.add(x.numero);b.classList.add('selected')}
+        update();
+      });
+    }else b.disabled=true;
+    tickets.appendChild(b);
+  });
+  const pct=n?.length?Math.round(busy/n.length*100):0;
+  if(r.metodo_sorteo==='loteria_nacional') actualizarInfoLoteria(r).catch(()=>{});
+  meta.innerHTML='<span>'+pct+'% ocupados</span><span>'+(r.fecha_sorteo?'Sorteo: '+new Date(r.fecha_sorteo).toLocaleDateString('es-MX'):'Sorteo próximamente')+'</span>';
+  bar.style.width=pct+'%';
+  update();
+  actualizarWhatsAppAyuda();
+  if(solicitudPendiente)bloquearNuevaSeleccion(true);
+  activarTiempoReal();
+  // Cargar extras después de pintar los números; si fallan, la rifa sigue funcionando.
+  mostrarGanadorPublico().catch(()=>{});
+  cargarHistorialGanadores().catch(()=>{});
+}
+async function cargarHistorialGanadores(){
+  const el=document.getElementById('winnerHistory');
+  const {data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').order('created_at',{ascending:false});
+  if(error){el.innerHTML='<div class="winner-empty">No se pudo cargar el historial.</div>';return}
+  if(!data||!data.length){el.innerHTML='<div class="winner-empty">Aún no hay ganadores registrados.</div>';return}
+  const rifaIds=[...new Set(data.map(w=>w.rifa_id).filter(Boolean))];
+  const {data:rifasData}=rifaIds.length?await db.from('rifas').select('id,codigo_sorteo,numero_sorteo,premio').in('id',rifaIds):{data:[]};
+  const rifasMap=new Map((rifasData||[]).map(r=>[r.id,r]));
+  el.innerHTML='<div class="winner-head"><div>🎟️ No. de sorteo</div><div>👤 Nombre del ganador</div><div>💰 Monto ganado</div><div>⭐ # ganador</div></div>'+data.map(w=>{
+    const r=rifasMap.get(w.rifa_id);
+    const codigo=r?.codigo_sorteo||('RA-'+String(r?.numero_sorteo||'?').padStart(4,'0'));
+    const d=new Date(w.created_at).toLocaleDateString('es-MX');
+    const nombreVisible=formatearNombrePublico(w.nombre_snapshot);
+    const premio=String(r?.premio||'No disponible');
+    return '<div class="winner-card"><div><div class="wname">'+codigo+'</div><div class="wdate">'+d+'</div></div><div class="wname">'+nombreVisible+'</div><div class="wprize">'+premio+'</div><div class="wnum">#'+String(w.numero).padStart(2,'0')+'</div></div>';
+  }).join('');
+}
+function continuarNavegacion(){
+  if(sel.size){abrirFormulario();return;}
+  document.getElementById('numeros')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function actualizarWhatsAppAyuda(){
+  const link=document.getElementById('helpWhatsApp');
+  if(!link)return;
+  const seleccion=nums();
+  const message=seleccion.length
+    ? 'Hola Rifando Ando 👋, necesito ayuda o soporte con mi participación. Mis números seleccionados son: '+seleccion.join(', ')+'.'
+    : 'Hola Rifando Ando 👋, necesito ayuda o soporte con mi participación.';
+  link.href='https://wa.me/528123859824?text='+encodeURIComponent(message);
+}
+function abrirFormulario(){
+  if(solicitudPendiente){
+    alert('Tienes una solicitud pendiente. Primero envía la confirmación por WhatsApp.');
+    return;
+  }
+  if(!sel.size){
+    alert('Primero elige al menos un número, compa.');
+    return;
+  }
+  formNumbers.textContent=nums().join(', ');
+  actualizarWhatsAppAyuda();
+  modal.classList.add('open');
+}
+function bloquearNuevaSeleccion(bloquear){
+  solicitudPendiente=bloquear;
+  document.querySelectorAll('#tickets .ticket').forEach(b=>{
+    b.disabled=bloquear || b.classList.contains('sold') || b.classList.contains('pending');
+    b.style.opacity=bloquear?'0.55':'';
+    b.style.cursor=bloquear?'not-allowed':'';
+  });
+}
+function restaurarSolicitudPendiente(){
+  try{
+    const raw=localStorage.getItem('rifando_pendiente_whatsapp');
+    if(!raw)return;
+    const p=JSON.parse(raw);
+    if(!p||!p.timestamp||Date.now()-Number(p.timestamp)>30*60*1000){
+      localStorage.removeItem('rifando_pendiente_whatsapp');
+      return;
+    }
+    const numerosPendientes=String(p.numbers||'').split(',').map(x=>parseInt(x.trim(),10)).filter(Number.isFinite);
+    sel=new Set(numerosPendientes);
+    solicitudPendiente=true;
+    document.getElementById('confirmName').textContent=p.name||'';
+    document.getElementById('confirmNumbers').textContent=p.numbers||'';
+    document.getElementById('confirmTotal').textContent=p.total||'';
+    update();
+    bloquearNuevaSeleccion(true);
+    const waConfirm=document.getElementById('waConfirm');
+    const recoveredNumbers=String(p.numbers||'').trim();
+    const recoveredMessage='🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado de los siguientes números:\n\n🎫 '+recoveredNumbers+'\n💰 Total: '+String(p.total||'')+'\n👤 Nombre: '+String(p.name||'')+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
+    waConfirm.href='https://wa.me/528123859824?text='+encodeURIComponent(recoveredMessage);
+    confirmWhatsAppClicked=false;
+    waConfirm.onclick=()=>{
+      if(confirmWhatsAppClicked)return false;
+      confirmWhatsAppClicked=true;
+      localStorage.removeItem('rifando_pendiente_whatsapp');
+      solicitudPendiente=false;
+      sel.clear();
+      bloquearNuevaSeleccion(false);
+      update();
+      waConfirm.style.pointerEvents='none';
+      waConfirm.style.opacity='.65';
+      waConfirm.textContent='✅ Solicitud enviada por WhatsApp';
+      document.getElementById('modalClose')?.classList.remove('locked-close');
+      document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
+    };
+    formView.style.display='none';
+    confirmation.classList.add('show');
+    modal.classList.add('open');
+    document.getElementById('modalClose')?.classList.add('locked-close');
+    document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
+  }catch(e){}
+}
+function cerrarFormulario(){
+  if(confirmation.classList.contains('show')&&!confirmWhatsAppClicked)return;
+  modal.classList.remove('open');
+  confirmWhatsAppClicked=false;
+  document.getElementById('modalClose')?.classList.remove('locked-close');
+  document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
+}
+async function confirmar(e){
+  e.preventDefault();
+  if(!rifa||!sel.size) return;
+  const btn=e.submitter||e.target.querySelector('button[type="submit"]');
+  const selected=Array.from(sel);
+  const name=nombre.value.trim();
+  const phone=whatsapp.value.trim();
+  const email='';
+  if(!name||!phone){
+    alert('Completa tu nombre y WhatsApp, compa.');
+    return;
+  }
+  btn.disabled=true;
+  btn.textContent='Apartando...';
+  const {data,error}=await db.rpc('apartar_numeros',{
+    p_rifa_id:rifa.id,
+    p_nombre:name,
+    p_whatsapp:phone,
+    p_correo:email,
+    p_numeros:selected
+  });
+  if(error){
+    alert('No se pudo apartar: '+error.message);
+    btn.disabled=false;
+    btn.textContent='Solicitar apartado';
+    await cargarRifa();
+    return;
+  }
+  const displayNumbers=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');
+  const displayTotal=Number(data?.total||selected.length*Number(rifa.precio_numero)).toLocaleString('es-MX');
+  document.getElementById('confirmName').textContent=name;
+  document.getElementById('confirmNumbers').textContent=displayNumbers;
+  document.getElementById('confirmTotal').textContent='$'+displayTotal;
+  const message='🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado de los siguientes números:\n\n🎫 '+displayNumbers+'\n💰 Total: $'+displayTotal+'.00\n👤 Nombre: '+name+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
+  const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
+  const waConfirm=document.getElementById('waConfirm');
+  waConfirm.href=waLink;
+  confirmWhatsAppClicked=false;
+  document.getElementById('modalClose')?.classList.add('locked-close');
+  document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
+  waConfirm.onclick=()=>{
+    if(confirmWhatsAppClicked)return false;
+    confirmWhatsAppClicked=true;
+
+    // Limpiar inmediatamente antes de abrir WhatsApp para evitar que la selección anterior se quede bloqueada.
+    solicitudPendiente=false;
+    sel.clear();
+    update();
+    bloquearNuevaSeleccion(false);
+
+    modal.classList.remove('open');
+    confirmation.classList.remove('show');
+    formView.style.display='';
+    nombre.value='';
+    whatsapp.value='';
+
+    waConfirm.style.pointerEvents='';
+    waConfirm.style.opacity='';
+    waConfirm.textContent='📲 Enviar solicitud por WhatsApp';
+    document.getElementById('modalClose')?.classList.remove('locked-close');
+    document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
+
+    try{localStorage.removeItem('rifando_pendiente_whatsapp')}catch(e){}
+    confirmWhatsAppClicked=false;
+
+    // Refrescar los estados reales sin recargar la página.
+    setTimeout(()=>cargarRifa().catch(()=>{}),100);
+  };
+  formView.style.display='none';
+  confirmation.classList.add('show');
+  sel.clear();
+  btn.disabled=false;
+  btn.textContent='Solicitar apartado';
+  await cargarRifa();
+}
+document.getElementById('topContinue')?.addEventListener('click',()=>{
+  if(sel.size){abrirFormulario();}
+  else{document.getElementById('numeros')?.scrollIntoView({behavior:'smooth',block:'start'});}
+});
+modal.addEventListener('click',e=>{
+  if(e.target===modal) cerrarFormulario();
+});
+cargarRifa().catch(()=>{
+  raffleName.textContent='No se pudo cargar el sorteo';
+  priceEl.textContent='Intenta actualizar la página';
+  tickets.innerHTML='<p style="color:#aaa">No se pudieron cargar los números. Actualiza la página para intentar de nuevo.</p>';
+});
+mostrarGanadorPublico().catch(()=>{});
+setInterval(()=>{revisarPruebaPersistente();revisarSorteoRealPersistente()},1500);
+setInterval(()=>{if(rifa)actualizarInfoLoteria(rifa)},30000);
+setInterval(mostrarGanadorPublico,5000);
+</script>
+</body>
+</html>
