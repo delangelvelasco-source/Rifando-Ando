@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://delangelvelasco-source.github.io/Rifando-Ando/sitemap.xml
