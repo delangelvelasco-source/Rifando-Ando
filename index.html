@@ -452,8 +452,8 @@ async function cargarRifa(){
 
   // Los apartados vencidos se consideran disponibles en la vista pública por su fecha de expiración.
   const precioFormateado='$'+Number(r.precio_numero).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
-  raffleName.textContent=r.nombre||('Sorteo #'+(r.numero_sorteo||''));
-  officialTitle.textContent=(r.nombre||'SORTEO OFICIAL').toUpperCase();
+  raffleName.textContent='SORTEO REGULAR';
+  officialTitle.textContent='SORTEO REGULAR';
   priceEl.textContent=precioFormateado+' por número';
   ticketInfoPrice.textContent=precioFormateado;
   const ga=document.getElementById('grandAmount');
