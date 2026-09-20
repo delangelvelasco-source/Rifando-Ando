@@ -454,13 +454,20 @@ function actualizarProcesoSorteo(r){
   const continueBtn=document.getElementById('continueBtn'), ticketsEl=document.getElementById('tickets'), summaryEl=document.querySelector('#numeros .summary');
   if(!sale||!closed||!draw)return;
   const abierto=r.estado==='activa';
+  const cerrada=r.estado==='cerrada';
+  const sorteada=r.estado==='sorteada';
   sale.classList.toggle('active',abierto);
   sale.classList.toggle('done',!abierto);
-  closed.classList.toggle('active',!abierto);
+  closed.classList.toggle('active',cerrada);
   closed.classList.toggle('closed',!abierto);
-  draw.classList.remove('active');
+  closed.classList.toggle('done',sorteada);
+  draw.classList.toggle('active',sorteada);
+  draw.classList.toggle('done',sorteada);
+  const drawTitle=draw.querySelector('b'), drawText=draw.querySelector('small');
+  if(drawTitle)drawTitle.textContent=sorteada?'Sorteo realizado':'Preparación del sorteo';
+  if(drawText)drawText.textContent=sorteada?'🏆 El Sorteo Especial ha sido realizado.':'El administrador realizará el sorteo cuando corresponda.';
   const status=document.getElementById('saleStatus');
-  if(status)status.textContent=abierto?'Puedes elegir y apartar tus números.':'Las ventas están cerradas. Los números están bloqueados.';
+  if(status)status.textContent=abierto?'Puedes elegir y apartar tus números.':sorteada?'Las ventas están cerradas y los números están bloqueados.':'Las ventas están cerradas. Los números están bloqueados.';
   if(continueBtn){continueBtn.disabled=!abierto;continueBtn.style.opacity=abierto?'1':'.45';continueBtn.style.cursor=abierto?'pointer':'not-allowed';}
   if(summaryEl)summaryEl.classList.toggle('closed-summary',!abierto);
   let notice=document.getElementById('closedNotice');
