@@ -45,7 +45,109 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 @keyframes prizePulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.035);filter:brightness(1.3)}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.45}}
 @keyframes twinkle{from{opacity:.35}to{opacity:1}}
-.draw-public{position:fixed;inset:0;background:#050505f5;z-index:50;display:none;place-items:center;padding:18px}.draw-public.open{display:grid}.draw-public-box{width:min(1000px,100%);max-height:92vh;overflow:auto;background:#111;border:2px solid #6d5215;border-radius:24px;padding:25px;text-align:center;box-shadow:0 0 45px #d9a93633;position:relative}.draw-public-close{position:absolute;top:10px;right:14px;width:42px;height:42px;border:1px solid #4a4a4a;border-radius:50%;background:#171717;color:#fff;font-size:30px;line-height:1;cursor:pointer;z-index:2}.draw-public-close:hover{background:#262626;border-color:#d9a936;color:#d9a936}.draw-public-number{font-size:clamp(80px,18vw,170px);line-height:.9;font-weight:1000;color:#d9a936;text-shadow:0 0 25px #d9a936}.draw-public-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:20px}.draw-public-grid span{padding:8px 3px;border:1px solid #303030;border-radius:8px;background:#171717;font-weight:900}.draw-public-grid span.active{background:#d9a936;color:#111;transform:scale(1.08)}.draw-public-result{display:none}.draw-public-result.show{display:block}@media(max-width:760px){.draw-public-grid{grid-template-columns:repeat(5,1fr)}}</style></head>
+.draw-public{position:fixed;inset:0;background:#050505f5;z-index:50;display:none;place-items:center;padding:18px}.draw-public.open{display:grid}.draw-public-box{width:min(1000px,100%);max-height:92vh;overflow:auto;background:#111;border:2px solid #6d5215;border-radius:24px;padding:25px;text-align:center;box-shadow:0 0 45px #d9a93633;position:relative}.draw-public-close{position:absolute;top:10px;right:14px;width:42px;height:42px;border:1px solid #4a4a4a;border-radius:50%;background:#171717;color:#fff;font-size:30px;line-height:1;cursor:pointer;z-index:2}.draw-public-close:hover{background:#262626;border-color:#d9a936;color:#d9a936}.draw-public-number{font-size:clamp(80px,18vw,170px);line-height:.9;font-weight:1000;color:#d9a936;text-shadow:0 0 25px #d9a936}.draw-public-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:20px}.draw-public-grid span{padding:8px 3px;border:1px solid #303030;border-radius:8px;background:#171717;font-weight:900}.draw-public-grid span.active{background:#d9a936;color:#111;transform:scale(1.08)}.draw-public-result{display:none}.draw-public-result.show{display:block}@media(max-width:760px){.draw-public-grid{grid-template-columns:repeat(5,1fr)}}</style>
+<style id="responsive-overrides">
+/* Responsive pass: desktop, tablet and mobile */
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden}
+body{min-width:0;overflow-x:hidden}
+img,video,canvas,svg{max-width:100%;height:auto}
+button,input,textarea,select{font:inherit;max-width:100%}
+button,.btn{touch-action:manipulation}
+main,.section,.hero,.nav{min-width:0}
+.hero>*{min-width:0}
+.card,.quick-card,.step,.rules-box,.lottery-info,.summary,.modal-box,.draw-public-box{max-width:100%;min-width:0}
+h1,h2,h3,p{overflow-wrap:anywhere}
+header{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));padding-top:max(12px,env(safe-area-inset-top))}
+.nav{width:100%}
+.nav>div:last-child{min-width:0}
+.ticket{user-select:none;-webkit-tap-highlight-color:transparent}
+@media (max-width:1100px){
+  .hero{padding-left:20px;padding-right:20px;gap:28px}
+  .section{padding-left:20px;padding-right:20px}
+  .nav{max-width:100%}
+}
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;max-width:760px;padding-top:42px}
+  .hero>div:first-child{text-align:center}
+  .hero>div:first-child .btn{display:inline-flex}
+  .grand-prize{width:min(100%,520px);margin:0 auto}
+  .quick-grid,.how{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .nav{flex-wrap:wrap;align-items:center}
+  .nav>div:last-child{width:100%;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .nav .btn{width:100%;min-width:0}
+}
+@media (max-width:600px){
+  header{padding-bottom:10px}
+  .nav{gap:10px}
+  .logo{font-size:19px;white-space:nowrap}
+  .nav>div:last-child{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .nav .btn{min-height:52px;padding:10px 7px;font-size:13px;line-height:1.15}
+  #topContinue{font-size:15px}
+  .hero{padding:34px 14px 30px;gap:24px}
+  .eyebrow{font-size:11px;letter-spacing:1.6px}
+  .hero h1{font-size:clamp(40px,12vw,62px);line-height:.96}
+  .hero p{font-size:16px;line-height:1.5}
+  .section{padding:30px 14px}
+  .section h2{font-size:28px;line-height:1.1}
+  .grand-prize{max-width:100%;padding:10px 9px}
+  .grand-prize .prize{height:105px;font-size:56px}
+  .official{font-size:16px;letter-spacing:1.2px}
+  .grand-label{font-size:13px;padding:7px 13px}
+  .grand-amount{font-size:clamp(42px,14vw,62px);letter-spacing:-2px}
+  .winner-text{font-size:clamp(18px,6vw,27px)}
+  .raffle-info{gap:6px}
+  .raffle-info span{font-size:13px;padding:7px 8px}
+  .price{font-size:25px}
+  .meta{font-size:13px;align-items:flex-end}
+  .quick-grid,.how{grid-template-columns:1fr}
+  .quick-card,.step{padding:16px}
+  .rules-box.compact{padding:14px}
+  .rules-box.compact .rules-inline{gap:7px}
+  .rules-box.compact .rules-inline span{font-size:13px;padding:7px 8px}
+  .lottery-info{padding:14px}
+  .tickets{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+  .ticket{min-height:56px;padding:10px 2px;font-size:22px;border-radius:10px}
+  .summary{gap:10px;padding:14px;align-items:stretch}
+  .summary>div{font-size:16px;line-height:1.35;min-width:0}
+  .summary .btn{min-width:0;flex:0 0 auto;min-height:52px;padding:12px 15px;font-size:16px}
+  .winner-head{display:none}
+  .winner-card{grid-template-columns:1fr 1fr;gap:10px;padding:14px}
+  .winner-card .wnum{text-align:left;font-size:28px;grid-column:2;grid-row:1 / span 2}
+  .winner-card .wname{font-size:15px}
+  .winner-card .wprize{font-size:17px}
+  .winner-card .wdate{font-size:11px}
+  .draw-public{padding:10px}
+  .draw-public-box{padding:18px 12px;border-radius:18px}
+  .draw-public-number{font-size:clamp(70px,24vw,130px)}
+  .draw-public-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+  .draw-public-grid span{padding:7px 2px;font-size:13px}
+  .modal{padding:8px}
+  .modal-box{padding:22px 16px;border-radius:20px}
+  .modal-box h2{font-size:25px}
+  .modal-box .field input{width:100%;font-size:18px}
+  .foot{padding:24px 14px}
+}
+@media (max-width:380px){
+  .logo{font-size:17px}
+  .nav .btn{font-size:12px;min-height:48px}
+  .hero{padding-left:10px;padding-right:10px}
+  .section{padding-left:10px;padding-right:10px}
+  .tickets{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+  .ticket{min-height:54px;font-size:21px}
+  .summary{flex-direction:column}
+  .summary .btn{width:100%}
+  .grand-amount{font-size:42px}
+}
+@media (hover:hover){
+  .btn:hover{filter:brightness(1.08)}
+  .ticket.available:hover{filter:brightness(1.08)}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
 <body>
 <header>
 <div class="nav">
