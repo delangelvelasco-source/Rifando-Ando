@@ -67,6 +67,60 @@
   .ticket>b{font-size:11px}
   .ticket .small{height:23px;font-size:9px!important;line-height:18px}
 }
+
+/* Rediseño visual del administrador: compacto, claro y responsivo */
+#app>div:first-child{padding:18px 20px;margin-bottom:14px;background:linear-gradient(135deg,#111,#171717);border:1px solid #2f2f2f;border-radius:18px;box-shadow:0 10px 30px #0006}
+#app>div:first-child h1{margin:0;font-size:clamp(24px,3vw,34px)}
+#app>div:first-child>div{display:flex;flex-wrap:wrap;gap:7px!important}
+#app>div:first-child .btn{padding:10px 13px}
+#adminRaffleNav{padding:12px 0;margin:0 0 8px}
+#adminRaffleNav .raffle-nav-btn{font-size:14px;padding:10px 16px}
+#status{margin:0 0 14px;padding:11px 14px;border:1px solid #3b3b3b;border-radius:12px;background:#111;color:#ddd;font-weight:700}
+.cards{margin:0 0 16px;gap:10px}
+.cards .card{padding:14px 16px;min-height:88px}
+.cards .num{font-size:30px}
+.box{border-radius:16px}
+.box h2{margin:0 0 10px}
+#nums{gap:6px}
+.ticket{min-width:0;min-height:70px;padding:7px 3px;display:flex;flex-direction:column;justify-content:space-between;align-items:center}
+.ticket>b{font-size:15px}
+.ticket .actions{width:100%;margin-top:6px}
+.ticket .small{width:100%;margin:0;padding:6px 3px;font-size:10px;line-height:1.05;white-space:nowrap}
+@media(min-width:701px){
+  #app>.box[style*="margin-top:18px"]{display:block}
+  #app>.box:nth-of-type(3){margin-top:18px}
+}
+@media(max-width:700px){
+  body{padding:8px}
+  #app>div:first-child{padding:12px 10px;border-radius:14px}
+  #app>div:first-child h1{font-size:22px}
+  #app>div:first-child>div{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px!important}
+  #app>div:first-child .btn{min-height:44px;padding:7px 5px;font-size:11px;line-height:1.05}
+  #adminRaffleNav{gap:7px;padding:4px 0 8px}
+  #adminRaffleNav .raffle-nav-btn{font-size:12px;padding:9px 11px}
+  #status{font-size:13px;padding:9px 10px;margin-bottom:10px}
+  .cards{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin-bottom:10px}
+  .cards .card{padding:9px 7px;min-height:74px;border-radius:12px;font-size:11px}
+  .cards .num{font-size:24px}
+  .box{padding:12px 10px;border-radius:14px}
+  .box h2{font-size:20px}
+  #nums{grid-template-columns:repeat(10,minmax(0,1fr));gap:4px}
+  .ticket{height:66px;min-height:66px;padding:5px 2px;border-radius:7px}
+  .ticket>b{font-size:12px}
+  .ticket .small{height:22px;padding:2px 1px;font-size:9px!important;border-radius:7px}
+  #participants{font-size:12px}
+  .row{padding:8px 0}
+}
+@media(max-width:420px){
+  #app>div:first-child>div{grid-template-columns:repeat(3,minmax(0,1fr))}
+  #adminRaffleNav .raffle-nav-btn{font-size:11px;padding:8px 9px}
+  .cards .card{font-size:10px}
+  .cards .num{font-size:22px}
+  #nums{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+  .ticket{height:70px}
+  .ticket>b{font-size:12px}
+  .ticket .small{font-size:10px!important}
+}
 </style></head><body>
 <div id="login" class="box login"><h1>🔐 Rifando <span class="gold">Ando</span></h1><h2>Acceso de administrador</h2><div class="field"><input id="email" type="email" placeholder="Correo"></div><div class="field"><input id="pass" type="password" placeholder="Contraseña"></div><button class="btn" onclick="entrar()" style="width:100%">Entrar</button><p id="msg"></p></div>
 <div id="app" class="wrap hidden"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h1>RIFANDO <span class="gold">ANDO</span> · ADMIN</h1><div><a class="btn secondary" href="index.html">Ver página</a> <button class="btn" onclick="realizarSorteo()">🏆 Sorteo interno</button> <button class="btn secondary" onclick="realizarSorteoLoteria()">🇲🇽 Lotería Nacional</button> <button class="btn danger" onclick="restablecerSorteo()">🔄 Restablecer</button> <button class="btn" onclick="salir()">Salir</button> <button class="btn secondary" onclick="probarAnimacionSorteo()">👁️ Ver animación</button> <button class="btn secondary" onclick="abrirPruebaPublica()">🌐 Probar en clientes</button></div></div><div id="adminRaffleNav" class="admin-raffle-nav" aria-label="Acceso rápido a sorteos"></div><p id="status">Cargando...</p>
@@ -280,7 +334,7 @@ function activarTiempoReal(){
   realtimeChannel=db.channel('admin-rifa-'+rifa.id)
     .on('postgres_changes',{event:'*',schema:'public',table:'numeros',filter:'rifa_id=eq.'+rifa.id},()=>cargar())
     .on('postgres_changes',{event:'*',schema:'public',table:'pagos',filter:'rifa_id=eq.'+rifa.id},()=>cargar())
-        .subscribe((status)=>{ $('status').textContent=rifa.nombre+' · Sorteo #'+(rifa.numero_sorteo||1)+' · '+(status==='SUBSCRIBED'?'🟢 Tiempo real activo':'Conectando tiempo real...'); });
+        .subscribe((status)=>{ $('status').textContent=nombreRifaAdmin(rifa)+' · Sorteo #'+(rifa.numero_sorteo||1)+' · '+String(rifa.codigo_sorteo||'RA-????')+' · '+(status==='SUBSCRIBED'?'🟢 Tiempo real activo':'Conectando tiempo real...'); });
 }
 function toggleParticipantes(){const body=$('participantsBody'),head=$('participantsToggle');const open=body.classList.toggle('open');head.classList.toggle('open',open);$('participantsIcon').textContent=open?'▲':'▼'}
 async function cargarHistorialRifas(){const {data,error}=await db.from('rifas').select('id,nombre,numero_sorteo,codigo_sorteo,estado,created_at,fecha_sorteo').order('created_at',{ascending:false});const sel=$('historyRaffle');if(!sel)return;if(error){sel.innerHTML='<option value="">No se pudieron cargar los sorteos</option>';if($('historySummary')){$('historySummary').textContent='';$('historySummary').style.display='none'}if($('historyParticipants')){$('historyParticipants').innerHTML='';$('historyParticipants').style.display='none'}return}sel.innerHTML='<option value="">Selecciona un sorteo...</option>'+(data||[]).map(x=>'<option value="'+x.id+'">'+esc(x.codigo_sorteo||('Sorteo #'+(x.numero_sorteo||'')))+' · '+esc(nombreRifaAdmin(x))+' · '+esc(x.estado)+'</option>').join('');if($('historySummary')){$('historySummary').textContent='';$('historySummary').style.display='none'}if($('historyParticipants')){$('historyParticipants').innerHTML='';$('historyParticipants').style.display='none'}}
