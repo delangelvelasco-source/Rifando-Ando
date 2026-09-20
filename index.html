@@ -83,25 +83,23 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 }
 .trophy-stage:after{content:"";position:absolute;left:50%;bottom:5px;width:190px;height:22px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,#d9a93666 0%,#d9a93620 35%,transparent 72%);filter:blur(5px);z-index:1}
 @media(max-width:760px){.trophy-stage{width:100%;max-width:320px;height:280px;transform:none}}
-.diamond-field-public{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:visible;perspective:700px}
+.diamond-field-public{position:absolute;inset:-6px;z-index:3;pointer-events:none;overflow:visible;perspective:800px}
 .iphone-prize{position:relative;isolation:isolate}
 .iphone-prize #prizeImage{position:relative;z-index:2}
-.diamond-public{position:absolute;left:50%;top:50%;display:block;border-radius:2px;clip-path:polygon(50% 0,100% 38%,72% 100%,28% 100%,0 38%);background:linear-gradient(135deg,#fff 0%,#eef9ff 28%,#9baabd 47%,#fff 62%,#cce7f7 80%,#fff 100%);filter:drop-shadow(0 0 5px #fff) drop-shadow(0 0 10px #d9a936);animation:diamondOrbitDepth 7s linear infinite;will-change:transform,opacity,filter}
-.dp1{width:16px;height:16px;animation-delay:0s}.dp2{width:12px;height:12px;animation-delay:-1s}.dp3{width:18px;height:18px;animation-delay:-2s}.dp4{width:13px;height:13px;animation-delay:-3s}.dp5{width:17px;height:17px;animation-delay:-4s}.dp6{width:12px;height:12px;animation-delay:-5s}.dp7{width:15px;height:15px;animation-delay:-6s}
-@keyframes diamondOrbitDepth{
-0%{z-index:4;opacity:1;transform:translate(-50%,-50%) translate(138px,0) scale(1.12) rotate(0deg)}
-12.5%{z-index:4;opacity:1;transform:translate(-50%,-50%) translate(98px,76px) scale(1.08) rotate(45deg)}
-25%{z-index:4;opacity:1;transform:translate(-50%,-50%) translate(0,104px) scale(1.03) rotate(90deg)}
-37.49%{z-index:4;opacity:.96;transform:translate(-50%,-50%) translate(-98px,76px) scale(.96) rotate(135deg)}
-37.5%{z-index:1;opacity:.58;transform:translate(-50%,-50%) translate(-98px,76px) scale(.82) rotate(135deg)}
-50%{z-index:1;opacity:.42;transform:translate(-50%,-50%) translate(-138px,0) scale(.72) rotate(180deg)}
-62.5%{z-index:1;opacity:.48;transform:translate(-50%,-50%) translate(-98px,-76px) scale(.76) rotate(225deg)}
-74.99%{z-index:1;opacity:.62;transform:translate(-50%,-50%) translate(0,-104px) scale(.84) rotate(270deg)}
-75%{z-index:4;opacity:.98;transform:translate(-50%,-50%) translate(0,-104px) scale(1) rotate(270deg)}
-87.5%{z-index:4;opacity:1;transform:translate(-50%,-50%) translate(98px,-76px) scale(1.08) rotate(315deg)}
-100%{z-index:4;opacity:1;transform:translate(-50%,-50%) translate(138px,0) scale(1.12) rotate(360deg)}
+.diamond-public{position:absolute;left:50%;top:50%;display:block;border-radius:2px;clip-path:polygon(50% 0,100% 38%,72% 100%,28% 100%,0 38%);background:linear-gradient(135deg,#fff 0%,#eef9ff 28%,#9baabd 47%,#fff 62%,#cce7f7 80%,#fff 100%);filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 12px #d9a936);animation:diamondEllipseDepth 7s linear infinite;will-change:transform,opacity,filter}
+.dp1{width:20px;height:20px;animation-delay:0s}.dp2{width:16px;height:16px;animation-delay:-1s}.dp3{width:22px;height:22px;animation-delay:-2s}.dp4{width:17px;height:17px;animation-delay:-3s}.dp5{width:21px;height:21px;animation-delay:-4s}.dp6{width:16px;height:16px;animation-delay:-5s}.dp7{width:19px;height:19px;animation-delay:-6s}
+@keyframes diamondEllipseDepth{
+0%{z-index:4;opacity:1;transform:translate(-50%,-50%) translate(146px,0) scale(1.08) rotate(0deg)}
+12.5%{z-index:4;opacity:1;transform:translate(-50%,-50%) translate(103px,30px) scale(1.04) rotate(45deg)}
+25%{z-index:4;opacity:1;transform:translate(-50%,-50%) translate(0,58px) scale(.98) rotate(90deg)}
+37.5%{z-index:4;opacity:.96;transform:translate(-50%,-50%) translate(-103px,30px) scale(.92) rotate(135deg)}
+50%{z-index:1;opacity:.45;transform:translate(-50%,-50%) translate(-146px,0) scale(.72) rotate(180deg)}
+62.5%{z-index:1;opacity:.5;transform:translate(-50%,-50%) translate(-103px,-30px) scale(.76) rotate(225deg)}
+75%{z-index:1;opacity:.58;transform:translate(-50%,-50%) translate(0,-58px) scale(.82) rotate(270deg)}
+87.5%{z-index:4;opacity:.98;transform:translate(-50%,-50%) translate(103px,-30px) scale(1.04) rotate(315deg)}
+100%{z-index:4;opacity:1;transform:translate(-50%,-50%) translate(146px,0) scale(1.08) rotate(360deg)}
 }
-@media(max-width:760px){.diamond-field-public{inset:-2px}.diamond-public{animation-duration:7s}}
+@media(max-width:760px){.diamond-field-public{inset:-4px}.diamond-public{animation-duration:7s}}
 .iphone-prize{display:flex;align-items:center;justify-content:center}.iphone-prize img{width:100%;height:100%;object-fit:contain}.iphone-prize span{font-size:64px}</style></head>
 <body>
 <header>
