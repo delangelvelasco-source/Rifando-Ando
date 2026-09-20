@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="version" content="2026-09-18-2355">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="version" content="2026-09-19-2308">
 <title>Rifando Ando · Sorteo Especial</title>
 <style>
 *{box-sizing:border-box}
@@ -167,7 +167,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=20260919-2305"></script>
+<script src="config.js?v=20260919-2308"></script>
 <script>
 'use strict';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -274,7 +274,7 @@ function revelarSorteoPublico(payload){
   result.classList.add('show');
   setTimeout(()=>document.getElementById('publicDraw').classList.remove('open'),payload.demo?3500:6000);
 }
-async function activarCanalSorteoPublico(){
+async async function activarCanalSorteoPublico(){
   if(!rifa)return;
   if(drawPublicChannel)await drawPublicChannel.unsubscribe();
   drawPublicChannel=db.channel('rifa-sorteo-publico-'+rifa.id)
