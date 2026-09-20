@@ -208,8 +208,17 @@ function resetConfirmation(){
 function activarTiempoReal(){
   if(!rifa) return;
   if(realtimeChannel) realtimeChannel.unsubscribe();
-  realtimeChannel=db.channel('rifa-numeros-'+rifa.id)
+  realtimeChannel=db.channel('rifa-especial-'+rifa.id)
     .on('postgres_changes',{event:'*',schema:'public',table:'numeros',filter:'rifa_id=eq.'+rifa.id},()=>cargarRifa())
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'rifas',filter:'id=eq.'+rifa.id},payload=>{
+      if(payload.new){
+        rifa=payload.new;
+        sel.clear();
+        update();
+        actualizarProcesoSorteo(rifa);
+        cargarRifa();
+      }
+    })
     .subscribe();
 }
 function activarSorteoPublico(payload){
