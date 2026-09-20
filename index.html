@@ -295,6 +295,25 @@ body{overflow-x:hidden}
   .winner-section{padding-top:20px;padding-bottom:10px}
   #historial-ganadores{padding-top:18px}
 }
+/* Tipografía compacta para historial de ganadores en móvil */
+@media(max-width:760px){
+  #historial-ganadores h2{font-size:25px;line-height:1.15}
+  #historial-ganadores .winner-head{font-size:9px;line-height:1.15;padding:9px 8px;gap:5px}
+  #historial-ganadores .winner-card{padding:12px 8px;gap:5px}
+  #historial-ganadores .winner-card .wname{font-size:13px}
+  #historial-ganadores .winner-card .wprize{font-size:14px}
+  #historial-ganadores .winner-card .wnum{font-size:23px}
+  #historial-ganadores .winner-card .wdate{font-size:10px}
+}
+@media(max-width:420px){
+  #historial-ganadores h2{font-size:23px}
+  #historial-ganadores .winner-head{font-size:8.5px;padding:8px 7px;gap:4px}
+  #historial-ganadores .winner-card{padding:11px 7px;gap:4px}
+  #historial-ganadores .winner-card .wname{font-size:12px}
+  #historial-ganadores .winner-card .wprize{font-size:13px}
+  #historial-ganadores .winner-card .wnum{font-size:21px}
+  #historial-ganadores .winner-card .wdate{font-size:9px}
+}
 </style>
 </head>
 <body>
