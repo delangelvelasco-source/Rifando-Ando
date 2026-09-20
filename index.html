@@ -115,7 +115,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <div class="card grand-prize">
 <div class="sparkles">✦ ✨ ✦ ✨ ✦</div>
 <div class="prize iphone-prize" id="prizeVisual">
-<img id="prizeImage" src="iphone-18-pro-max.svg" alt="Premio">
+<img id="prizeImage" src="copa.PNG" alt="Copa dorada Rifando Ando">
 <span id="prizeEmoji" class="trophy-stage" style="display:none" aria-hidden="true">
 <svg class="trophy-art" viewBox="0 0 520 520" role="img" aria-label="Copa dorada">
 <defs>
@@ -147,11 +147,11 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 </span></div>
 <div class="official" id="officialTitle">SORTEO OFICIAL</div>
 <div class="grand-label">GRAN PREMIO</div>
-<div class="grand-amount" id="grandAmount" style="display:none">…<span class="decimals"></span></div>
+<div class="grand-amount" id="grandAmount">$1,000<span class="decimals">.00</span></div>
 <div class="winner-text">✨ ¡PUEDE SER TUYO! ✨</div>
-<div class="raffle-info"><span>🎟️ <b id="ticketInfoPrice">$180.00</b> por boleto</span><span>🔢 <b id="ticketInfoCount">250</b> números</span></div>
-<h2 id="raffleName">iPhone 18 Pro Max 256 GB</h2>
-<div class="price" id="price">$180.00 por número</div>
+<div class="raffle-info"><span>🎟️ <b id="ticketInfoPrice">$15.00</b> por boleto</span><span>🔢 <b id="ticketInfoCount">100</b> números</span></div>
+<h2 id="raffleName">Sorteo Regular</h2>
+<div class="price" id="price">$15.00 por número</div>
 <div class="meta" id="meta"><span>0% ocupados</span><span>Sorteo próximamente</span></div>
 <div class="bar"><i id="progress"></i></div>
 </div>
@@ -512,7 +512,7 @@ let cargarRifaSeq=0;
 async function cargarRifa(){
   const loadSeq=++cargarRifaSeq;
   const params=new URLSearchParams(window.location.search);
-  const requestedRifa=params.get('rifa')||'9a9bca1f-3f22-4a1a-8813-70c7f5914f65';
+  const requestedRifa=params.get('rifa')||'4b23f516-7973-4a04-bff6-9b9b5cb90f4d';
 
   // Al cambiar de rifa, cualquier número seleccionado pertenece a la rifa anterior
   // y no debe sobrevivir ni mezclarse con la nueva. Este control también cubre
