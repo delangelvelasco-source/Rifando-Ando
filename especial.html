@@ -419,7 +419,9 @@ async function actualizarInfoLoteria(r){
   }else{
     status.textContent='🔵 Esta rifa se sorteará con '+drawType+'.';
   }
+  const drawDateLabel=fmtDate(targetDate);
   details.innerHTML='<div>🎯 Modalidad: <b>'+drawType+'</b></div>'+
+    '<div>📅 Fecha del sorteo: <b>'+drawDateLabel+'</b></div>'+
     '<div>⏰ Hora del sorteo: <b>'+drawTime+' h</b> (hora de Monterrey)</div>'+
     '<div>🔢 Regla: <b>últimas 2 cifras</b> del resultado oficial</div>'+
     '<div>🎟️ Estado de la rifa: <b>'+completeCount+'/100 números pagados</b></div>';
