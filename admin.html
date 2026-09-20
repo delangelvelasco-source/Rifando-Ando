@@ -52,6 +52,21 @@
   .ticket>b{font-size:9px}
   .ticket .small{height:16px;font-size:8px!important;line-height:14px}
 }
+
+/* Vista móvil equilibrada del panel: similar a la cuadrícula anterior */
+@media(max-width:700px){
+  .grid{grid-template-columns:repeat(10,minmax(0,1fr));gap:5px}
+  .ticket{min-width:0;width:100%;height:72px;padding:6px 2px;box-sizing:border-box;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;overflow:hidden}
+  .ticket>b{font-size:12px;line-height:1.1}
+  .ticket .actions{width:100%;display:flex;justify-content:center;margin-top:4px}
+  .ticket .small{width:100%;min-width:0;height:24px;padding:2px 3px!important;margin:0!important;border-radius:8px;font-size:10px!important;line-height:19px;box-sizing:border-box;white-space:nowrap}
+}
+@media(max-width:420px){
+  .grid{grid-template-columns:repeat(10,minmax(0,1fr));gap:4px}
+  .ticket{height:68px;padding:5px 2px}
+  .ticket>b{font-size:11px}
+  .ticket .small{height:23px;font-size:9px!important;line-height:18px}
+}
 </style></head><body>
 <div id="login" class="box login"><h1>🔐 Rifando <span class="gold">Ando</span></h1><h2>Acceso de administrador</h2><div class="field"><input id="email" type="email" placeholder="Correo"></div><div class="field"><input id="pass" type="password" placeholder="Contraseña"></div><button class="btn" onclick="entrar()" style="width:100%">Entrar</button><p id="msg"></p></div>
 <div id="app" class="wrap hidden"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h1>RIFANDO <span class="gold">ANDO</span> · ADMIN</h1><div><a class="btn secondary" href="index.html">Ver página</a> <button class="btn" onclick="realizarSorteo()">🏆 Sorteo interno</button> <button class="btn secondary" onclick="realizarSorteoLoteria()">🇲🇽 Lotería Nacional</button> <button class="btn danger" onclick="restablecerSorteo()">🔄 Restablecer</button> <button class="btn" onclick="salir()">Salir</button> <button class="btn secondary" onclick="probarAnimacionSorteo()">👁️ Ver animación</button> <button class="btn secondary" onclick="abrirPruebaPublica()">🌐 Probar en clientes</button></div></div><div id="adminRaffleNav" class="admin-raffle-nav" aria-label="Acceso rápido a sorteos"></div><p id="status">Cargando...</p>
