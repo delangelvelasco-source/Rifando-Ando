@@ -137,7 +137,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <section class="section" id="historial-ganadores"><h2>🏆 Historial de Ganadores</h2><div id="winnerHistory" class="winner-history"><div class="winner-empty">Aún no hay ganadores registrados.</div></div></section>
 </main>
 
-<footer class="foot">© 2026 Rifando Ando · La rifa entre compas<div style="margin-top:10px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap"><a href="reglas.html" style="color:#d9a936;text-decoration:none;font-weight:900">📜 Reglas, Bases, Términos y Condiciones</a><span style="color:#555">·</span><a href="aviso-privacidad.html" style="color:#d9a936;text-decoration:none;font-weight:900">🔒 Aviso de Privacidad</a></div>© 2026 Rifando Ando · La rifa entre compas</footer>
+<footer class="foot">© 2026 Rifando Ando · La rifa entre compas<div style="margin-top:10px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap"><a href="reglas.html" style="color:#d9a936;text-decoration:none;font-weight:900">📜 Reglas, Bases, Términos y Condiciones</a><span style="color:#555">·</span><a href="aviso-privacidad.html" style="color:#d9a936;text-decoration:none;font-weight:900">🔒 Aviso de Privacidad</a></div></footer>
 
 <div class="modal" id="modal">
 <div class="modal-box">
@@ -500,6 +500,9 @@ function actualizarProcesoSorteo(r){
     meta.innerHTML='<span>🎉 Sorteo realizado</span><span>'+(r.fecha_sorteo?'Fecha: '+new Date(r.fecha_sorteo).toLocaleDateString('es-MX'):'')+'</span>';
     bar.style.width='100%';
     update();
+    // En una rifa ya sorteada también deben mostrarse el último ganador y su historial.
+    await mostrarGanadorPublico().catch(()=>{});
+    await cargarHistorialGanadores().catch(()=>{});
     return;
   }
 
