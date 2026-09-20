@@ -370,7 +370,7 @@ async function mostrarGanadorPublico(){
   dateEl.textContent=d?'Sorteo realizado el '+d:'';
 }
 
-async function actualizarInfoLoteria(r){
+async async function actualizarInfoLoteria(r){
   const box=document.getElementById('lotteryInfo');
   const status=document.getElementById('lotteryStatus');
   const details=document.getElementById('lotteryDetails');
@@ -489,9 +489,9 @@ async function cargarRifa(){
   if(r.estado==='sorteada'){
     tickets.innerHTML='<div style="grid-column:1/-1;padding:28px;text-align:center;border:1px solid #3a2d0d;border-radius:16px;background:#111"><div style="font-size:48px">🏆</div><h3>¡El sorteo ya fue realizado!</h3><p style="color:#aaa">Consulta el ganador y el historial más abajo.</p></div>';
     const precioFormateado='$'+Number(r.precio_numero).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
-    const nombrePublico=r.id==='4b23f516-7973-4a04-bff6-9b9b5cb90f4d'?'Sorteo Regular':(r.nombre||'Sorteo');
+    const nombrePublico=obtenerNombrePublicoRifa(r);
     raffleName.textContent=nombrePublico;
-    officialTitle.textContent='SORTEO REGULAR';
+    officialTitle.textContent='SORTEO OFICIAL';
     priceEl.textContent=precioFormateado+' por número';
     ticketInfoPrice.textContent=precioFormateado;
     meta.innerHTML='<span>🎉 Sorteo realizado</span><span>'+(r.fecha_sorteo?'Fecha: '+new Date(r.fecha_sorteo).toLocaleDateString('es-MX'):'')+'</span>';
@@ -502,7 +502,7 @@ async function cargarRifa(){
 
   // Los apartados vencidos se consideran disponibles en la vista pública por su fecha de expiración.
   const precioFormateado='$'+Number(r.precio_numero).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
-  const nombrePublico=r.id==='4b23f516-7973-4a04-bff6-9b9b5cb90f4d'?'Sorteo Regular':(r.nombre||'Sorteo');
+  const nombrePublico=obtenerNombrePublicoRifa(r);
   raffleName.textContent=nombrePublico;
   officialTitle.textContent='SORTEO OFICIAL';
   priceEl.textContent=precioFormateado+' por número';
@@ -556,7 +556,8 @@ async function cargarRifa(){
   mostrarGanadorPublico().catch(()=>{});
   cargarHistorialGanadores().catch(()=>{});
 }
-async function cargarHistorialGanadores(){
+async function obtenerNombrePublicoRifa(r){return r?.id==='4b23f516-7973-4a04-bff6-9b9b5cb90f4d'?'Sorteo Regular':(r?.nombre||'Sorteo');}
+function cargarHistorialGanadores(){
   const el=document.getElementById('winnerHistory');
   const {data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').order('created_at',{ascending:false});
   if(error){el.innerHTML='<div class="winner-empty">No se pudo cargar el historial.</div>';return}
@@ -739,7 +740,8 @@ document.querySelectorAll('.raffle-link[data-rifa]').forEach(link=>{
     e.preventDefault();
     const id=link.dataset.rifa;
     if(!id)return;
-    if(rifa?.id===id){history.replaceState({},'',link.getAttribute('href'));return;}
+    if(rifa?.id===id){history.replaceState({},'',link.getAttribute('href'));sel.clear();update();return;}
+    sel.clear(); update();
     document.querySelectorAll('.raffle-link[data-rifa]').forEach(x=>x.classList.remove('loading'));
     link.classList.add('loading');
     history.pushState({},'',link.getAttribute('href'));
