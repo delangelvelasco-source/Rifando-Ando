@@ -444,6 +444,24 @@ async function cargarRifa(){
   const loadSeq=++cargarRifaSeq;
   const params=new URLSearchParams(window.location.search);
   const requestedRifa=params.get('rifa')||'9a9bca1f-3f22-4a1a-8813-70c7f5914f65';
+
+  // Mostrar de inmediato la información conocida del sorteo solicitado.
+  // Así la tarjeta nunca se queda mostrando "Cargando..." mientras Supabase responde.
+  const datosBase={
+    '4b23f516-7973-4a04-bff6-9b9b5cb90f4d':{nombre:'Sorteo Regular',precio:'$15.00 por número',boleto:'$15.00',numeros:'100'},
+    '60f9a81d-bdd6-4e28-b330-dc92cfe4d113':{nombre:'Sorteo Especial',precio:'$100.00 por número',boleto:'$100.00',numeros:'100'},
+    '9a9bca1f-3f22-4a1a-8813-70c7f5914f65':{nombre:'iPhone 18 Pro Max 256 GB',precio:'$180.00 por número',boleto:'$180.00',numeros:'250'}
+  };
+  const base=datosBase[requestedRifa];
+  if(base){
+    raffleName.textContent=base.nombre;
+    priceEl.textContent=base.precio;
+    ticketInfoPrice.textContent=base.boleto;
+    document.getElementById('ticketInfoCount').textContent=base.numeros;
+    meta.innerHTML='<span>0% ocupados</span><span>Sorteo próximamente</span>';
+    bar.style.width='0%';
+  }
+
   const {data:r,error:re}=await db.from('rifas').select('*').eq('id',requestedRifa).maybeSingle();
   if(loadSeq!==cargarRifaSeq)return;
   if(re||!r){
