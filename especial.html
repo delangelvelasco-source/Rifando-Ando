@@ -274,7 +274,7 @@ function revelarSorteoPublico(payload){
   result.classList.add('show');
   setTimeout(()=>document.getElementById('publicDraw').classList.remove('open'),payload.demo?3500:6000);
 }
-async async function activarCanalSorteoPublico(){
+async function activarCanalSorteoPublico(){
   if(!rifa)return;
   if(drawPublicChannel)await drawPublicChannel.unsubscribe();
   drawPublicChannel=db.channel('rifa-sorteo-publico-'+rifa.id)
@@ -651,7 +651,8 @@ function cerrarFormulario(){
 }
 async function confirmar(e){
   e.preventDefault();
-  if(!rifa||rifa.estado!=='activa'){alert('🔒 Las ventas del Sorteo Especial están cerradas.');return;}\n  if(!sel.size) return;
+  if(!rifa||rifa.estado!=='activa'){alert('🔒 Las ventas del Sorteo Especial están cerradas.');return;}
+  if(!sel.size) return;
   const btn=e.submitter||e.target.querySelector('button[type="submit"]');
   const selected=Array.from(sel);
   const name=nombre.value.trim();
