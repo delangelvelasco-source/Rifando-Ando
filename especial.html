@@ -344,7 +344,7 @@ function formatearNombrePublico(nombre){
 async function mostrarGanadorPublico(){
   const box=document.getElementById('ultimo-ganador');
   if(!box)return;
-  const {data:w,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').order('created_at',{ascending:false}).limit(1).maybeSingle();
+  const {data:w,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').eq('rifa_id',rifa.id).order('created_at',{ascending:false}).limit(1).maybeSingle();
   if(error||!w){box.classList.add('hidden');return}
   box.classList.remove('hidden');
   const nombrePublico=formatearNombrePublico(w.nombre_snapshot||'Ganador');
@@ -506,7 +506,7 @@ async function cargarRifa(){
 }
 async function cargarHistorialGanadores(){
   const el=document.getElementById('winnerHistory');
-  const {data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').order('created_at',{ascending:false});
+  const {data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').eq('rifa_id',rifa.id).order('created_at',{ascending:false});
   if(error){el.innerHTML='<div class="winner-empty">No se pudo cargar el historial.</div>';return}
   if(!data||!data.length){el.innerHTML='<div class="winner-empty">Aún no hay ganadores registrados.</div>';return}
   const rifaIds=[...new Set(data.map(w=>w.rifa_id).filter(Boolean))];
