@@ -558,8 +558,7 @@ function restaurarSolicitudPendiente(){
     bloquearNuevaSeleccion(true);
     const waConfirm=document.getElementById('waConfirm');
     const recoveredNumbers=String(p.numbers||'').trim();
-    const nl=String.fromCharCode(10);
-    const recoveredMessage='👋 ¡Hola, Rifando Ando!'+nl+nl+'🎟️✨ RIFANDO ANDO ✨🎟️'+nl+nl+'🎫 *QUIERO APARTAR MIS NÚMEROS*'+nl+nl+'🔢 Números: '+recoveredNumbers+nl+'💰 Total: 
+    const recoveredMessage='🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado de los siguientes números:\n\n🎫 '+recoveredNumbers+'\n💰 Total: '+String(p.total||'')+'\n👤 Nombre: '+String(p.name||'')+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
     waConfirm.href='https://wa.me/528123859824?text='+encodeURIComponent(recoveredMessage);
     confirmWhatsAppClicked=false;
     waConfirm.onclick=()=>{
@@ -623,133 +622,7 @@ async function confirmar(e){
   document.getElementById('confirmName').textContent=name;
   document.getElementById('confirmNumbers').textContent=displayNumbers;
   document.getElementById('confirmTotal').textContent='$'+displayTotal;
-  const nl=String.fromCharCode(10);
-  const message='👋 ¡Hola, Rifando Ando!'+nl+nl+'🎟️✨ RIFANDO ANDO ✨🎟️'+nl+nl+'🎫 *QUIERO APARTAR MIS NÚMEROS*'+nl+nl+'🔢 Números: '+displayNumbers+nl+'💰 Total: $'+displayTotal+'.00'+nl+'👤 Nombre: '+name+nl+nl+'📲 Quedo atento para continuar con mi participación.'+nl+nl+'🤝 ¡Gracias!';
-  const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
-  const waConfirm=document.getElementById('waConfirm');
-  waConfirm.href=waLink;
-  confirmWhatsAppClicked=false;
-  document.getElementById('modalClose')?.classList.add('locked-close');
-  document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
-  waConfirm.onclick=()=>{
-    if(confirmWhatsAppClicked)return false;
-    confirmWhatsAppClicked=true;
-
-    // Limpiar inmediatamente antes de abrir WhatsApp para evitar que la selección anterior se quede bloqueada.
-    solicitudPendiente=false;
-    sel.clear();
-    update();
-    bloquearNuevaSeleccion(false);
-
-    modal.classList.remove('open');
-    confirmation.classList.remove('show');
-    formView.style.display='';
-    nombre.value='';
-    whatsapp.value='';
-
-    waConfirm.style.pointerEvents='';
-    waConfirm.style.opacity='';
-    waConfirm.textContent='📲 Enviar solicitud por WhatsApp';
-    document.getElementById('modalClose')?.classList.remove('locked-close');
-    document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
-
-    try{localStorage.removeItem('rifando_pendiente_whatsapp')}catch(e){}
-    confirmWhatsAppClicked=false;
-
-    // Refrescar los estados reales sin recargar la página.
-    setTimeout(()=>cargarRifa().catch(()=>{}),100);
-  };
-  formView.style.display='none';
-  confirmation.classList.add('show');
-  sel.clear();
-  btn.disabled=false;
-  btn.textContent='Solicitar apartado';
-  await cargarRifa();
-}
-document.getElementById('topContinue')?.addEventListener('click',()=>{
-  if(sel.size){abrirFormulario();}
-  else{document.getElementById('numeros')?.scrollIntoView({behavior:'smooth',block:'start'});}
-});
-modal.addEventListener('click',e=>{
-  if(e.target===modal) cerrarFormulario();
-});
-cargarRifa().catch(()=>{
-  raffleName.textContent='No se pudo cargar el sorteo';
-  priceEl.textContent='Intenta actualizar la página';
-  tickets.innerHTML='<p style="color:#aaa">No se pudieron cargar los números. Actualiza la página para intentar de nuevo.</p>';
-});
-mostrarGanadorPublico().catch(()=>{});
-setInterval(()=>{revisarPruebaPersistente();revisarSorteoRealPersistente()},1500);
-setInterval(()=>{if(rifa)actualizarInfoLoteria(rifa)},30000);
-setInterval(mostrarGanadorPublico,5000);
-</script>
-</body>
-</html>+String(p.total||'')+nl+'👤 Nombre: '+String(p.name||'')+nl+nl+'📲 Quedo atento para continuar con mi participación.'+nl+nl+'🤝 ¡Gracias!';
-    waConfirm.href='https://wa.me/528123859824?text='+encodeURIComponent(recoveredMessage);
-    confirmWhatsAppClicked=false;
-    waConfirm.onclick=()=>{
-      if(confirmWhatsAppClicked)return false;
-      confirmWhatsAppClicked=true;
-      localStorage.removeItem('rifando_pendiente_whatsapp');
-      solicitudPendiente=false;
-      sel.clear();
-      bloquearNuevaSeleccion(false);
-      update();
-      waConfirm.style.pointerEvents='none';
-      waConfirm.style.opacity='.65';
-      waConfirm.textContent='✅ Solicitud enviada por WhatsApp';
-      document.getElementById('modalClose')?.classList.remove('locked-close');
-      document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
-    };
-    formView.style.display='none';
-    confirmation.classList.add('show');
-    modal.classList.add('open');
-    document.getElementById('modalClose')?.classList.add('locked-close');
-    document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
-  }catch(e){}
-}
-function cerrarFormulario(){
-  if(confirmation.classList.contains('show')&&!confirmWhatsAppClicked)return;
-  modal.classList.remove('open');
-  confirmWhatsAppClicked=false;
-  document.getElementById('modalClose')?.classList.remove('locked-close');
-  document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
-}
-async function confirmar(e){
-  e.preventDefault();
-  if(!rifa||!sel.size) return;
-  const btn=e.submitter||e.target.querySelector('button[type="submit"]');
-  const selected=Array.from(sel);
-  const name=nombre.value.trim();
-  const phone=whatsapp.value.trim();
-  const email='';
-  if(!name||!phone){
-    alert('Completa tu nombre y WhatsApp, compa.');
-    return;
-  }
-  btn.disabled=true;
-  btn.textContent='Apartando...';
-  const {data,error}=await db.rpc('apartar_numeros',{
-    p_rifa_id:rifa.id,
-    p_nombre:name,
-    p_whatsapp:phone,
-    p_correo:email,
-    p_numeros:selected
-  });
-  if(error){
-    alert('No se pudo apartar: '+error.message);
-    btn.disabled=false;
-    btn.textContent='Solicitar apartado';
-    await cargarRifa();
-    return;
-  }
-  const displayNumbers=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');
-  const displayTotal=Number(data?.total||selected.length*Number(rifa.precio_numero)).toLocaleString('es-MX');
-  document.getElementById('confirmName').textContent=name;
-  document.getElementById('confirmNumbers').textContent=displayNumbers;
-  document.getElementById('confirmTotal').textContent='$'+displayTotal;
-  const nl=String.fromCharCode(10);
-  const message='👋 ¡Hola, Rifando Ando!'+nl+nl+'🎟️✨ RIFANDO ANDO ✨🎟️'+nl+nl+'🎫 *QUIERO APARTAR MIS NÚMEROS*'+nl+nl+'🔢 Números: '+displayNumbers+nl+'💰 Total: $'+displayTotal+'.00'+nl+'👤 Nombre: '+name+nl+nl+'📲 Quedo atento para continuar con mi participación.'+nl+nl+'🤝 ¡Gracias!';
+  const message='🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado de los siguientes números:\n\n🎫 '+displayNumbers+'\n💰 Total: $'+displayTotal+'.00\n👤 Nombre: '+name+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
   const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
   const waConfirm=document.getElementById('waConfirm');
   waConfirm.href=waLink;
