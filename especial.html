@@ -58,6 +58,26 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
  .grand-prize .trophy-orbit .orbit-diamond{width:27px;height:27px;margin:-13.5px;font-size:21px}
  .grand-prize .trophy-orbit .orbit-diamond:nth-child(n){--radius:43px}
 }
+</style><style>
+/* Animación premium final: diamantes orbitando alrededor de la copa */
+.grand-prize .prize{position:relative!important;overflow:hidden!important;display:grid!important;place-items:center!important}
+.grand-prize .trophy-orbit{position:absolute!important;width:100px!important;height:100px!important;left:50%!important;top:50%!important;margin:-50px 0 0 -50px!important;inset:auto!important;z-index:2!important;pointer-events:none!important;animation:premiumOrbit 8s linear infinite!important}
+.grand-prize .trophy-orbit .orbit-diamond{position:absolute!important;left:50%!important;top:50%!important;width:30px!important;height:30px!important;margin:-15px!important;display:grid!important;place-items:center!important;font-size:24px!important;line-height:1!important;background:none!important;border:0!important;box-shadow:none!important;filter:drop-shadow(0 0 5px #8ed8ff) drop-shadow(0 0 10px #d9a936)!important;transform:rotate(var(--a)) translateX(50px)!important;animation:premiumDiamond 1.5s ease-in-out infinite!important}
+.grand-prize .trophy-orbit .orbit-diamond span{display:block!important;transform:rotate(calc(var(--a) * -1))!important}
+.grand-prize .trophy-orbit .orbit-diamond:nth-child(1){--a:0deg}
+.grand-prize .trophy-orbit .orbit-diamond:nth-child(2){--a:60deg}
+.grand-prize .trophy-orbit .orbit-diamond:nth-child(3){--a:120deg}
+.grand-prize .trophy-orbit .orbit-diamond:nth-child(4){--a:180deg}
+.grand-prize .trophy-orbit .orbit-diamond:nth-child(5){--a:240deg}
+.grand-prize .trophy-orbit .orbit-diamond:nth-child(6){--a:300deg}
+.grand-prize .trophy-orbit + div{position:relative!important;z-index:3!important}
+@keyframes premiumOrbit{to{transform:rotate(360deg)}}
+@keyframes premiumDiamond{0%,100%{scale:.88;opacity:.82}50%{scale:1.08;opacity:1}}
+@media(max-width:760px){
+ .grand-prize .prize{height:160px!important}
+ .grand-prize .trophy-orbit{width:92px!important;height:92px!important;margin:-46px 0 0 -46px!important}
+ .grand-prize .trophy-orbit .orbit-diamond{transform:rotate(var(--a)) translateX(46px)!important;font-size:21px!important;width:26px!important;height:26px!important;margin:-13px!important}
+}
 </style></head>
 <body>
 <header>
