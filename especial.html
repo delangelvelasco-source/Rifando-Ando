@@ -167,7 +167,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=20260919-2308"></script>
+<script src="config.js?v=20260919-2315"></script>
 <script>
 'use strict';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -557,18 +557,22 @@ function actualizarProcesoSorteo(r){
 }
 async function cargarHistorialGanadores(){
   const el=document.getElementById('winnerHistory');
-  const {data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').eq('rifa_id',rifa.id).order('created_at',{ascending:false});
-  if(error){el.innerHTML='<div class="winner-empty">No se pudo cargar el historial.</div>';return}
-  if(!data||!data.length){el.innerHTML='<div class="winner-empty">Aún no hay ganadores registrados.</div>';return}
-  const rifaIds=[...new Set(data.map(w=>w.rifa_id).filter(Boolean))];
-  const {data:rifasData}=rifaIds.length?await db.from('rifas').select('id,codigo_sorteo,numero_sorteo,premio').in('id',rifaIds):{data:[]};
-  const rifasMap=new Map((rifasData||[]).map(r=>[r.id,r]));
+  if(!el||!rifa?.id)return;
+  let data=null,error=null;
+  ({data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').eq('rifa_id',rifa.id).order('created_at',{ascending:false}));
+  if(error){
+    el.innerHTML='<div class="winner-empty">No se pudo cargar el historial.</div>';
+    return;
+  }
+  if(!data||!data.length){
+    el.innerHTML='<div class="winner-empty">Aún no hay ganadores registrados.</div>';
+    return;
+  }
+  const premio=String(rifa.premio||'No disponible');
   el.innerHTML='<div class="winner-head"><div>🎟️ No. de sorteo</div><div>👤 Nombre del ganador</div><div>💰 Monto ganado</div><div>⭐ # ganador</div></div>'+data.map(w=>{
-    const r=rifasMap.get(w.rifa_id);
-    const codigo=r?.codigo_sorteo||('RA-'+String(r?.numero_sorteo||'?').padStart(4,'0'));
-    const d=new Date(w.created_at).toLocaleDateString('es-MX');
-    const nombreVisible=formatearNombrePublico(w.nombre_snapshot);
-    const premio=String(r?.premio||'No disponible');
+    const codigo=rifa.codigo_sorteo||('RA-'+String(rifa.numero_sorteo||'?').padStart(4,'0'));
+    const d=w.created_at?new Date(w.created_at).toLocaleDateString('es-MX'):'';
+    const nombreVisible=formatearNombrePublico(w.nombre_snapshot||'Ganador');
     return '<div class="winner-card"><div><div class="wname">'+codigo+'</div><div class="wdate">'+d+'</div></div><div class="wname">'+nombreVisible+'</div><div class="wprize">'+premio+'</div><div class="wnum">#'+String(w.numero).padStart(2,'0')+'</div></div>';
   }).join('');
 }
