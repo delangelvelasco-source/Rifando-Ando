@@ -424,7 +424,7 @@ async function cargarNumerosPublico(rifaId){
 }
 
 async function cargarRifa(){
-  const {data:r,error:re}=await db.from('rifas').select('*').in('estado',['activa','sorteada']).order('created_at',{ascending:false}).limit(1).maybeSingle();
+  const {data:r,error:re}=await db.from('rifas').select('*').eq('estado','activa').order('created_at',{ascending:false}).limit(1).maybeSingle();
   if(re||!r){
     tickets.innerHTML='<p style="color:#aaa">No hay una rifa activa disponible.</p>';
     await mostrarGanadorPublico();
