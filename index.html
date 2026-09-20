@@ -45,7 +45,10 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 @keyframes prizePulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.035);filter:brightness(1.3)}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.45}}
 @keyframes twinkle{from{opacity:.35}to{opacity:1}}
-.draw-public{position:fixed;inset:0;background:#050505f5;z-index:50;display:none;place-items:center;padding:18px}.draw-public.open{display:grid}.draw-public-box{width:min(1000px,100%);max-height:92vh;overflow:auto;background:#111;border:2px solid #6d5215;border-radius:24px;padding:25px;text-align:center;box-shadow:0 0 45px #d9a93633;position:relative}.draw-public-close{position:absolute;top:10px;right:14px;width:42px;height:42px;border:1px solid #4a4a4a;border-radius:50%;background:#171717;color:#fff;font-size:30px;line-height:1;cursor:pointer;z-index:2}.draw-public-close:hover{background:#262626;border-color:#d9a936;color:#d9a936}.draw-public-number{font-size:clamp(80px,18vw,170px);line-height:.9;font-weight:1000;color:#d9a936;text-shadow:0 0 25px #d9a936}.draw-public-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:20px}.draw-public-grid span{padding:8px 3px;border:1px solid #303030;border-radius:8px;background:#171717;font-weight:900}.draw-public-grid span.active{background:#d9a936;color:#111;transform:scale(1.08)}.draw-public-result{display:none}.draw-public-result.show{display:block}@media(max-width:760px){.draw-public-grid{grid-template-columns:repeat(5,1fr)}}.iphone-prize{height:280px!important;background:radial-gradient(circle,#3a3a3a,#101010 65%)!important;overflow:hidden}.iphone-prize img{width:100%;height:100%;object-fit:contain;display:block;padding:8px}@media(max-width:760px){.grand-prize .iphone-prize{height:110px!important}.iphone-prize img{padding:2px}}</style></head>
+.draw-public{position:fixed;inset:0;background:#050505f5;z-index:50;display:none;place-items:center;padding:18px}.draw-public.open{display:grid}.draw-public-box{width:min(1000px,100%);max-height:92vh;overflow:auto;background:#111;border:2px solid #6d5215;border-radius:24px;padding:25px;text-align:center;box-shadow:0 0 45px #d9a93633;position:relative}.draw-public-close{position:absolute;top:10px;right:14px;width:42px;height:42px;border:1px solid #4a4a4a;border-radius:50%;background:#171717;color:#fff;font-size:30px;line-height:1;cursor:pointer;z-index:2}.draw-public-close:hover{background:#262626;border-color:#d9a936;color:#d9a936}.draw-public-number{font-size:clamp(80px,18vw,170px);line-height:.9;font-weight:1000;color:#d9a936;text-shadow:0 0 25px #d9a936}.draw-public-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:20px}.draw-public-grid span{padding:8px 3px;border:1px solid #303030;border-radius:8px;background:#171717;font-weight:900}.draw-public-grid span.active{background:#d9a936;color:#111;transform:scale(1.08)}.draw-public-result{display:none}.draw-public-result.show{display:block}@media(max-width:760px){.draw-public-grid{grid-template-columns:repeat(5,1fr)}}.iphone-prize{height:280px!important;background:radial-gradient(circle,#3a3a3a,#101010 65%)!important;overflow:hidden}.iphone-prize img{width:100%;height:100%;object-fit:contain;display:block;padding:8px}@media(max-width:760px){.grand-prize .iphone-prize{height:110px!important}.iphone-prize img{padding:2px}}
+.raffle-links{margin-top:22px;max-width:560px}.raffle-links-title{font-size:17px;font-weight:1000;color:#d9a936;margin-bottom:10px}.raffle-links-list{display:grid;gap:9px}.raffle-link{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;border:1px solid #5e4816;border-radius:13px;background:#111;color:#fff;text-decoration:none;font-weight:900;transition:.2s}.raffle-link:hover{border-color:#d9a936;background:#18140a;transform:translateY(-1px)}.raffle-link.active{background:#d9a936;color:#111;border-color:#f5d36a}.raffle-link-arrow{font-size:22px;color:#d9a936}.raffle-link.active .raffle-link-arrow{color:#111}
+@media(max-width:760px){.raffle-links{margin-top:18px}.raffle-link{min-height:48px;padding:12px 14px;font-size:14px}}
+</style></head>
 <body>
 <header>
 <div class="nav">
@@ -66,6 +69,13 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <h1>¡Échale número, <span class="gold">compa!</span></h1>
 <p>Participa en nuestras rifas, elige tus números y cruza los dedos.</p>
 <a class="btn" href="#numeros">Quiero participar</a>
+<div class="raffle-links" aria-label="Nuestros sorteos">
+<div class="raffle-links-title">🎟️ Nuestros sorteos</div>
+<div class="raffle-links-list">
+<a class="raffle-link active" href="?rifa=9a9bca1f-3f22-4a1a-8813-70c7f5914f65">iPhone 18 Pro Max 256 GB <span class="raffle-link-arrow">›</span></a>
+<a class="raffle-link" href="?rifa=60f9a81d-bdd6-4e28-b330-dc92cfe4d113">Sorteo Especial <span class="raffle-link-arrow">›</span></a>
+<a class="raffle-link" href="?rifa=4b23f516-7973-4a04-bff6-9b9b5cb90f4d">Segundo sorteo oficial <span class="raffle-link-arrow">›</span></a>
+</div></div>
 </div>
 <div class="card grand-prize">
 <div class="sparkles">✦ ✨ ✦ ✨ ✦</div>
@@ -430,7 +440,9 @@ async function cargarNumerosPublico(rifaId){
 }
 
 async function cargarRifa(){
-  const {data:r,error:re}=await db.from('rifas').select('*').eq('id','9a9bca1f-3f22-4a1a-8813-70c7f5914f65').maybeSingle();
+  const params=new URLSearchParams(window.location.search);
+  const requestedRifa=params.get('rifa')||'9a9bca1f-3f22-4a1a-8813-70c7f5914f65';
+  const {data:r,error:re}=await db.from('rifas').select('*').eq('id',requestedRifa).maybeSingle();
   if(re||!r){
     tickets.innerHTML='<p style="color:#aaa">No hay una rifa activa disponible.</p>';
     await mostrarGanadorPublico();
