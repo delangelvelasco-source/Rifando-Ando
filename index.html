@@ -255,6 +255,33 @@ body{overflow-x:hidden}
   .nav .btn{width:145px}
   .hero,.section{padding-left:24px;padding-right:24px}
 }
+/* Corrección final de navegación móvil: la columna de botones es un contenedor propio. */
+@media(max-width:760px){
+  body{padding-top:190px}
+  html{scroll-padding-top:200px}
+  .nav{grid-template-columns:1fr}
+  .nav>div:last-child{
+    grid-column:1/-1;
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+  }
+  .nav .btn{
+    width:100%;
+    min-width:0;
+    overflow-wrap:anywhere;
+    word-break:normal;
+    white-space:normal;
+  }
+}
+@media(max-width:420px){
+  body{padding-top:184px}
+  html{scroll-padding-top:194px}
+  .nav>div:last-child{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .nav .btn{min-height:52px;padding:8px 5px;font-size:11.5px;line-height:1.08}
+  #topContinue{font-size:12px}
+}
 </style>
 </head>
 <body>
