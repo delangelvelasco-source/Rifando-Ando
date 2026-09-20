@@ -187,10 +187,11 @@ async function guardarPago(){const monto=Number($('payAmount').value);if(!payPar
 function enviarWhatsApp(nombre,telefono,numeros,total,pagado,saldo){
   const clean=String(telefono||'').replace(/\D/g,'');
   const waNumber=clean.length===10?'52'+clean:clean;
-  const resumen='💰 RESUMEN DE TU PARTICIPACIÓN\n💵 Total: $'+Number(total).toLocaleString('es-MX')+'\n✅ Pagado: $'+Number(pagado).toLocaleString('es-MX');
+  const nl=String.fromCharCode(10);
+  const resumen='💰 RESUMEN DE TU PARTICIPACIÓN'+nl+'💵 Total: $'+Number(total).toLocaleString('es-MX')+nl+'✅ Pagado: $'+Number(pagado).toLocaleString('es-MX');
   const msg=saldo>0
-    ? '👋 ¡Hola, '+nombre+'!\n\n🎟️✨ RIFANDO ANDO ✨🎟️\n\n🎉 ¡Tu apartado ha sido registrado correctamente!\n\n🎫 TUS NÚMEROS\n'+numeros+'\n\n'+resumen+'\n💳 Saldo pendiente: $'+Number(saldo).toLocaleString('es-MX')+'\n\n⏰ IMPORTANTE: TIENES 30 MINUTOS\n\n⏳ Tu selección queda apartada por un máximo de 30 minutos. Para conservar tus números, completa tu pago dentro de ese plazo.\n\nPara completar tu participación, solicítame los datos de pago por este mismo WhatsApp.\n\n🧾 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tu participación.\n\n🤝 Gracias por participar en Rifando Ando.\n\n🏆 ¡Échale número, compa!'
-    : '👋 ¡Hola, '+nombre+'!\n\n🎟️✨ RIFANDO ANDO ✨🎟️\n\n🎉 ¡PAGO CONFIRMADO!\n\n🎫 TUS NÚMEROS\n'+numeros+'\n\n'+resumen+'\n\n✅ Tu participación ha quedado confirmada correctamente.\n\n🍀 ¡Mucha suerte en el sorteo!\n\n🤝 Gracias por participar en Rifando Ando.\n\n🏆 ¡Échale número, compa!';
+    ? '👋 ¡Hola, '+nombre+'!'+nl+nl+'🎟️✨ RIFANDO ANDO ✨🎟️'+nl+nl+'🎉 ¡Tu apartado ha sido registrado correctamente!'+nl+nl+'🎫 TUS NÚMEROS'+nl+numeros+nl+nl+resumen+nl+'💳 Saldo pendiente: $'+Number(saldo).toLocaleString('es-MX')+nl+nl+'⏰ IMPORTANTE: TIENES 30 MINUTOS'+nl+nl+'⏳ Tu selección queda apartada por un máximo de 30 minutos. Para conservar tus números, completa tu pago dentro de ese plazo.'+nl+nl+'Para completar tu participación, solicítame los datos de pago por este mismo WhatsApp.'+nl+nl+'🧾 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tu participación.'+nl+nl+'🤝 Gracias por participar en Rifando Ando.'+nl+nl+'🏆 ¡Échale número, compa!'
+    : '👋 ¡Hola, '+nombre+'!'+nl+nl+'🎟️✨ RIFANDO ANDO ✨🎟️'+nl+nl+'🎉 ¡PAGO CONFIRMADO!'+nl+nl+'🎫 TUS NÚMEROS'+nl+numeros+nl+nl+resumen+nl+nl+'✅ Tu participación ha quedado confirmada correctamente.'+nl+nl+'🍀 ¡Mucha suerte en el sorteo!'+nl+nl+'🤝 Gracias por participar en Rifando Ando.'+nl+nl+'🏆 ¡Échale número, compa!';
   window.open('https://wa.me/'+waNumber+'?text='+encodeURIComponent(msg),'_blank');
 }
 function activarTiempoReal(){
