@@ -190,7 +190,20 @@ function enviarWhatsApp(nombre,telefono,numeros,total,pagado,saldo){
   const clean=String(telefono||'').replace(/\D/g,'');
   const waNumber=clean.length===10?'52'+clean:clean;
   const nl=String.fromCharCode(10);
-  const resumen='💰 RESUMEN DE TU PARTICIPACIÓN'+nl+'💵 Total: $'+Number(total).toLocaleString('es-MX')+nl+'✅ Pagado: $'+Number(pagado).toLocaleString('es-MX');
+  const codigoSorteo=String(rifa?.codigo_sorteo||('RA-'+String(rifa?.numero_sorteo||'?').padStart(4,'0'))); 
+  const nombreSorteo=String(rifa?.nombre||'Sorteo');
+  const identificacionSorteo='🎟️ SORTEO: *'+codigoSorteo+'*'+nl+'📋 '+nombreSorteo;
+  const resumen='💰 RESUMEN DE TU PARTICIPACIÓN'+nl+'💵 Total: 
+  const msg=saldo>0
+    ? '👋 ¡Hola, '+nombre+'!'+nl+nl+'🎟️✨ RIFANDO ANDO ✨🎟️'+nl+nl+'🎉 ¡Tu apartado ha sido registrado correctamente!'+nl+nl+identificacionSorteo+nl+nl+'🎫 TUS NÚMEROS'+nl+numeros+nl+nl+resumen+nl+'💳 Saldo pendiente: $'+Number(saldo).toLocaleString('es-MX')+nl+nl+'⏰ IMPORTANTE: TIENES 30 MINUTOS'+nl+nl+'⏳ Tu selección queda apartada por un máximo de 30 minutos. Para conservar tus números, completa tu pago dentro de ese plazo.'+nl+nl+'Para completar tu participación, solicítame los datos de pago por este mismo WhatsApp.'+nl+nl+'🧾 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tu participación.'+nl+nl+'🤝 Gracias por participar en Rifando Ando.'+nl+nl+'🏆 ¡Échale número, compa!'
+    : '👋 ¡Hola, '+nombre+'!'+nl+nl+'🎟️✨ RIFANDO ANDO ✨🎟️'+nl+nl+'🎉 ¡PAGO CONFIRMADO!'+nl+nl+identificacionSorteo+nl+nl+'🎫 TUS NÚMEROS'+nl+numeros+nl+nl+resumen+nl+nl+'✅ Tu participación ha quedado confirmada correctamente.'+nl+nl+'🍀 ¡Mucha suerte en el sorteo!'+nl+nl+'🤝 Gracias por participar en Rifando Ando.'+nl+nl+'🏆 ¡Échale número, compa!';
+  window.open('https://wa.me/'+waNumber+'?text='+encodeURIComponent(msg),'_blank');
+}+Number(total).toLocaleString('es-MX')+nl+'✅ Pagado: 
+  const msg=saldo>0
+    ? '👋 ¡Hola, '+nombre+'!'+nl+nl+'🎟️✨ RIFANDO ANDO ✨🎟️'+nl+nl+'🎉 ¡Tu apartado ha sido registrado correctamente!'+nl+nl+'🎫 TUS NÚMEROS'+nl+numeros+nl+nl+resumen+nl+'💳 Saldo pendiente: $'+Number(saldo).toLocaleString('es-MX')+nl+nl+'⏰ IMPORTANTE: TIENES 30 MINUTOS'+nl+nl+'⏳ Tu selección queda apartada por un máximo de 30 minutos. Para conservar tus números, completa tu pago dentro de ese plazo.'+nl+nl+'Para completar tu participación, solicítame los datos de pago por este mismo WhatsApp.'+nl+nl+'🧾 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tu participación.'+nl+nl+'🤝 Gracias por participar en Rifando Ando.'+nl+nl+'🏆 ¡Échale número, compa!'
+    : '👋 ¡Hola, '+nombre+'!'+nl+nl+'🎟️✨ RIFANDO ANDO ✨🎟️'+nl+nl+'🎉 ¡PAGO CONFIRMADO!'+nl+nl+'🎫 TUS NÚMEROS'+nl+numeros+nl+nl+resumen+nl+nl+'✅ Tu participación ha quedado confirmada correctamente.'+nl+nl+'🍀 ¡Mucha suerte en el sorteo!'+nl+nl+'🤝 Gracias por participar en Rifando Ando.'+nl+nl+'🏆 ¡Échale número, compa!';
+  window.open('https://wa.me/'+waNumber+'?text='+encodeURIComponent(msg),'_blank');
+}+Number(pagado).toLocaleString('es-MX');
   const msg=saldo>0
     ? '👋 ¡Hola, '+nombre+'!'+nl+nl+'🎟️✨ RIFANDO ANDO ✨🎟️'+nl+nl+'🎉 ¡Tu apartado ha sido registrado correctamente!'+nl+nl+'🎫 TUS NÚMEROS'+nl+numeros+nl+nl+resumen+nl+'💳 Saldo pendiente: $'+Number(saldo).toLocaleString('es-MX')+nl+nl+'⏰ IMPORTANTE: TIENES 30 MINUTOS'+nl+nl+'⏳ Tu selección queda apartada por un máximo de 30 minutos. Para conservar tus números, completa tu pago dentro de ese plazo.'+nl+nl+'Para completar tu participación, solicítame los datos de pago por este mismo WhatsApp.'+nl+nl+'🧾 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tu participación.'+nl+nl+'🤝 Gracias por participar en Rifando Ando.'+nl+nl+'🏆 ¡Échale número, compa!'
     : '👋 ¡Hola, '+nombre+'!'+nl+nl+'🎟️✨ RIFANDO ANDO ✨🎟️'+nl+nl+'🎉 ¡PAGO CONFIRMADO!'+nl+nl+'🎫 TUS NÚMEROS'+nl+numeros+nl+nl+resumen+nl+nl+'✅ Tu participación ha quedado confirmada correctamente.'+nl+nl+'🍀 ¡Mucha suerte en el sorteo!'+nl+nl+'🤝 Gracias por participar en Rifando Ando.'+nl+nl+'🏆 ¡Échale número, compa!';
