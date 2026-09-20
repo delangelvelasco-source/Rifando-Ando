@@ -425,32 +425,46 @@ async function actualizarInfoLoteria(r){
   const tz='America/Monterrey';
   const now=new Date();
   const fmtDate=d=>new Intl.DateTimeFormat('es-MX',{timeZone:tz,day:'2-digit',month:'long',year:'numeric'}).format(d);
-  const fmtTime=d=>new Intl.DateTimeFormat('es-MX',{timeZone:tz,hour:'2-digit',minute:'2-digit',hour12:false}).format(d);
   const drawType=r.loteria_tipo||'Tris Clásico';
-  const drawTime=drawType==='Tris Clásico'?'21:00':(drawType==='Tris de las Siete'?'19:00':drawType==='Tris Extra'?'17:00':drawType==='Tris de las Tres'?'15:00':'13:00');
-  const todayParts=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
-  const part=k=>todayParts.find(x=>x.type===k)?.value;
-  const today=part('year')+'-'+part('month')+'-'+part('day');
-  const targetDate=r.loteria_fecha ? new Date(r.loteria_fecha) : new Date(today+'T00:00:00-06:00');
-  const targetDay=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).format(targetDate);
-  const closeToday=new Date(targetDay+'T'+drawTime+':00-06:00');
+  const drawTime='21:00';
   const completeCount=await contarVendidosPublico(r.id);
   const full=completeCount>=100;
-  let targetLabel=targetDay===today?'hoy':fmtDate(targetDate);
+  let targetDate=null;
+  let ultimaVenta=null;
+  if(full){
+    const {data:lastSold}=await db.from('numeros')
+      .select('vendido_at')
+      .eq('rifa_id',r.id)
+      .eq('estado','vendido')
+      .not('vendido_at','is',null)
+      .order('vendido_at',{ascending:false})
+      .limit(1)
+      .maybeSingle();
+    if(lastSold?.vendido_at)ultimaVenta=new Date(lastSold.vendido_at);
+    if(ultimaVenta&&!isNaN(ultimaVenta)){
+      const parts=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',hourCycle:'h23'}).formatToParts(ultimaVenta);
+      const get=k=>parts.find(x=>x.type===k)?.value;
+      const y=Number(get('year')),m=Number(get('month')),d=Number(get('day')),h=Number(get('hour'));
+      targetDate=new Date(Date.UTC(y,m-1,d));
+      if(h>=21)targetDate.setUTCDate(targetDate.getUTCDate()+1);
+    }else if(r.loteria_fecha){
+      targetDate=new Date(r.loteria_fecha);
+    }
+  }
   if(r.estado==='sorteada'){
     status.textContent='🏆 Sorteo realizado';
-  }else if(full && now<closeToday){
-    status.textContent='🟢 ¡Rifa completa! Participará en el '+drawType+' de '+targetLabel+'.';
-  }else if(full && now>=closeToday){
-    status.textContent='🟡 Rifa completa después del cierre. Participará en el siguiente '+drawType+' disponible.';
+  }else if(full&&targetDate){
+    status.textContent='🟢 ¡Rifa completa! Participará en el '+drawType+' del '+fmtDate(targetDate)+'.';
+  }else if(full){
+    status.textContent='🟢 ¡Rifa completa! La fecha del sorteo está por determinar.';
   }else{
-    status.textContent='🔵 Esta rifa se sorteará con '+drawType+'.';
+    status.textContent='🔵 La fecha del sorteo se determinará al vender el último boleto.';
   }
-  const drawDateLabel=fmtDate(targetDate);
+  const drawDateLabel=targetDate?fmtDate(targetDate):'Se determinará al vender el último boleto';
   details.innerHTML='<div>🎯 Modalidad: <b>'+drawType+'</b></div>'+
     '<div>📅 Fecha del sorteo: <b>'+drawDateLabel+'</b></div>'+
-    '<div>⏰ Hora del sorteo: <b>'+drawTime+' h</b> (hora de Monterrey)</div>'+
-    '<div>🔢 Regla: <b>últimas 2 cifras</b> del resultado oficial</div>'+
+    '<div>⏰ Hora límite: <b>21:00 h</b> (hora de Monterrey)</div>'+
+    '<div>🔢 Regla: <b>Si el último boleto se vende antes de las 21:00 h, participa ese mismo día; después de las 21:00 h, se programa para el día siguiente.</b></div>'+
     '<div>🎟️ Estado de la rifa: <b>'+completeCount+'/100 números pagados</b></div>';
   if(r.estado==='sorteada' && r.loteria_resultado){
     const resultText=String(r.loteria_resultado).padStart(5,'0');
@@ -459,6 +473,7 @@ async function actualizarInfoLoteria(r){
     result.innerHTML='Resultado oficial: <b>'+resultText+'</b> · Número ganador: <b>'+winner+'</b>';
   }else result.style.display='none';
 }
+
 async function contarVendidosPublico(rifaId){
   const {count,error}=await db.from('numeros').select('id',{count:'exact',head:true}).eq('rifa_id',rifaId).eq('estado','vendido');
   return error ? 0 : Number(count||0);
