@@ -282,6 +282,19 @@ body{overflow-x:hidden}
   .nav .btn{min-height:52px;padding:8px 5px;font-size:11.5px;line-height:1.08}
   #topContinue{font-size:12px}
 }
+/* Ajuste visual final: el último ganador debe quedar debajo de la barra fija y sin hueco excesivo. */
+.winner-section{padding-top:24px;padding-bottom:18px}
+@media(max-width:760px){
+  html{scroll-padding-top:212px}
+  .winner-section{padding-top:22px;padding-bottom:12px}
+  #ultimo-ganador{margin-bottom:8px!important}
+  #historial-ganadores{padding-top:20px}
+}
+@media(max-width:420px){
+  html{scroll-padding-top:208px}
+  .winner-section{padding-top:20px;padding-bottom:10px}
+  #historial-ganadores{padding-top:18px}
+}
 </style>
 </head>
 <body>
@@ -418,7 +431,7 @@ body{overflow-x:hidden}
 </div>
 </section>
 
-<section class="section">
+<section class="section winner-section">
 <div id="ultimo-ganador" class="box hidden" style="margin-bottom:25px;text-align:center;border-color:#d9a936"><div style="font-size:42px">🏆</div><h2>Último ganador</h2><div id="publicWinnerNumber" style="font-size:58px;font-weight:1000;color:#d9a936">--</div><div id="publicWinnerName" style="font-size:24px;font-weight:900"></div><button class="btn" type="button" onclick="reproducirUltimoSorteo()" style="margin-top:16px">🎬 Ver animación del último sorteo</button></div>
 </section>
 <section class="section" id="historial-ganadores"><h2>🏆 Historial de Ganadores</h2><div id="winnerHistory" class="winner-history"><div class="winner-empty">Aún no hay ganadores registrados.</div></div></section>
