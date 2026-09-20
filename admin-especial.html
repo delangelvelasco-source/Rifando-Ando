@@ -1,0 +1,228 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Rifando Ando · Administración · Sorteo Especial</title><style>*{box-sizing:border-box}body{margin:0;background:#080808;color:#fff;font-family:system-ui,-apple-system,sans-serif;padding:22px}.wrap{max-width:1100px;margin:auto}.gold{color:#d9a936}.box,.card{background:#151515;border:1px solid #303030;border-radius:18px;padding:18px}.login{max-width:420px;margin:12vh auto}.field{margin:12px 0}.field label{display:block;color:#aaa;margin-bottom:6px}.field input,.field select{width:100%;padding:13px;border-radius:10px;border:1px solid #363636;background:#0d0d0d;color:#fff;font-size:16px}.btn{background:#d9a936;color:#111;border:0;border-radius:10px;padding:11px 15px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-block}.secondary{background:#292929;color:#fff}.danger{background:#7a3030;color:#fff}.small{padding:6px 9px;font-size:11px;margin:3px}.hidden{display:none}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:25px 0}.num{font-size:32px;font-weight:900}.grid{display:grid;grid-template-columns:repeat(10,1fr);gap:7px}.ticket{padding:8px 3px;border-radius:8px;border:1px solid #333;text-align:center;background:#111}.ticket.apartado{background:#4b3b16}.ticket.vendido{background:#333;text-decoration:line-through;color:#888}.actions{margin-top:6px}.row{border-bottom:1px solid #292929;padding:12px 0}.pay{margin-top:10px;padding:10px;border-radius:10px;background:#101010}.error{color:#ff9999}.modal{position:fixed;inset:0;background:#000b;display:none;place-items:center;padding:18px;z-index:20}.modal.open{display:grid}.modalbox{width:min(460px,100%);background:#151515;border:1px solid #363636;border-radius:18px;padding:22px}.muted{color:#aaa}.collapseHead{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:transparent;color:#fff;border:0;padding:0;text-align:left;cursor:pointer}.collapseTitle{font-size:1.35rem;font-weight:800}.collapseIcon{font-size:20px;color:#d9a936;transition:transform .2s}.collapseHead.open .collapseIcon{transform:rotate(180deg)}.collapseBody{display:none;margin-top:14px}.collapseBody.open{display:block}@media(max-width:700px){.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(5,1fr)}} </style></head><body>
+<div id="login" class="box login"><h1>🔐 Rifando <span class="gold">Ando</span></h1><h2>Acceso de administrador</h2><div class="field"><input id="email" type="email" placeholder="Correo"></div><div class="field"><input id="pass" type="password" placeholder="Contraseña"></div><button class="btn" onclick="entrar()" style="width:100%">Entrar</button><p id="msg"></p></div>
+<div id="app" class="wrap hidden"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h1>RIFANDO <span class="gold">ANDO</span> · ADMIN</h1><div><a class="btn secondary" href="especial.html">Ver página</a> <button class="btn" onclick="realizarSorteo()">🏆 Sorteo interno</button> <button class="btn secondary" onclick="realizarSorteoLoteria()">🇲🇽 Lotería Nacional</button> <button class="btn danger" onclick="restablecerSorteo()">🔄 Restablecer</button> <button class="btn" onclick="salir()">Salir</button> <button class="btn secondary" onclick="probarAnimacionSorteo()">👁️ Ver animación</button> <button class="btn secondary" onclick="abrirPruebaPublica()">🌐 Probar en clientes</button></div></div><p id="status">Cargando...</p>
+<div class="cards"><div class="card">Disponibles<div class="num gold" id="disp">0</div></div><div class="card">Apartados<div class="num" id="apart">0</div></div><div class="card">Vendidos<div class="num" id="vend">0</div></div><div class="card">Participantes<div class="num" id="people">0</div></div></div>
+<div class="box"><h2>Números</h2><p class="muted">Apartado = dorado · Vendido = tachado.</p><div class="grid" id="nums"></div></div><div class="box" style="margin-top:18px"><div class="collapseHead" style="cursor:default"><span class="collapseTitle">👥 Últimos participantes</span></div><div id="participantsBody" class="collapseBody open"><div id="participants">Cargando...</div></div></div><div class="box" style="margin-top:18px"><h2>📊 Historial y movimientos por sorteo</h2><div class="field"><label>Seleccionar sorteo</label><select id="historyRaffle" onchange="cargarHistorialRifa()"><option value="">Selecciona un sorteo...</option></select></div><div id="historySummary" class="muted">Selecciona un sorteo para consultar sus movimientos.</div><div id="historyParticipants" style="margin-top:12px"></div></div>
+<div id="winnerListBox" class="box" style="margin-top:18px;border-color:#d9a936"><h2>🏆 Lista de Ganadores</h2><p class="muted">Aquí puedes contactar directamente al ganador de cada sorteo.</p><div id="winnerList"><div class="muted">Cargando ganadores...</div></div></div>
+<div id="winnerBox" class="box hidden" style="margin-top:18px;border-color:#d9a936;text-align:center"><div style="font-size:52px">🏆</div><h2>GANADOR DEL SORTEO</h2><div id="winnerNumber" style="font-size:64px;font-weight:1000;color:#d9a936">--</div><h3 id="winnerName" style="font-size:28px;margin:8px 0"></h3><p id="winnerDate" class="muted"></p><a id="winnerWhatsApp" class="btn" href="#" target="_blank" rel="noopener" style="display:none;margin-top:10px">📲 Felicitar por WhatsApp</a></div></div>
+<div id="loteriaModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarLoteria()" style="float:right">×</button><h2>🇲🇽 Sorteo con Lotería Nacional</h2><p class="muted">Regla: se toman las <b>2 últimas cifras</b> del resultado oficial del Tris y ese número 00–99 determina al ganador. Deben estar vendidos los 100 números.</p><div class="field"><label>Tipo de sorteo</label><select id="lotTipo"><option>Tris Clásico</option><option>Tris de las Siete</option><option>Tris Extra</option><option>Tris de las Tres</option><option>Tris Medio Día</option></select></div><div class="field"><label>Número de sorteo</label><input id="lotSorteo" inputmode="numeric" placeholder="36657"></div><div class="field"><label>Resultado oficial de 5 dígitos</label><input id="lotResultado" inputmode="numeric" maxlength="5" placeholder="01518"></div><div class="field"><label>Fecha del sorteo</label><input id="lotFecha" type="datetime-local"></div><div class="field"><label>Fuente oficial</label><input id="lotFuente" value="https://www.loterianacional.gob.mx/Tris/resultados"></div><button class="btn" onclick="confirmarSorteoLoteria()" style="width:100%">🏆 Registrar ganador</button><p id="lotMsg"></p></div></div><div id="drawModal" class="modal"><div class="modalbox" style="width:min(900px,100%);text-align:center"><div style="font-size:44px">🎲</div><h2>SELECCIÓN DEL SORTEO</h2><p id="drawStatus" class="muted">Preparando participantes...</p><div id="drawNumber" style="font-size:86px;font-weight:1000;color:#d9a936;line-height:1">--</div><div id="drawGrid" class="grid" style="margin-top:22px;max-height:280px;overflow:auto"></div><div id="drawWinner" class="hidden" style="margin-top:20px"><div style="font-size:24px">🏆 NÚMERO GANADOR</div><div id="drawWinnerNumber" style="font-size:72px;font-weight:1000;color:#d9a936">--</div><div id="drawWinnerName" style="font-size:26px"></div></div></div></div><div id="payModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarPago()" style="float:right">×</button><h2>Registrar pago</h2><p id="payPerson"></p><div class="field"><label>Monto recibido</label><input id="payAmount" type="number" min="0.01" step="0.01"></div><div class="field"><label>Método</label><select id="payMethod"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Otro</option></select></div><button class="btn" onclick="guardarPago()">Confirmar pago</button><p id="payMsg"></p></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://unpkg.com/@supabase/supabase-js@2"></script><script src="config.js"></script><script>
+let db=null, $=id=>document.getElementById(id), rifa=null,nGlobal=[],payParticipant=null,realtimeChannel=null,currentAdmin=null;
+async function initDb(){
+  if(db) return true;
+  if(!window.supabase){$('msg').textContent='⚠️ No se pudo cargar el sistema de acceso. Revisa tu conexión a internet y recarga la página.';return false}
+  try{db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);return true}
+  catch(e){$('msg').textContent='⚠️ Error al iniciar el acceso: '+(e.message||e);return false}
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function estado(x){if(x.estado==='vendido')return'vendido';if(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)>new Date())return'apartado';return'disponible'}
+function numerosActuales(pid){return nGlobal.filter(z=>z.participante_id===pid&&(z.estado==='apartado'||z.estado==='vendido'))}
+async function entrar(){
+  $('msg').textContent='Conectando...';
+  const ok=await initDb(); if(!ok)return;
+  try{
+    const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('pass').value});
+    if(error){$('msg').innerHTML='<span class="error">⚠️ '+esc(error.message)+'</span>';return}
+    $('msg').textContent='✅ Acceso correcto. Cargando...';
+    await sesion();
+  }catch(e){$('msg').innerHTML='<span class="error">⚠️ '+esc(e?.message||e)+'</span>'}
+}
+async function salir(){await db.auth.signOut();mostrarLogin()}
+function mostrarLogin(){$('app').classList.add('hidden');$('login').classList.remove('hidden')}
+async function sesion(){const {data:{session}}=await db.auth.getSession();if(!session){mostrarLogin();return}currentAdmin=session.user||null;$('login').classList.add('hidden');$('app').classList.remove('hidden');await cargar()}
+async function liberar(id){if(!confirm('¿Liberar este número?'))return;const {error}=await db.from('numeros').update({estado:'disponible',participante_id:null,apartado_hasta:null}).eq('id',id);if(error){alert(error.message);return}await cargar()}
+async function vender(id){if(!confirm('¿Marcar este número como VENDIDO?'))return;const {error}=await db.from('numeros').update({estado:'vendido',apartado_hasta:null}).eq('id',id);if(error){alert(error.message);return}await cargar()}
+async function mostrarGanador(){const {data:w,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,participante_id').eq('rifa_id',rifa.id).maybeSingle();if(error||!w){$('winnerBox').classList.add('hidden');return}$('winnerBox').classList.remove('hidden');$('winnerNumber').textContent=String(w.numero).padStart(2,'0');$('winnerName').textContent=w.nombre_snapshot;$('winnerDate').textContent='Sorteado el '+new Date(w.created_at).toLocaleString('es-MX');const wa=$('winnerWhatsApp');if(wa){let tel='';if(w.participante_id){const {data:p}=await db.from('participantes').select('whatsapp').eq('id',w.participante_id).maybeSingle();tel=String(p?.whatsapp||'').replace(/\D/g,'')}if(tel.length===10){const nl=String.fromCharCode(10); const msg=['🎉 ¡Felicidades, '+w.nombre_snapshot+'!','🏆 Fuiste el ganador de *Rifando Ando* con el número *'+String(w.numero).padStart(2,'0')+'*.','¡Muchas felicidades y gracias por participar! 🎟️'].join(nl+nl);wa.href='https://wa.me/52'+tel+'?text='+encodeURIComponent(msg);wa.style.display='inline-block'}else{wa.removeAttribute('href');wa.style.display='none'}}}
+async function probarAnimacionSorteo(){
+  const lista=Array.from({length:100},(_,i)=>i);
+  $('drawModal').classList.add('open');$('drawWinner').classList.add('hidden');
+  $('drawStatus').textContent='DEMO · Esta prueba no realiza ni guarda ningún sorteo.';
+  $('drawGrid').innerHTML=lista.map(n=>'<div class="ticket"><b>'+String(n).padStart(2,'0')+'</b></div>').join('');
+  await new Promise(r=>setTimeout(r,Math.max(0,drawStartAt-Date.now())));
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce){$('drawNumber').textContent='🎲';await new Promise(r=>setTimeout(r,900));}
+  else{
+    let i=0;
+    for(let t=0;t<55;t++){
+      $('drawNumber').textContent=String(lista[i%lista.length]).padStart(2,'0');
+      document.querySelectorAll('#drawGrid .ticket').forEach((el,k)=>el.style.outline=k===i%lista.length?'3px solid #d9a936':'none');
+      i+=Math.max(1,Math.floor(t/9)+1);
+      await new Promise(r=>setTimeout(r,45+t*4));
+    }
+  }
+  const demo=lista[Math.floor(Math.random()*lista.length)];
+  $('drawNumber').textContent=String(demo).padStart(2,'0');
+  $('drawWinnerNumber').textContent=String(demo).padStart(2,'0');
+  $('drawWinnerName').textContent='Ganador de demostración';
+  $('drawWinner').classList.remove('hidden');
+  $('drawStatus').textContent='🎉 DEMOSTRACIÓN COMPLETADA · No se modificó la base de datos.';
+}
+async function abrirPruebaPublica(){
+  if(!rifa)return;
+  const ok=confirm('🌐 PRUEBA EN CLIENTES\n\nAsegúrate de tener abiertas las páginas de los clientes antes de continuar.\n\n⏱️ La prueba durará 45 segundos.\n\nℹ️ Esta es solo una prueba de sincronización. No realizará ni registrará ningún sorteo.\n\n¿Iniciar la prueba ahora?');
+  if(!ok)return;
+  await probarAnimacionClientes();
+}
+async function probarAnimacionClientes(){
+  if(!rifa)return;
+  const {data:sold,error}=await db.from('numeros').select('numero').eq('rifa_id',rifa.id).eq('estado','vendido').not('participante_id','is',null).order('numero');
+  if(error){alert('No se pudo cargar la lista para la prueba: '+error.message);return}
+  const lista=(sold||[]).map(x=>Number(x.numero));
+  if(!lista.length){alert('No hay números vendidos para probar la animación.');return}
+  const demo=lista[Math.floor(Math.random()*lista.length)];
+  const startAt=new Date(Date.now()+3000).toISOString();
+  const durationMs=45000;
+  const {error:te}=await db.from('sorteo_pruebas').insert({
+    rifa_id:rifa.id,start_at:startAt,duration_ms:durationMs,numeros:lista,numero_demo:demo
+  });
+  if(te){alert('No se pudo iniciar la prueba para los clientes: '+te.message);return}
+  $('drawModal').classList.add('open');$('drawWinner').classList.add('hidden');
+  $('drawStatus').textContent='🌐 PRUEBA EN CLIENTES · No se realizará ni registrará ningún sorteo.';
+  $('drawGrid').innerHTML=lista.map(n=>'<div class="ticket"><b>'+String(n).padStart(2,'0')+'</b></div>').join('');
+  const startMs=new Date(startAt).getTime();
+  await new Promise(r=>setTimeout(r,Math.max(0,startMs-Date.now())));
+  const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const started=Date.now();let i=0;
+  if(!reduce){while(Date.now()-started<durationMs){$('drawNumber').textContent=String(lista[i%lista.length]).padStart(2,'0');i++;await new Promise(r=>setTimeout(r,55));}}else{await new Promise(r=>setTimeout(r,700));}
+  $('drawNumber').textContent=String(demo).padStart(2,'0');
+  $('drawWinnerNumber').textContent=String(demo).padStart(2,'0');
+  $('drawWinnerName').textContent='Prueba de animación · NO es un ganador real';
+  $('drawWinner').classList.remove('hidden');
+  $('drawStatus').textContent='🎉 PRUEBA COMPLETADA · No se modificó la base de datos del sorteo.';
+  setTimeout(()=>$('drawModal').classList.remove('open'),2500);
+}
+
+function cerrarLoteria(){ $('loteriaModal').classList.remove('open'); }
+async function realizarSorteoLoteria(){
+  if(!rifa)return;
+  if(rifa.metodo_sorteo!=='loteria_nacional'){alert('⚠️ Esta rifa está configurada para sorteo interno. Crea la siguiente rifa con “Lotería Nacional” para usar este método.');return}
+  const vendidos=nGlobal.filter(x=>x.estado==='vendido'&&x.participante_id).length,apartados=nGlobal.filter(x=>estado(x)==='apartado').length;
+  if(vendidos!==100){alert('⚠️ Para usar Lotería Nacional deben estar vendidos los 100 números. Actualmente hay '+vendidos+' vendidos.');return}
+  if(apartados>0){alert('⚠️ Hay '+apartados+' número(s) apartados. Deben quedar en cero antes del sorteo.');return}
+  $('lotSorteo').value=rifa.loteria_sorteo||'';$('lotResultado').value=rifa.loteria_resultado||'';$('lotFuente').value=rifa.loteria_fuente||'https://www.loterianacional.gob.mx/Tris/resultados';$('lotFecha').value=rifa.loteria_fecha?new Date(rifa.loteria_fecha).toISOString().slice(0,16):new Date().toISOString().slice(0,16);$('lotMsg').textContent='';$('loteriaModal').classList.add('open');
+}
+async function confirmarSorteoLoteria(){
+  const tipo=$('lotTipo').value.trim(),sorteo=$('lotSorteo').value.trim(),resultado=$('lotResultado').value.replace(/\D/g,'').trim(),fuente=$('lotFuente').value.trim(),fecha=$('lotFecha').value;
+  if(!sorteo||resultado.length!==5||!fuente||!fecha){$('lotMsg').innerHTML='<span class="error">Completa tipo, sorteo, resultado de 5 dígitos, fecha y fuente.</span>';return}
+  const numero=Number(resultado.slice(-2)),vendido=nGlobal.find(x=>Number(x.numero)===numero&&x.estado==='vendido'&&x.participante_id);
+  if(!vendido){$('lotMsg').innerHTML='<span class="error">El resultado deriva el número '+String(numero).padStart(2,'0')+', pero ese número no aparece vendido.</span>';return}
+  if(!confirm('🇲🇽 CONFIRMACIÓN\n\nTris: '+tipo+' · Sorteo '+sorteo+'\nResultado oficial: '+resultado+'\nNúmero derivado: '+String(numero).padStart(2,'0')+'\n\n¿Registrar este ganador?'))return;
+  const btn=[...$('loteriaModal').querySelectorAll('.btn')].find(x=>x.textContent.includes('Registrar ganador'));if(btn){btn.disabled=true;btn.textContent='Registrando...'}
+  const {data,error}=await db.rpc('realizar_sorteo_loteria',{p_rifa_id:rifa.id,p_tipo:tipo,p_sorteo:sorteo,p_resultado:resultado,p_fuente:fuente,p_fecha:new Date(fecha).toISOString()});
+  if(error){$('lotMsg').innerHTML='<span class="error">❌ '+esc(error.message)+'</span>';if(btn){btn.disabled=false;btn.textContent='🏆 Registrar ganador'}return}
+  $('loteriaModal').classList.remove('open');await cargar();await mostrarGanador();alert('🏆 ¡GANADOR REGISTRADO!\n\nResultado Lotería Nacional: '+resultado+'\nNúmero ganador: '+String(data.numero).padStart(2,'0')+'\nGanador: '+data.nombre);
+}
+async function realizarSorteo(){if(!rifa)return;
+const {data:sold,error:se}=await db.from('numeros').select('numero,participante_id').eq('rifa_id',rifa.id).eq('estado','vendido').not('participante_id','is',null);
+if(se){alert('No se pudo verificar los números vendidos: '+se.message);return}
+const {data:apartados,error:ae}=await db.from('numeros').select('numero').eq('rifa_id',rifa.id).eq('estado','apartado');
+if(ae){alert('No se pudo verificar los apartados: '+ae.message);return}
+const vendidos=(sold||[]).length, apartadosActivos=(apartados||[]).length;
+if(vendidos===0){alert('⚠️ No hay números vendidos elegibles para el sorteo.');return}
+if(apartadosActivos>0){alert('⚠️ Todavía hay '+apartadosActivos+' número(s) en apartado.');return}
+if(!confirm('🏆 VERIFICACIÓN DEL SORTEO\n\nNúmeros vendidos elegibles: '+vendidos+'\nApartados activos: 0\n\nSe mostrarán todos los números participantes y comenzará una animación. El ganador final será seleccionado y registrado por el servidor.\n\n¿Realizar el sorteo ahora?'))return;
+const btn=[...document.querySelectorAll('.btn')].find(x=>x.textContent.includes('Realizar sorteo'));if(btn){btn.disabled=true;btn.textContent='🎲 Sorteando...'}
+const lista=(sold||[]).map(x=>Number(x.numero)).sort((a,b)=>a-b);
+const drawStartAt=Date.now()+1500;
+$('drawModal').classList.add('open');$('drawWinner').classList.add('hidden');$('drawStatus').textContent='Participan '+lista.length+' números vendidos. La selección final se realiza en el servidor.';$('drawGrid').innerHTML=lista.map(n=>'<div class="ticket"><b>'+String(n).padStart(2,'0')+'</b></div>').join('');const drawDurationMs=45000;
+const drawStartIso=new Date(drawStartAt).toISOString();
+const {data:drawEvent,error:drawEventError}=await db.from('sorteo_eventos_en_vivo').insert({rifa_id:rifa.id,start_at:drawStartIso,duration_ms:drawDurationMs,numeros:lista,estado:'en_vivo'}).select('id').single();
+if(drawEventError){$('drawStatus').textContent='❌ No se pudo iniciar la transmisión.';alert('No se pudo iniciar la transmisión del sorteo: '+drawEventError.message);if(btn){btn.disabled=false;btn.textContent='🏆 Realizar sorteo'}return}
+const publicDraw=db.channel('rifa-sorteo-publico-'+rifa.id);publicDraw.subscribe();
+await new Promise(r=>setTimeout(r,300));
+await publicDraw.send({type:'broadcast',event:'sorteo_inicio',payload:{rifa_id:rifa.id,numeros:lista,start_at:drawStartAt,duration_ms:drawDurationMs}});
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(!reduce){let i=0;const started=Date.now();while(Date.now()-started<45000){$('drawNumber').textContent=String(lista[i%lista.length]).padStart(2,'0');i++;await new Promise(r=>setTimeout(r,55+Math.min(90,((Date.now()-started)/45000)*90)));}}else{$('drawNumber').textContent='🎲';await new Promise(r=>setTimeout(r,700));}
+$('drawStatus').textContent='🔐 Confirmando selección aleatoria en el servidor...';
+const {data,error}=await db.rpc('realizar_sorteo',{p_rifa_id:rifa.id});
+if(error){$('drawStatus').textContent='❌ No se pudo completar el sorteo.';alert('No se pudo realizar el sorteo: '+error.message);setTimeout(()=>{$('drawModal').classList.remove('open')},1200);if(btn){btn.disabled=false;btn.textContent='🏆 Realizar sorteo'}return}
+const numero=String(data.numero).padStart(2,'0');$('drawNumber').textContent=numero;$('drawWinnerNumber').textContent=numero;$('drawWinnerName').textContent=data.nombre;$('drawWinner').classList.remove('hidden');$('drawStatus').textContent='✅ Selección registrada en el historial.';
+await db.from('sorteo_eventos_en_vivo').update({estado:'finalizado',numero_ganador:data.numero,nombre_ganador:data.nombre}).eq('id',drawEvent.id);
+await publicDraw.send({type:'broadcast',event:'sorteo_resultado',payload:{rifa_id:rifa.id,numero:data.numero,nombre:data.nombre}});
+await publicDraw.unsubscribe();
+await new Promise(r=>setTimeout(r,2500));$('drawModal').classList.remove('open');await mostrarGanador();alert('🏆 ¡SORTEO REALIZADO!\n\nNúmero ganador: '+numero+'\nGanador: '+data.nombre);if(btn){btn.disabled=true;btn.textContent='🏆 Sorteo realizado'}await cargar();}
+async function cargarListaGanadores(){
+  const el=$('winnerList');
+  if(!el)return;
+  const {data:gs,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id,participante_id').eq('rifa_id',rifa.id).order('created_at',{ascending:false});
+  if(error){el.innerHTML='<div class="error">No se pudo cargar la lista de ganadores.</div>';return}
+  if(!gs||!gs.length){el.innerHTML='<div class="muted">Aún no hay ganadores registrados.</div>';return}
+  const pids=[...new Set(gs.map(g=>g.participante_id).filter(Boolean))];
+  const rids=[...new Set(gs.map(g=>g.rifa_id).filter(Boolean))];
+  const {data:ps}=pids.length?await db.from('participantes').select('id,whatsapp').in('id',pids):{data:[]};
+  const {data:rs}=rids.length?await db.from('rifas').select('id,nombre,codigo_sorteo,numero_sorteo,premio').in('id',rids):{data:[]};
+  const pm=new Map((ps||[]).map(p=>[p.id,p]));
+  const rm=new Map((rs||[]).map(r=>[r.id,r]));
+  el.innerHTML=gs.map(g=>{
+    const p=pm.get(g.participante_id)||{};
+    const r=rm.get(g.rifa_id)||{};
+    const tel=String(p.whatsapp||'').replace(/\D/g,'');
+    const num=String(g.numero).padStart(2,'0');
+    const fecha=new Date(g.created_at).toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit',year:'numeric'});
+    const nl=String.fromCharCode(10); const msg=['🎉 ¡Felicidades, '+(g.nombre_snapshot||'Ganador')+'!','🏆 Fuiste el ganador de *Rifando Ando* con el número *'+num+'*.',(r.codigo_sorteo?'Sorteo: *'+r.codigo_sorteo+'*':''),'¡Muchas felicidades y gracias por participar! 🎟️'].filter(Boolean).join(nl+nl);
+    const wa=tel.length===10
+      ? '<a class="btn small" href="https://wa.me/52'+tel+'?text='+encodeURIComponent(msg)+'" target="_blank" rel="noopener">📲 Felicitar por WhatsApp</a>'
+      : '<span class="muted">📵 Sin WhatsApp registrado</span>';
+    return '<div class="row" style="border:1px solid #3a2d0d;border-radius:14px;padding:14px;margin:10px 0"><b style="font-size:18px">🏆 '+esc(g.nombre_snapshot||'Ganador')+'</b><br><span class="gold">⭐ Número ganador: #'+num+'</span><br><span>🎟️ '+esc(r.codigo_sorteo||('Sorteo #'+(r.numero_sorteo||'?')))+' · '+fecha+'</span><br><span>💰 Premio: '+esc(r.premio||'No disponible')+'</span><div style="margin-top:10px">'+wa+'</div></div>';
+  }).join('');
+}
+async function restablecerSorteo(){if(!rifa)return;if(!confirm('⚠️ PRIMERA CONFIRMACIÓN\n\nSe cerrará este sorteo y se creará un NUEVO SORTEO con números nuevos.\nEl historial, participantes y pagos anteriores se conservarán.\n\n¿Continuar?'))return;if(!confirm('⚠️ SEGUNDA CONFIRMACIÓN\n\nEsta acción no se puede deshacer desde el administrador.\n\n¿Realmente quieres continuar?'))return;const palabra=prompt('⚠️ TERCERA CONFIRMACIÓN\n\nEscribe RESTABLECER para confirmar:');if(palabra!=='RESTABLECER'){alert('Cancelado.');return}const {data,error}=await db.rpc('restablecer_rifa',{p_rifa_id:rifa.id});if(error){alert('No se pudo restablecer: '+error.message);return}alert('✅ Nuevo sorteo creado.\n\nSorteo #'+data.numero_sorteo+'\n'+data.numeros+' números disponibles.\n\nEl sorteo anterior quedó guardado en el historial.');await cargar()}
+function abrirPago(id,nombre,saldo){payParticipant=id;$('payPerson').textContent=nombre;$('payAmount').value=saldo;$('payMsg').textContent='';$('payModal').classList.add('open')}
+function cerrarPago(){$('payModal').classList.remove('open')}
+async function editarWhatsApp(id,nombre,telefono){
+  const actual=String(telefono||'').replace(/\D/g,'');
+  const nuevo=prompt('Editar únicamente el WhatsApp de '+nombre+'\n\nNúmero actual: '+(actual||'Sin número')+'\n\nEscribe el nuevo número de 10 dígitos:',actual);
+  if(nuevo===null)return;
+  const numero=String(nuevo).replace(/\D/g,'');
+  if(numero.length!==10){alert('⚠️ El WhatsApp debe tener exactamente 10 dígitos.');return}
+  if(numero===actual){alert('ℹ️ No hubo cambios.');return}
+  const confirmar=confirm('¿Guardar este nuevo WhatsApp?\n\n'+actual+' → '+numero+'\n\nSolo se modificará el WhatsApp.');
+  if(!confirmar)return;
+  const {error}=await db.from('participantes').update({whatsapp:numero}).eq('id',id);
+  if(error){alert('❌ No se pudo actualizar el WhatsApp.\n\n'+error.message);return}
+  alert('✅ WhatsApp actualizado correctamente.\n\nNo se modificaron nombre, correo, números ni pagos.');
+  await cargar();
+}
+async function guardarPago(){const monto=Number($('payAmount').value);if(!payParticipant||!rifa||monto<=0){$('payMsg').innerHTML='<span class="error">Indica un monto válido.</span>';return}const ns=numerosActuales(payParticipant),total=ns.length*Number(rifa.precio_numero);const {data:prev,error:pe}=await db.from('pagos').select('monto').eq('rifa_id',rifa.id).eq('participante_id',payParticipant).eq('estado','confirmado');if(pe){$('payMsg').innerHTML='<span class="error">'+esc(pe.message)+'</span>';return}const pagado=(prev||[]).reduce((s,x)=>s+Number(x.monto||0),0),saldo=Math.max(0,total-pagado);if(saldo<=0){$('payMsg').innerHTML='<span class="error">Este participante ya está pagado.</span>';return}if(monto>saldo){$('payMsg').innerHTML='<span class="error">El máximo a registrar es $'+saldo.toLocaleString('es-MX')+'.</span>';return}const {error}=await db.from('pagos').insert({rifa_id:rifa.id,participante_id:payParticipant,monto,metodo:$('payMethod').value,estado:'confirmado',confirmado_at:new Date().toISOString(),confirmado_por:currentAdmin?.id||null,confirmado_por_email:currentAdmin?.email||null});if(error){$('payMsg').innerHTML='<span class="error">'+esc(error.message)+'</span>';return}const nuevo=pagado+monto;if(nuevo>=total){const {error:ue}=await db.from('numeros').update({estado:'vendido',apartado_hasta:null}).eq('rifa_id',rifa.id).eq('participante_id',payParticipant).eq('estado','apartado');if(ue){$('payMsg').innerHTML='<span class="error">Pago guardado, pero no se actualizaron los números.</span>';return}cerrarPago();alert('Pago completo registrado y números vendidos.')}else{cerrarPago();alert('Abono registrado. Saldo pendiente: $'+(total-nuevo).toLocaleString('es-MX'))}await cargar()}
+function enviarWhatsApp(nombre,telefono,numeros,total,pagado,saldo){
+  const clean=String(telefono||'').replace(/\D/g,'');
+  const waNumber=clean.length===10?'52'+clean:clean;
+  const nl=String.fromCharCode(10);
+  const resumen='💰 RESUMEN DE TU PARTICIPACIÓN'+nl+'💵 Total: $'+Number(total).toLocaleString('es-MX')+nl+'✅ Pagado: $'+Number(pagado).toLocaleString('es-MX');
+  const msg=saldo>0
+    ? '👋 ¡Hola, '+nombre+'!'+nl+nl+'🎟️✨ RIFANDO ANDO ✨🎟️'+nl+nl+'🎉 ¡Tu apartado ha sido registrado correctamente!'+nl+nl+'🎫 TUS NÚMEROS'+nl+numeros+nl+nl+resumen+nl+'💳 Saldo pendiente: $'+Number(saldo).toLocaleString('es-MX')+nl+nl+'⏰ IMPORTANTE: TIENES 30 MINUTOS'+nl+nl+'⏳ Tu selección queda apartada por un máximo de 30 minutos. Para conservar tus números, completa tu pago dentro de ese plazo.'+nl+nl+'Para completar tu participación, solicítame los datos de pago por este mismo WhatsApp.'+nl+nl+'🧾 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tu participación.'+nl+nl+'🤝 Gracias por participar en Rifando Ando.'+nl+nl+'🏆 ¡Échale número, compa!'
+    : '👋 ¡Hola, '+nombre+'!'+nl+nl+'🎟️✨ RIFANDO ANDO ✨🎟️'+nl+nl+'🎉 ¡PAGO CONFIRMADO!'+nl+nl+'🎫 TUS NÚMEROS'+nl+numeros+nl+nl+resumen+nl+nl+'✅ Tu participación ha quedado confirmada correctamente.'+nl+nl+'🍀 ¡Mucha suerte en el sorteo!'+nl+nl+'🤝 Gracias por participar en Rifando Ando.'+nl+nl+'🏆 ¡Échale número, compa!';
+  window.open('https://wa.me/'+waNumber+'?text='+encodeURIComponent(msg),'_blank');
+}
+function enviarDatosPagoWhatsApp(telefono){
+  const clean=String(telefono||'').replace(/\D/g,'');
+  const waNumber=clean.length===10?'52'+clean:clean;
+  const nl=String.fromCharCode(10);
+  const msg='💳 DATOS PARA REALIZAR TU PAGO'+nl+nl+'🏦 TRANSFERENCIA'+nl+'🔢 CLABE: 722969010050807387'+nl+'🏦 Banco: Mercado Pago'+nl+'👤 Beneficiario: Miguel Velasco'+nl+nl+'🧾 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tu participación.'+nl+nl+'🤝 Gracias por participar en Rifando Ando.'+nl+nl+'🏆 ¡Échale número, compa!';
+  window.open('https://wa.me/'+waNumber+'?text='+encodeURIComponent(msg),'_blank');
+}
+
+function activarTiempoReal(){
+  if(!rifa) return;
+  if(realtimeChannel) realtimeChannel.unsubscribe();
+  realtimeChannel=db.channel('admin-rifa-'+rifa.id)
+    .on('postgres_changes',{event:'*',schema:'public',table:'numeros',filter:'rifa_id=eq.'+rifa.id},()=>cargar())
+    .on('postgres_changes',{event:'*',schema:'public',table:'pagos',filter:'rifa_id=eq.'+rifa.id},()=>cargar())
+        .subscribe((status)=>{ $('status').textContent=rifa.nombre+' · Sorteo #'+(rifa.numero_sorteo||1)+' · '+(status==='SUBSCRIBED'?'🟢 Tiempo real activo':'Conectando tiempo real...'); });
+}
+function toggleParticipantes(){const body=$('participantsBody'),head=$('participantsToggle');const open=body.classList.toggle('open');head.classList.toggle('open',open);$('participantsIcon').textContent=open?'▲':'▼'}
+async function cargarHistorialRifas(){const {data,error}=await db.from('rifas').select('id,nombre,numero_sorteo,codigo_sorteo,estado,created_at,fecha_sorteo').order('created_at',{ascending:false});const sel=$('historyRaffle');if(!sel)return;if(error){sel.innerHTML='<option value="">No se pudieron cargar los sorteos</option>';if($('historySummary')){$('historySummary').textContent='';$('historySummary').style.display='none'}if($('historyParticipants')){$('historyParticipants').innerHTML='';$('historyParticipants').style.display='none'}return}sel.innerHTML='<option value="">Selecciona un sorteo...</option>'+(data||[]).map(x=>'<option value="'+x.id+'">'+esc(x.codigo_sorteo||('Sorteo #'+(x.numero_sorteo||'')))+' · '+esc(x.nombre)+' · '+esc(x.estado)+'</option>').join('');if($('historySummary')){$('historySummary').textContent='';$('historySummary').style.display='none'}if($('historyParticipants')){$('historyParticipants').innerHTML='';$('historyParticipants').style.display='none'}}
+async function cargarHistorialRifa(){const id=$('historyRaffle')?.value;if(!id){$('historySummary').textContent='';$('historySummary').style.display='none';$('historyParticipants').innerHTML='';$('historyParticipants').style.display='none';return}$('historySummary').style.display='block';$('historyParticipants').style.display='block';const {data:n,error:ne}=await db.from('numeros').select('numero,estado,participante_id,apartado_hasta').eq('rifa_id',id).order('numero');if(ne){$('historySummary').textContent='No se pudieron cargar los números.';return}const ns=n||[];const ids=[...new Set(ns.filter(x=>x.participante_id).map(x=>x.participante_id))];const {data:p}=ids.length?await db.from('participantes').select('id,nombre,whatsapp').in('id',ids):{data:[]};const {data:pay}=ids.length?await db.from('pagos').select('participante_id,monto,metodo,estado,confirmado_at,confirmado_por_email').eq('rifa_id',id).in('participante_id',ids).order('confirmado_at',{ascending:false}):{data:[]};const by={};(p||[]).forEach(x=>by[x.id]=x);const paid={};(pay||[]).forEach(x=>{if(x.estado==='confirmado')paid[x.participante_id]=(paid[x.participante_id]||0)+Number(x.monto||0)});const sold=ns.filter(x=>x.estado==='vendido').length,apart=ns.filter(x=>x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)>new Date()).length;const money=(pay||[]).filter(x=>x.estado==='confirmado').reduce((s,x)=>s+Number(x.monto||0),0);$('historySummary').innerHTML='<b>'+ids.length+'</b> participantes · <b>'+sold+'</b> vendidos · <b>'+apart+'</b> apartados activos · <b>$'+money.toLocaleString('es-MX')+'</b> cobrado';$('historyParticipants').innerHTML=ids.length?ids.map(pid=>{const x=by[pid]||{};const nums=ns.filter(z=>z.participante_id===pid&&(z.estado==='vendido'||z.estado==='apartado')).map(z=>String(z.numero).padStart(2,'0'));const rows=(pay||[]).filter(q=>q.participante_id===pid&&q.estado==='confirmado').map(q=>'<div>💳 $'+Number(q.monto).toLocaleString('es-MX')+' · '+esc(q.metodo||'')+' · '+new Date(q.confirmado_at||0).toLocaleString('es-MX')+' · '+esc(q.confirmado_por_email||'Administrador')+'</div>').join('');return '<div class="row"><b>'+esc(x.nombre||'Participante')+'</b> · '+esc(x.whatsapp||'')+'<br><span class="gold">🎟️ Números: '+(nums.join(', ')||'—')+'</span><br>'+(paid[pid]?'🟢 Pagado: $'+paid[pid].toLocaleString('es-MX'):'⚪ Sin pago confirmado')+'<div class="pay">'+(rows||'Sin movimientos de pago')+'</div></div>'}).join(''):'Sin participantes registrados en este sorteo.'}
+async function cargar(){const {data:r,error:re}=await db.from('rifas').select('*').eq('id','60f9a81d-bdd6-4e28-b330-dc92cfe4d113').maybeSingle();if(re||!r){$('status').textContent='No se pudo cargar la rifa.';return}rifa=r;await mostrarGanador();await cargarListaGanadores();await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});const {data:n,error:ne}=await db.from('numeros').select('id,numero,estado,apartado_hasta,participante_id').eq('rifa_id',r.id).order('numero');if(ne){$('status').textContent='No se pudieron cargar los números.';return}nGlobal=n||[];$('disp').textContent=n.filter(x=>estado(x)==='disponible').length;$('apart').textContent=n.filter(x=>estado(x)==='apartado').length;$('vend').textContent=n.filter(x=>x.estado==='vendido').length;$('nums').innerHTML=n.map(x=>{const st=estado(x);let b='';if(st==='apartado')b='<button class="btn small danger" onclick="liberar(\''+x.id+'\')">Liberar</button>';if(st==='disponible')b='<button class="btn small" onclick="vender(\''+x.id+'\')">Vendido</button>';if(st==='vendido')b='<button class="btn small secondary" onclick="liberar(\''+x.id+'\')">Liberar</button>';return '<div class="ticket '+st+'"><b>'+String(x.numero).padStart(2,'0')+'</b><div class="actions">'+b+'</div></div>'}).join('');
+const participantIds=[...new Set((nGlobal||[]).filter(z=>z.participante_id).map(z=>z.participante_id))];
+const {data:p,error:pe}=participantIds.length?await db.from('participantes').select('id,nombre,whatsapp,correo,created_at').in('id',participantIds).order('created_at',{ascending:false}).limit(20):{data:[],error:null};
+if(pe){$('participants').textContent='No se pudieron cargar participantes: '+pe.message;$('people').textContent='0';return}
+$('people').textContent=p?.length||0;const ids=(p||[]).map(x=>x.id);const {data:payments}=ids.length?await db.from('pagos').select('participante_id,monto,estado,confirmado_at,confirmado_por_email').eq('rifa_id',r.id).in('participante_id',ids):{data:[]};const paidBy={},lastPaymentBy={};(payments||[]).forEach(q=>{if(q.estado==='confirmado'){paidBy[q.participante_id]=(paidBy[q.participante_id]||0)+Number(q.monto||0);if(!lastPaymentBy[q.participante_id]||new Date(q.confirmado_at||0)>new Date(lastPaymentBy[q.participante_id].confirmado_at||0))lastPaymentBy[q.participante_id]=q}});$('participants').innerHTML=p?.length?p.map(x=>{const ns=nGlobal.filter(z=>z.participante_id===x.id&&(z.estado==='apartado'||z.estado==='vendido')).map(z=>String(z.numero).padStart(2,'0'));const total=ns.length*Number(r.precio_numero),pagado=paidBy[x.id]||0,saldo=Math.max(0,total-pagado);const ep=total===0?'Sin números':saldo===0?'Pagado':pagado>0?'Abono':'Pendiente';const lp=lastPaymentBy[x.id];const confirmInfo=saldo===0&&lp?'<br><small>🕒 Confirmado: '+new Date(lp.confirmado_at||0).toLocaleString('es-MX')+'</small>':'';const safe=esc(x.nombre).replace(/'/g,'');return '<div class="row"><b>'+esc(x.nombre)+'</b><br>'+esc(x.whatsapp)+'<br><span class="gold">Números: '+(ns.join(', ')||'—')+'</span><div class="pay"><span>Total: $'+total.toLocaleString('es-MX')+'</span><br><span>Pagado: $'+pagado.toLocaleString('es-MX')+' · Saldo: $'+saldo.toLocaleString('es-MX')+'</span><br><b>'+ep+'</b>'+confirmInfo+'<br>'+(saldo>0&&total>0?'<button class="btn small" onclick="abrirPago(\''+x.id+'\',\''+safe+'\','+saldo+')">Registrar pago</button>':'')+'<button class="btn small secondary" onclick="editarWhatsApp(\''+x.id+'\',\''+safe+'\',\''+esc(x.whatsapp)+'\')">✏️ Editar WhatsApp</button>'+(ns.length?'<button class="btn small secondary" onclick="enviarWhatsApp(\''+safe+'\',\''+esc(x.whatsapp)+'\',\''+ns.join(', ')+'\','+total+','+pagado+','+saldo+')">📲 WhatsApp</button><button class="btn small secondary" onclick="enviarDatosPagoWhatsApp(\''+esc(x.whatsapp)+'\')">💳 Datos de pago</button>':'')+'</div><small>'+new Date(x.created_at).toLocaleString('es-MX')+'</small></div>'}).join(''):'Sin participantes';$('status').textContent=r.nombre+' · Sorteo #'+(r.numero_sorteo||1)+' · '+Number(r.precio_numero).toLocaleString('es-MX')+' por número';await cargarHistorialRifas()}
+async function iniciarAdmin(){
+  if(!(await initDb()))return;
+  db.auth.onAuthStateChange((e,s)=>{if(s)sesion();else mostrarLogin()});
+  await sesion();
+  setInterval(()=>{if(!$('app').classList.contains('hidden'))cargar()},30000);
+}
+iniciarAdmin();
+</script><script src="admin-nuevo-sorteo.js"></script></body></html>
