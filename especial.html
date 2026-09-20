@@ -464,7 +464,7 @@ async function actualizarInfoLoteria(r){
   details.innerHTML='<div>🎯 Modalidad: <b>'+drawType+'</b></div>'+
     '<div>📅 Fecha del sorteo: <b>'+drawDateLabel+'</b></div>'+
     '<div>⏰ Hora límite: <b>21:00 h</b> (hora de Monterrey)</div>'+
-    '<div>🔢 Regla: <b>Si el último boleto se vende antes de las 21:00 h, participa ese mismo día; después de las 21:00 h, se programa para el día siguiente.</b></div>'+
+    '<div>🔢 Regla: <b>Si el último boleto se vende antes de las 21:00 h, el sorteo se realizará ese mismo día. Si se vende después de las 21:00 h, el sorteo se realizará al día siguiente.</b></div>'+
     '<div>🎟️ Estado de la rifa: <b>'+completeCount+'/100 números pagados</b></div>';
   if(r.estado==='sorteada' && r.loteria_resultado){
     const resultText=String(r.loteria_resultado).padStart(5,'0');
