@@ -45,7 +45,19 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 @keyframes prizePulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.035);filter:brightness(1.3)}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.45}}
 @keyframes twinkle{from{opacity:.35}to{opacity:1}}
-.draw-public{position:fixed;inset:0;background:#050505f5;z-index:50;display:none;place-items:center;padding:18px}.draw-public.open{display:grid}.draw-public-box{width:min(1000px,100%);max-height:92vh;overflow:auto;background:#111;border:2px solid #6d5215;border-radius:24px;padding:25px;text-align:center;box-shadow:0 0 45px #d9a93633;position:relative}.draw-public-close{position:absolute;top:10px;right:14px;width:42px;height:42px;border:1px solid #4a4a4a;border-radius:50%;background:#171717;color:#fff;font-size:30px;line-height:1;cursor:pointer;z-index:2}.draw-public-close:hover{background:#262626;border-color:#d9a936;color:#d9a936}.draw-public-number{font-size:clamp(80px,18vw,170px);line-height:.9;font-weight:1000;color:#d9a936;text-shadow:0 0 25px #d9a936}.draw-public-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:20px}.draw-public-grid span{padding:8px 3px;border:1px solid #303030;border-radius:8px;background:#171717;font-weight:900}.draw-public-grid span.active{background:#d9a936;color:#111;transform:scale(1.08)}.draw-public-result{display:none}.draw-public-result.show{display:block}@media(max-width:760px){.draw-public-grid{grid-template-columns:repeat(5,1fr)}}</style><style>.closed-ticket{opacity:.48!important;cursor:not-allowed!important;filter:grayscale(.25)}#closedNotice{margin:10px 0;padding:10px 12px;border:1px solid #6d5215;border-radius:10px;background:#17130a;color:#f5d36a;text-align:center;font-weight:800}</style></head>
+.draw-public{position:fixed;inset:0;background:#050505f5;z-index:50;display:none;place-items:center;padding:18px}.draw-public.open{display:grid}.draw-public-box{width:min(1000px,100%);max-height:92vh;overflow:auto;background:#111;border:2px solid #6d5215;border-radius:24px;padding:25px;text-align:center;box-shadow:0 0 45px #d9a93633;position:relative}.draw-public-close{position:absolute;top:10px;right:14px;width:42px;height:42px;border:1px solid #4a4a4a;border-radius:50%;background:#171717;color:#fff;font-size:30px;line-height:1;cursor:pointer;z-index:2}.draw-public-close:hover{background:#262626;border-color:#d9a936;color:#d9a936}.draw-public-number{font-size:clamp(80px,18vw,170px);line-height:.9;font-weight:1000;color:#d9a936;text-shadow:0 0 25px #d9a936}.draw-public-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:20px}.draw-public-grid span{padding:8px 3px;border:1px solid #303030;border-radius:8px;background:#171717;font-weight:900}.draw-public-grid span.active{background:#d9a936;color:#111;transform:scale(1.08)}.draw-public-result{display:none}.draw-public-result.show{display:block}@media(max-width:760px){.draw-public-grid{grid-template-columns:repeat(5,1fr)}}</style><style>.closed-ticket{opacity:.48!important;cursor:not-allowed!important;filter:grayscale(.25)}#closedNotice{margin:10px 0;padding:10px 12px;border:1px solid #6d5215;border-radius:10px;background:#17130a;color:#f5d36a;text-align:center;font-weight:800}</style><style>
+.draw-process{margin-top:24px;max-width:520px;padding:16px 18px;border:1px solid #6d5215;border-radius:18px;background:linear-gradient(145deg,#15120b,#0e0e0e);box-shadow:0 0 22px #d9a93618}
+.draw-process-title{color:#f5d36a;font-weight:1000;letter-spacing:1.5px;margin-bottom:12px}
+.draw-step{display:flex;gap:12px;align-items:center;padding:10px 8px;border-top:1px solid #292929;opacity:.48;transition:.2s}
+.draw-step:first-of-type{border-top:0}
+.draw-step>span{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:#292929;color:#aaa;font-weight:1000}
+.draw-step b{display:block;color:#fff}.draw-step small{display:block;color:#999;margin-top:2px}
+.draw-step.active{opacity:1}.draw-step.active>span{background:#d9a936;color:#111}.draw-step.done{opacity:.9}.draw-step.done>span{background:#2f7d32;color:#fff}
+.draw-step.closed{opacity:1}.draw-step.closed>span{background:#8a6518;color:#fff}
+#closedNotice{margin:12px 0;padding:12px 14px;border:1px solid #8a6518;border-radius:12px;background:#17130a;color:#f5d36a;text-align:center;font-weight:900}
+.closed-summary{opacity:.55}.closed-summary button{pointer-events:none}
+@media(max-width:760px){.draw-process{margin-top:18px;padding:14px}.draw-step{padding:9px 4px}}
+</style></head>
 <body>
 <header>
 <div class="nav">
@@ -65,7 +77,12 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <div class="eyebrow">La rifa entre compas</div>
 <h1>¡Échale número, <span class="gold">compa!</span></h1>
 <p>Participa en nuestras rifas, elige tus números y cruza los dedos.</p>
-<a class="btn" href="#numeros">Quiero participar</a>
+<a class="btn" href="#numeros">Quiero participar</a><div class="draw-process" id="drawProcess">
+  <div class="draw-process-title">🎯 PROCESO DEL SORTEO</div>
+  <div class="draw-step active" id="stepSale"><span>01</span><div><b>Boletos en venta</b><small id="saleStatus">Puedes elegir y apartar tus números.</small></div></div>
+  <div class="draw-step" id="stepClosed"><span>02</span><div><b>Ventas cerradas</b><small>Los números quedan bloqueados y ya no se permiten apartados.</small></div></div>
+  <div class="draw-step" id="stepDraw"><span>03</span><div><b>Preparación del sorteo</b><small>El administrador realizará el sorteo cuando corresponda.</small></div></div>
+</div>
 </div>
 <div class="card grand-prize"><div class="sparkles">✦ ✨ ✦ ✨ ✦</div>
 <div class="prize">🏆</div>
@@ -110,7 +127,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <div class="tickets" id="tickets"><p style="color:#aaa">Cargando números...</p></div>
 <div class="summary">
 <div>Números: <b class="gold" id="count">0</b> · Total: <b class="gold">$<span id="total">0</span></b></div>
-<button class="btn" onclick="abrirFormulario()">Continuar</button>
+<button class="btn" id="continueBtn" onclick="abrirFormulario()">Continuar</button>
 </div>
 </section>
 
@@ -423,7 +440,25 @@ async function cargarNumerosPublico(rifaId){
   return {data:null,error:ultimoError};
 }
 
-async function cargarRifa(){
+function actualizarProcesoSorteo(r){
+  const sale=document.getElementById('stepSale'), closed=document.getElementById('stepClosed'), draw=document.getElementById('stepDraw');
+  const continueBtn=document.getElementById('continueBtn'), ticketsEl=document.getElementById('tickets'), summaryEl=document.querySelector('#numeros .summary');
+  if(!sale||!closed||!draw)return;
+  const abierto=r.estado==='activa';
+  sale.classList.toggle('active',abierto);
+  sale.classList.toggle('done',!abierto);
+  closed.classList.toggle('active',!abierto);
+  closed.classList.toggle('closed',!abierto);
+  draw.classList.remove('active');
+  const status=document.getElementById('saleStatus');
+  if(status)status.textContent=abierto?'Puedes elegir y apartar tus números.':'Las ventas están cerradas. Los números están bloqueados.';
+  if(continueBtn){continueBtn.disabled=!abierto;continueBtn.style.opacity=abierto?'1':'.45';continueBtn.style.cursor=abierto?'pointer':'not-allowed';}
+  if(summaryEl)summaryEl.classList.toggle('closed-summary',!abierto);
+  let notice=document.getElementById('closedNotice');
+  if(!abierto){
+    if(!notice){notice=document.createElement('div');notice.id='closedNotice';notice.textContent='🔒 VENTAS CERRADAS · Los números están bloqueados y no se pueden apartar.';ticketsEl.parentNode.insertBefore(notice,ticketsEl);}
+  }else if(notice)notice.remove();
+}async function cargarRifa(){
   const {data:r,error:re}=await db.from('rifas').select('*').eq('id','60f9a81d-bdd6-4e28-b330-dc92cfe4d113').maybeSingle();
   if(re||!r){
     tickets.innerHTML='<p style="color:#aaa">No hay una rifa activa disponible.</p>';
@@ -432,6 +467,7 @@ async function cargarRifa(){
     return;
   }
   rifa=r;
+  actualizarProcesoSorteo(r);
   actualizarInfoLoteria(r).catch(()=>{});
   // El canal de animación y los historiales no deben bloquear la carga principal.
   activarCanalSorteoPublico().catch(()=>{});
