@@ -618,7 +618,7 @@ async function cargarHistorialGanadores(){
   const premio=String(rifa.premio||'No disponible');
   el.innerHTML='<div class="winner-head"><div>🎟️ No. de sorteo</div><div>👤 Nombre del ganador</div><div>💰 Monto ganado</div><div>⭐ # ganador</div></div>'+data.map(w=>{
     const codigo=rifa.codigo_sorteo||('RA-'+String(rifa.numero_sorteo||'?').padStart(4,'0'));
-    const d=w.created_at?new Date(w.created_at).toLocaleDateString('es-MX'):'';
+    const d=w.created_at?(()=>{const dt=new Date(w.created_at);const fecha=dt.toLocaleDateString('es-MX',{timeZone:'America/Monterrey'});const hora=dt.toLocaleTimeString('es-MX',{timeZone:'America/Monterrey',hour:'2-digit',minute:'2-digit',hour12:false});return fecha+' · '+hora+' h';})():'';
     const nombreVisible=formatearNombrePublico(w.nombre_snapshot||'Ganador');
     return '<div class="winner-card"><div><div class="wname">'+codigo+'</div><div class="wdate">'+d+'</div></div><div class="wname">'+nombreVisible+'</div><div class="wprize">'+premio+'</div><div class="wnum">#'+String(w.numero).padStart(2,'0')+'</div></div>';
   }).join('');
