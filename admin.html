@@ -198,7 +198,7 @@ function enviarDatosPagoWhatsApp(telefono){
   const clean=String(telefono||'').replace(/\D/g,'');
   const waNumber=clean.length===10?'52'+clean:clean;
   const nl=String.fromCharCode(10);
-  const msg='💳 DATOS PARA REALIZAR TU PAGO'+nl+nl+'🏦 TRANSFERENCIA'+nl+'🔢 CLABE: 7229 69010050807387'+nl+'🏦 Banco: Mercado Pago'+nl+'👤 Beneficiario: Miguel Velasco'+nl+nl+'🧾 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tu participación.'+nl+nl+'🤝 Gracias por participar en Rifando Ando.'+nl+nl+'🏆 ¡Échale número, compa!';
+  const msg='💳 DATOS PARA REALIZAR TU PAGO'+nl+nl+'🏦 TRANSFERENCIA'+nl+'🔢 CLABE: 722969010050807387'+nl+'🏦 Banco: Mercado Pago'+nl+'👤 Beneficiario: Miguel Velasco'+nl+nl+'🧾 Después de realizar tu pago, envíame tu comprobante por este mismo WhatsApp para confirmar tu participación.'+nl+nl+'🤝 Gracias por participar en Rifando Ando.'+nl+nl+'🏆 ¡Échale número, compa!';
   window.open('https://wa.me/'+waNumber+'?text='+encodeURIComponent(msg),'_blank');
 }
 
