@@ -29,6 +29,8 @@
 </script>
 <style>
 *{box-sizing:border-box}
+:focus-visible{outline:3px solid #f5d36a;outline-offset:3px}
+button,.btn,.raffle-link,.ticket{touch-action:manipulation}
 body{margin:0;background:#080808;color:#fff;font-family:system-ui,-apple-system,sans-serif}
 header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;background:#080808ee;z-index:5}
 .nav{max-width:1100px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:15px}
@@ -120,23 +122,23 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 </div>
 </header>
 
-<div id="publicDraw" class="draw-public" onclick="cerrarSorteoPublico(event)"><div class="draw-public-box"><button class="draw-public-close" type="button" onclick="cerrarSorteoPublico(event)" aria-label="Cerrar animación" title="Cerrar">×</button><div style="font-size:46px">🎲</div><div class="official">SORTEO EN VIVO</div><h2 id="publicDrawStatus">Preparando selección...</h2><div id="publicDrawNumber" class="draw-public-number">--</div><div id="publicDrawGrid" class="draw-public-grid"></div><div id="publicDrawResult" class="draw-public-result"><div style="font-size:28px;color:#f5d36a;font-weight:1000">🏆 ¡TENEMOS GANADOR!</div><div id="publicDrawWinnerNumber" style="font-size:72px;font-weight:1000;color:#d9a936"></div><div id="publicDrawWinnerName" style="font-size:26px;font-weight:900"></div></div></div></div><main>
+<div id="publicDraw" class="draw-public" role="dialog" aria-modal="true" aria-labelledby="publicDrawStatus" onclick="cerrarSorteoPublico(event)"><div class="draw-public-box"><button class="draw-public-close" type="button" onclick="cerrarSorteoPublico(event)" aria-label="Cerrar animación del sorteo" title="Cerrar">×</button><div style="font-size:46px">🎲</div><div class="official">SORTEO EN VIVO</div><h2 id="publicDrawStatus">Preparando selección...</h2><div id="publicDrawNumber" class="draw-public-number">--</div><div id="publicDrawGrid" class="draw-public-grid"></div><div id="publicDrawResult" class="draw-public-result"><div style="font-size:28px;color:#f5d36a;font-weight:1000">🏆 ¡TENEMOS GANADOR!</div><div id="publicDrawWinnerNumber" style="font-size:72px;font-weight:1000;color:#d9a936"></div><div id="publicDrawWinnerName" style="font-size:26px;font-weight:900"></div></div></div></div><main>
 <div class="hero">
 <div>
 <div class="eyebrow">La rifa entre compas</div>
 <h1>¡Échale número, <span class="gold">compa!</span></h1>
 <p>Participa en nuestras rifas, elige tus números y cruza los dedos.</p>
 <a class="btn" href="#numeros">Quiero participar</a>
-<div class="raffle-links" aria-label="Nuestros sorteos">
+<nav class="raffle-links" aria-label="Nuestros sorteos">
 <div class="raffle-links-title">🎟️ Nuestros sorteos</div>
 <div class="raffle-links-list">
 <a class="raffle-link" data-rifa="4b23f516-7973-4a04-bff6-9b9b5cb90f4d" href="?rifa=4b23f516-7973-4a04-bff6-9b9b5cb90f4d">Sorteo Regular <span class="raffle-link-arrow">›</span></a>
 <a class="raffle-link" data-rifa="60f9a81d-bdd6-4e28-b330-dc92cfe4d113" href="?rifa=60f9a81d-bdd6-4e28-b330-dc92cfe4d113">Sorteo Especial <span class="raffle-link-arrow">›</span></a>
 <a class="raffle-link" data-rifa="9a9bca1f-3f22-4a1a-8813-70c7f5914f65" href="?rifa=9a9bca1f-3f22-4a1a-8813-70c7f5914f65">iPhone 18 Pro Max 256 GB <span class="raffle-link-arrow">›</span></a>
-</div></div>
+</div></nav>
 </div>
 <div class="card grand-prize">
-<div class="sparkles">✦ ✨ ✦ ✨ ✦</div>
+<div class="sparkles" aria-hidden="true">✦ ✨ ✦ ✨ ✦</div>
 <div class="prize iphone-prize" id="prizeVisual">
 <img id="prizeImage" src="copa.PNG" alt="Copa dorada Rifando Ando" decoding="async">
 
@@ -172,7 +174,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <div class="official" id="officialTitle">SORTEO OFICIAL</div>
 <div class="grand-label">GRAN PREMIO</div>
 <div class="grand-amount" id="grandAmount">$1,000<span class="decimals">.00</span></div>
-<div class="winner-text">✨ ¡PUEDE SER TUYO! ✨</div>
+<div class="winner-text" aria-hidden="true">✨ ¡PUEDE SER TUYO! ✨</div>
 <div class="raffle-info"><span>🎟️ <b id="ticketInfoPrice">$15.00</b> por boleto</span><span>🔢 <b id="ticketInfoCount">100</b> números</span></div>
 <h2 id="raffleName">Sorteo Regular</h2>
 <div class="price" id="price">$15.00 por número</div>
