@@ -201,9 +201,13 @@ function resetConfirmation(){
 }
 function activarTiempoReal(){
   if(!rifa) return;
+  const channelRifaId=String(rifa.id);
   if(realtimeChannel) realtimeChannel.unsubscribe();
-  realtimeChannel=db.channel('rifa-numeros-'+rifa.id)
-    .on('postgres_changes',{event:'*',schema:'public',table:'numeros',filter:'rifa_id=eq.'+rifa.id},()=>cargarRifa())
+  realtimeChannel=db.channel('rifa-numeros-'+channelRifaId)
+    .on('postgres_changes',{event:'*',schema:'public',table:'numeros',filter:'rifa_id=eq.'+channelRifaId},()=>{
+      if(!rifa || String(rifa.id)!==channelRifaId)return;
+      cargarRifa().catch(()=>{});
+    })
     .subscribe();
 }
 function activarSorteoPublico(payload){
@@ -518,6 +522,7 @@ async function cargarRifa(){
   }
 
   const {data:n,error:ne}=await cargarNumerosPublico(r.id);
+  if(loadSeq!==cargarRifaSeq || !rifa || String(rifa.id)!==String(r.id))return;
   if(ne){
     console.error('Rifando Ando: error cargando números',ne);
     tickets.innerHTML='<div style="grid-column:1/-1;padding:22px;text-align:center;border:1px solid #3a2d0d;border-radius:16px;background:#111"><b style="color:#d9a936">No se pudieron cargar los números.</b><p style="color:#aaa;margin:8px 0 0">Estamos intentando reconectar con el servidor. Actualiza la página en unos segundos.</p></div>';
