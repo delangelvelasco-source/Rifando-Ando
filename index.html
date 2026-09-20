@@ -65,20 +65,22 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 .cup-pedestal:before{content:"";position:absolute;left:8px;right:8px;top:-7px;height:11px;border-radius:50%;background:linear-gradient(90deg,#6f3b03,#f1c247,#fff0a0,#a45f06);border:2px solid #c48717}
 .cup-pedestal b{position:relative;color:#f5d36a;font-size:9px;line-height:.95;letter-spacing:1px;text-shadow:0 0 5px #d9a93666}
 .diamond-field{position:absolute;inset:0;z-index:4;pointer-events:none}
-.diamond{position:absolute;display:block;background:linear-gradient(135deg,#fff,#dcecff 32%,#aab6c8 48%,#fff 62%,#b8d0e4 78%,#fff);clip-path:polygon(50% 0,100% 37%,73% 100%,27% 100%,0 37%);box-shadow:0 0 12px #fff,0 0 22px #d9a93699;filter:drop-shadow(0 2px 4px #0008)}
-.diamond:after{content:"";position:absolute;inset:2px;background:linear-gradient(135deg,transparent 38%,#ffffffbb 50%,transparent 62%);clip-path:polygon(50% 0,100% 37%,73% 100%,27% 100%,0 37%)}
-.d1{width:18px;height:18px;left:18px;top:92px;animation:diamondOrbit1 4.8s linear infinite}
-.d2{width:25px;height:25px;left:62px;top:18px;animation:diamondOrbit2 4.8s linear infinite}
-.d3{width:17px;height:17px;right:17px;top:82px;animation:diamondOrbit3 4.8s linear infinite}
-.d4{width:14px;height:14px;left:47px;bottom:23px;animation:diamondOrbit4 3.8s linear infinite reverse}
-.d5{width:20px;height:20px;right:44px;bottom:18px;animation:diamondOrbit5 3.8s linear infinite reverse}
-.d6{width:13px;height:13px;right:67px;top:28px;animation:diamondOrbit6 3.8s linear infinite reverse}
-@keyframes diamondOrbit1{0%{transform:translate(0,0) rotate(0) scale(1)}25%{transform:translate(40px,-38px) rotate(90deg) scale(.88)}50%{transform:translate(112px,-8px) rotate(180deg) scale(1.08)}75%{transform:translate(50px,45px) rotate(270deg) scale(.9)}100%{transform:translate(0,0) rotate(360deg) scale(1)}}
-@keyframes diamondOrbit2{0%{transform:translate(0,0) rotate(0) scale(1)}25%{transform:translate(58px,34px) rotate(90deg) scale(.9)}50%{transform:translate(-8px,73px) rotate(180deg) scale(1.08)}75%{transform:translate(-56px,30px) rotate(270deg) scale(.92)}100%{transform:translate(0,0) rotate(360deg) scale(1)}}
-@keyframes diamondOrbit3{0%{transform:translate(0,0) rotate(0) scale(1)}25%{transform:translate(-52px,39px) rotate(90deg) scale(.9)}50%{transform:translate(-108px,3px) rotate(180deg) scale(1.08)}75%{transform:translate(-42px,-48px) rotate(270deg) scale(.92)}100%{transform:translate(0,0) rotate(360deg) scale(1)}}
-@keyframes diamondOrbit4{0%{transform:translate(0,0) rotate(0) scale(1)}25%{transform:translate(-32px,-45px) rotate(90deg) scale(.9)}50%{transform:translate(65px,-61px) rotate(180deg) scale(1.05)}75%{transform:translate(74px,3px) rotate(270deg) scale(.9)}100%{transform:translate(0,0) rotate(360deg) scale(1)}}
-@keyframes diamondOrbit5{0%{transform:translate(0,0) rotate(0) scale(1)}25%{transform:translate(-64px,-39px) rotate(90deg) scale(.92)}50%{transform:translate(-80px,18px) rotate(180deg) scale(1.06)}75%{transform:translate(-12px,50px) rotate(270deg) scale(.9)}100%{transform:translate(0,0) rotate(360deg) scale(1)}}
-@keyframes diamondOrbit6{0%{transform:translate(0,0) rotate(0) scale(1)}25%{transform:translate(30px,46px) rotate(90deg) scale(.9)}50%{transform:translate(-52px,67px) rotate(180deg) scale(1.05)}75%{transform:translate(-70px,6px) rotate(270deg) scale(.9)}100%{transform:translate(0,0) rotate(360deg) scale(1)}}
+.diamond{position:absolute;left:50%;top:50%;display:block;width:15px;height:15px;background:linear-gradient(135deg,#fff,#e9f5ff 28%,#9aaabd 48%,#fff 63%,#b9d5e8 80%,#fff);clip-path:polygon(50% 0,100% 37%,73% 100%,27% 100%,0 37%);filter:drop-shadow(0 2px 4px #0008);box-shadow:0 0 10px #fff,0 0 20px #d9a93699;transform-origin:center}
+.diamond:after{content:"";position:absolute;inset:1px;background:linear-gradient(135deg,transparent 35%,#ffffffdd 50%,transparent 65%);clip-path:polygon(50% 0,100% 37%,73% 100%,27% 100%,0 37%)}
+.d1{width:18px;height:18px;animation:diamondPath 6s linear infinite;--phase:0deg}
+.d2{width:14px;height:14px;animation:diamondPath 6s linear infinite;--phase:51.43deg}
+.d3{width:20px;height:20px;animation:diamondPath 6s linear infinite;--phase:102.86deg}
+.d4{width:13px;height:13px;animation:diamondPath 6s linear infinite;--phase:154.29deg}
+.d5{width:17px;height:17px;animation:diamondPath 6s linear infinite;--phase:205.72deg}
+.d6{width:14px;height:14px;animation:diamondPath 6s linear infinite;--phase:257.15deg}
+.d7{width:19px;height:19px;animation:diamondPath 6s linear infinite;--phase:308.58deg}
+@keyframes diamondPath{
+  0%{transform:translate(-50%,-50%) rotate(45deg) translateX(108px) translateY(0) scale(1)}
+  25%{transform:translate(-50%,-50%) rotate(45deg) translateX(0) translateY(-58px) scale(.92)}
+  50%{transform:translate(-50%,-50%) rotate(45deg) translateX(-108px) translateY(0) scale(1.08)}
+  75%{transform:translate(-50%,-50%) rotate(45deg) translateX(0) translateY(58px) scale(.92)}
+  100%{transform:translate(-50%,-50%) rotate(45deg) translateX(108px) translateY(0) scale(1)}
+}
 .trophy-stage:after{content:"";position:absolute;left:50%;bottom:5px;width:190px;height:22px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,#d9a93666 0%,#d9a93620 35%,transparent 72%);filter:blur(5px);z-index:1}
 @media(max-width:760px){.trophy-stage{width:100%;max-width:320px;height:280px;transform:none}}
 .iphone-prize{display:flex;align-items:center;justify-content:center}.iphone-prize img{width:100%;height:100%;object-fit:contain}.iphone-prize span{font-size:64px}</style></head>
@@ -141,7 +143,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <rect x="202" y="458" width="116" height="22" rx="3" fill="#090909" stroke="#d9a936" stroke-width="2"/>
 <text x="260" y="474" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="900" letter-spacing="2" fill="#f5d36a">RIFANDO</text>
 </svg>
-<div class="diamond-field"><i class="diamond d1"></i><i class="diamond d2"></i><i class="diamond d3"></i><i class="diamond d4"></i><i class="diamond d5"></i><i class="diamond d6"></i></div>
+<div class="diamond-field" aria-hidden="true"><i class="diamond d1"></i><i class="diamond d2"></i><i class="diamond d3"></i><i class="diamond d4"></i><i class="diamond d5"></i><i class="diamond d6"></i><i class="diamond d7"></i></div>
 </span></div>
 <div class="official" id="officialTitle">SORTEO OFICIAL</div>
 <div class="grand-label">GRAN PREMIO</div>
