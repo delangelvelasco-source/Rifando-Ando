@@ -455,8 +455,12 @@ async function cargarRifa(){
   if(activeRaffleLink) activeRaffleLink.classList.add('active');
   const prizeImage=document.getElementById('prizeImage'),prizeEmoji=document.getElementById('prizeEmoji');
   const isIphone=String(r.nombre||'').toLowerCase().includes('iphone');
+  const grandLabel=document.querySelector('.grand-label');
+  const grandAmount=document.getElementById('grandAmount');
   if(prizeImage) prizeImage.style.display=isIphone?'block':'none';
   if(prizeEmoji) prizeEmoji.style.display=isIphone?'none':'inline';
+  if(grandLabel) grandLabel.textContent=isIphone?'GRAN PREMIO':'💰 GRAN PREMIO 💰';
+  if(grandAmount) grandAmount.style.display=isIphone?'none':'';
   actualizarInfoLoteria(r).catch(()=>{});
   // El canal de animación y los historiales no deben bloquear la carga principal.
   activarCanalSorteoPublico().catch(()=>{});
