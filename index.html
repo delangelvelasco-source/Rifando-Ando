@@ -632,11 +632,18 @@ function formatearNombrePublico(nombre){
   return partes[0]+' '+partes[1].charAt(0).toUpperCase()+'.';
 }
 
+let ganadorPublicoEnVuelo=false;
+let ultimoGanadorPublicoConsulta=0;
 async function mostrarGanadorPublico(){
   const box=document.getElementById('ultimo-ganador');
+  if(ganadorPublicoEnVuelo)return;
+  const ahoraConsulta=Date.now();
+  if(ahoraConsulta-ultimoGanadorPublicoConsulta<30000)return;
+  ganadorPublicoEnVuelo=true;
+  ultimoGanadorPublicoConsulta=ahoraConsulta;
   if(!box)return;
   const {data:w,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').order('created_at',{ascending:false}).limit(1).maybeSingle();
-  if(error||!w){box.classList.add('hidden');return}
+  if(error||!w){box.classList.add('hidden');ganadorPublicoEnVuelo=false;return}
   box.classList.remove('hidden');
   const nombrePublico=formatearNombrePublico(w.nombre_snapshot||'Ganador');
   document.getElementById('publicWinnerNumber').textContent='#'+String(w.numero).padStart(2,'0');
@@ -649,6 +656,7 @@ async function mostrarGanadorPublico(){
   let dateEl=document.getElementById('publicWinnerDate');
   if(!dateEl){dateEl=document.createElement('div');dateEl.id='publicWinnerDate';dateEl.style.cssText='margin-top:8px;color:#888;font-size:14px';box.appendChild(dateEl)}
   dateEl.textContent=d?'Sorteo realizado el '+d:'';
+  ganadorPublicoEnVuelo=false;
 }
 
 async function actualizarInfoLoteria(r){
@@ -1130,13 +1138,21 @@ function ejecutarActualizacionesEnSegundoPlano(){
 let segundoPlanoTimer=null;
 let loteriaTimer=null;
 let ganadorTimer=null;
+let loteriaEnVuelo=false;
+let ultimaInfoLoteriaConsulta=0;
 function iniciarActualizacionesEnSegundoPlano(){
   if(segundoPlanoTimer)clearInterval(segundoPlanoTimer);
   if(loteriaTimer)clearInterval(loteriaTimer);
   if(ganadorTimer)clearInterval(ganadorTimer);
   segundoPlanoTimer=setInterval(ejecutarActualizacionesEnSegundoPlano,2000);
-  loteriaTimer=setInterval(()=>{if(document.visibilityState==='visible'&&rifa)actualizarInfoLoteria(rifa).catch(()=>{})},30000);
-  ganadorTimer=setInterval(()=>{if(document.visibilityState==='visible')mostrarGanadorPublico().catch(()=>{})},10000);
+  loteriaTimer=setInterval(()=>{
+    if(document.visibilityState==='visible'&&rifa&&!loteriaEnVuelo&&Date.now()-ultimaInfoLoteriaConsulta>=30000){
+      loteriaEnVuelo=true;
+      ultimaInfoLoteriaConsulta=Date.now();
+      actualizarInfoLoteria(rifa).catch(()=>{}).finally(()=>{loteriaEnVuelo=false});
+    }
+  },30000);
+  ganadorTimer=setInterval(()=>{if(document.visibilityState==='visible')mostrarGanadorPublico().catch(()=>{})},30000);
 }
 function detenerActualizacionesEnSegundoPlano(){
   if(segundoPlanoTimer){clearInterval(segundoPlanoTimer);segundoPlanoTimer=null}
