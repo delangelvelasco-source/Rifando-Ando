@@ -56,7 +56,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <div style="display:flex;gap:8px;align-items:center">
 <a class="btn" href="#numeros">Elegir números</a>
 <a class="btn" href="#ultimo-ganador">🏆 Último ganador</a>
-<a class="btn" href="especial.html">🎟️ Sorteo Especial</a>
+<a class="btn" href="?rifa=60f9a81d-bdd6-4e28-b330-dc92cfe4d113">🎟️ Sorteo Especial</a>
 <button class="btn" id="topContinue" type="button">Continuar</button>
 </div>
 </div>
@@ -450,7 +450,9 @@ async function cargarRifa(){
     return;
   }
   rifa=r;
-  document.querySelectorAll('.raffle-link[data-rifa]').forEach(a=>a.classList.toggle('active',a.dataset.rifa===r.id));
+  document.querySelectorAll('.raffle-link[data-rifa]').forEach(a=>a.classList.remove('active'));
+  const activeRaffleLink=document.querySelector('.raffle-link[data-rifa="'+CSS.escape(String(r.id))+'"]');
+  if(activeRaffleLink) activeRaffleLink.classList.add('active');
   const prizeImage=document.getElementById('prizeImage'),prizeEmoji=document.getElementById('prizeEmoji');
   const isIphone=String(r.nombre||'').toLowerCase().includes('iphone');
   if(prizeImage) prizeImage.style.display=isIphone?'block':'none';
