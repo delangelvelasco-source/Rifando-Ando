@@ -108,7 +108,73 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 }
 .trophy-stage:after{content:"";position:absolute;left:50%;bottom:5px;width:190px;height:22px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,#d9a93666 0%,#d9a93620 35%,transparent 72%);filter:blur(5px);z-index:1}
 @media(max-width:760px){.trophy-stage{width:100%;max-width:320px;height:280px;transform:none}}
-.iphone-prize{display:flex;align-items:center;justify-content:center}.iphone-prize img{width:100%;height:100%;object-fit:contain}.iphone-prize span{font-size:64px}</style></head>
+.iphone-prize{display:flex;align-items:center;justify-content:center}.iphone-prize img{width:100%;height:100%;object-fit:contain}.iphone-prize span{font-size:64px}</style><style>
+/* Ajuste responsive final: evita desbordes y mejora la composición en móviles */
+html{overflow-x:hidden}
+body{overflow-x:hidden}
+@media(max-width:760px){
+  header{padding:10px 14px}
+  .nav{
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    align-items:stretch;
+  }
+  .logo{
+    grid-column:1/-1;
+    font-size:20px;
+    line-height:1.05;
+    padding:2px 2px 4px;
+  }
+  .nav .btn{
+    width:100%;
+    min-width:0;
+    min-height:52px;
+    height:auto;
+    padding:9px 7px;
+    font-size:12px;
+    line-height:1.15;
+    border-radius:11px;
+    white-space:normal;
+  }
+  #topContinue{font-size:13px}
+  .hero{
+    width:100%;
+    padding:38px 16px 32px;
+    gap:24px;
+  }
+  .hero h1{font-size:clamp(40px,11vw,58px)}
+  .hero p{font-size:16px;line-height:1.5}
+  .section{width:100%;padding:34px 16px}
+  .section h2{font-size:30px}
+  .grand-prize{width:100%;max-width:350px}
+  .raffle-links{width:100%;max-width:none}
+  .tickets{gap:6px}
+  .ticket{min-height:58px;padding:12px 2px;font-size:22px;border-radius:10px}
+  .summary{width:100%;overflow:hidden}
+}
+@media(max-width:420px){
+  header{padding:9px 10px}
+  .nav{gap:7px}
+  .nav .btn{min-height:50px;font-size:11.5px;padding:8px 5px}
+  #topContinue{font-size:12px}
+  .hero{padding-left:14px;padding-right:14px}
+  .section{padding-left:14px;padding-right:14px}
+  .raffle-link{font-size:13px}
+  .grand-prize{max-width:100%;padding-left:9px;padding-right:9px}
+  .grand-prize .prize{height:112px}
+  .tickets{gap:5px}
+  .ticket{min-height:54px;font-size:20px;border-radius:9px}
+  .summary>div{font-size:16px}
+  .summary .btn{min-width:120px;min-height:50px;padding:12px 14px;font-size:15px}
+}
+@media(min-width:761px) and (max-width:980px){
+  .nav .btn{width:145px}
+  .hero,.section{padding-left:24px;padding-right:24px}
+}
+</style>
+</head>
 <body>
 <header>
 <div class="nav">
