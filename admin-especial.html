@@ -144,7 +144,7 @@ await publicDraw.send({type:'broadcast',event:'sorteo_inicio',payload:{rifa_id:r
 const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if(!reduce){let i=0;const started=Date.now();while(Date.now()-started<45000){$('drawNumber').textContent=String(lista[i%lista.length]).padStart(2,'0');i++;await new Promise(r=>setTimeout(r,55+Math.min(90,((Date.now()-started)/45000)*90)));}}else{$('drawNumber').textContent='🎲';await new Promise(r=>setTimeout(r,700));}
 $('drawStatus').textContent='🔐 Confirmando selección aleatoria en el servidor...';
-const {data,error}=await db.rpc('realizar_sorteo',{p_rifa_id:rifa.id});
+const {data,error}=await db.rpc('realizar_sorteo_especial',{p_rifa_id:rifa.id});
 if(error){$('drawStatus').textContent='❌ No se pudo completar el sorteo.';alert('No se pudo realizar el sorteo: '+error.message);setTimeout(()=>{$('drawModal').classList.remove('open')},1200);if(btn){btn.disabled=false;btn.textContent='🏆 Realizar sorteo'}return}
 const numero=String(data.numero).padStart(2,'0');$('drawNumber').textContent=numero;$('drawWinnerNumber').textContent=numero;$('drawWinnerName').textContent=data.nombre;$('drawWinner').classList.remove('hidden');$('drawStatus').textContent='✅ Selección registrada en el historial.';
 await db.from('sorteo_eventos_en_vivo').update({estado:'finalizado',numero_ganador:data.numero,nombre_ganador:data.nombre}).eq('id',drawEvent.id);
