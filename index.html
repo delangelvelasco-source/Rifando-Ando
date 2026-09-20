@@ -154,6 +154,27 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <div class="price" id="price">$15.00 por número</div>
 <div class="meta" id="meta"><span>0% ocupados</span><span>Sorteo próximamente</span></div>
 <div class="bar"><i id="progress"></i></div>
+<script>
+(function(){
+  const id=new URLSearchParams(location.search).get('rifa');
+  const iphone='9a9bca1f-3f22-4a1a-8813-70c7f5914f65';
+  const especial='60f9a81d-bdd6-4e28-b330-dc92cfe4d113';
+  if(!id||id==='4b23f516-7973-4a04-bff6-9b9b5cb90f4d')return;
+  const img=document.getElementById('prizeImage'), amount=document.getElementById('grandAmount');
+  const price=document.getElementById('ticketInfoPrice'), count=document.getElementById('ticketInfoCount');
+  const name=document.getElementById('raffleName'), per=document.getElementById('price');
+  if(id===iphone){
+    if(img){img.src='iphone-18-pro-max.svg';img.alt='iPhone 18 Pro Max de 256 GB'}
+    if(amount)amount.style.display='none';
+    if(price)price.textContent='$180.00'; if(count)count.textContent='250';
+    if(name)name.textContent='iPhone 18 Pro Max 256 GB'; if(per)per.textContent='$180.00 por número';
+  }else if(id===especial){
+    if(amount){amount.style.display='';amount.innerHTML='$6,000<span class="decimals">.00</span>'}
+    if(price)price.textContent='$100.00'; if(count)count.textContent='100';
+    if(name)name.textContent='Sorteo Especial'; if(per)per.textContent='$100.00 por número';
+  }
+})();
+</script>
 </div>
 </div>
 
