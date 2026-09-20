@@ -1097,9 +1097,10 @@ const topRaffleIds=[
   '9a9bca1f-3f22-4a1a-8813-70c7f5914f65'
 ];
 topRaffles?.addEventListener('click',()=>{
-  const disponibles=topRaffleIds.filter(id=>String(id)!==String(rifa?.id));
-  const destino=disponibles[Math.floor(Math.random()*disponibles.length)]||topRaffleIds[0];
-  const link=document.querySelector('.raffle-link[data-rifa="'+destino+'"]');
+  const actual=String(rifa?.id||topRaffleIds[0]);
+  const indice=topRaffleIds.indexOf(actual);
+  const siguiente=topRaffleIds[(indice+1+topRaffleIds.length)%topRaffleIds.length];
+  const link=document.querySelector('.raffle-link[data-rifa="'+siguiente+'"]');
   if(link)link.click();
 });
 document.getElementById('topContinue')?.addEventListener('click',()=>{
