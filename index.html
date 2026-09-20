@@ -467,6 +467,9 @@ async function reproducirUltimoSorteo(){
   },45000);
 }
 
+function esc(value){
+  return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
 function formatearNombrePublico(nombre){
   const partes=(nombre||'').trim().split(/\s+/).filter(Boolean);
   if(!partes.length)return 'Ganador';
@@ -707,7 +710,7 @@ async function cargarHistorialGanadores(){
     const d=new Date(w.created_at).toLocaleDateString('es-MX');
     const nombreVisible=formatearNombrePublico(w.nombre_snapshot);
     const premio=String(r?.premio||'No disponible');
-    return '<div class="winner-card"><div><div class="wname">'+codigo+'</div><div class="wdate">'+d+'</div></div><div class="wname">'+nombreVisible+'</div><div class="wprize">'+premio+'</div><div class="wnum">#'+String(w.numero).padStart(2,'0')+'</div></div>';
+    return '<div class="winner-card"><div><div class="wname">'+esc(codigo)+'</div><div class="wdate">'+esc(d)+'</div></div><div class="wname">'+esc(nombreVisible)+'</div><div class="wprize">'+esc(premio)+'</div><div class="wnum">#'+esc(String(w.numero).padStart(2,'0'))+'</div></div>';
   }).join('');
 }
 function continuarNavegacion(){
