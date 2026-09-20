@@ -41,7 +41,24 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 @keyframes prizePulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.035);filter:brightness(1.3)}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.45}}
 @keyframes twinkle{from{opacity:.35}to{opacity:1}}
-.draw-public{position:fixed;inset:0;background:#050505f5;z-index:50;display:none;place-items:center;padding:18px}.draw-public.open{display:grid}.draw-public-box{width:min(1000px,100%);max-height:92vh;overflow:auto;background:#111;border:2px solid #6d5215;border-radius:24px;padding:25px;text-align:center;box-shadow:0 0 45px #d9a93633;position:relative}.draw-public-close{position:absolute;top:10px;right:14px;width:42px;height:42px;border:1px solid #4a4a4a;border-radius:50%;background:#171717;color:#fff;font-size:30px;line-height:1;cursor:pointer;z-index:2}.draw-public-close:hover{background:#262626;border-color:#d9a936;color:#d9a936}.draw-public-number{font-size:clamp(80px,18vw,170px);line-height:.9;font-weight:1000;color:#d9a936;text-shadow:0 0 25px #d9a936}.draw-public-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:20px}.draw-public-grid span{padding:8px 3px;border:1px solid #303030;border-radius:8px;background:#171717;font-weight:900}.draw-public-grid span.active{background:#d9a936;color:#111;transform:scale(1.08)}.draw-public-result{display:none}.draw-public-result.show{display:block}@media(max-width:760px){.draw-public-grid{grid-template-columns:repeat(5,1fr)}}</style></head>
+.draw-public{position:fixed;inset:0;background:#050505f5;z-index:50;display:none;place-items:center;padding:18px}.draw-public.open{display:grid}.draw-public-box{width:min(1000px,100%);max-height:92vh;overflow:auto;background:#111;border:2px solid #6d5215;border-radius:24px;padding:25px;text-align:center;box-shadow:0 0 45px #d9a93633;position:relative}.draw-public-close{position:absolute;top:10px;right:14px;width:42px;height:42px;border:1px solid #4a4a4a;border-radius:50%;background:#171717;color:#fff;font-size:30px;line-height:1;cursor:pointer;z-index:2}.draw-public-close:hover{background:#262626;border-color:#d9a936;color:#d9a936}.draw-public-number{font-size:clamp(80px,18vw,170px);line-height:.9;font-weight:1000;color:#d9a936;text-shadow:0 0 25px #d9a936}.draw-public-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:20px}.draw-public-grid span{padding:8px 3px;border:1px solid #303030;border-radius:8px;background:#171717;font-weight:900}.draw-public-grid span.active{background:#d9a936;color:#111;transform:scale(1.08)}.draw-public-result{display:none}.draw-public-result.show{display:block}@media(max-width:760px){.draw-public-grid{grid-template-columns:repeat(5,1fr)}}</style><style>
+/* Ajuste final de la animación premium */
+.grand-prize .prize{position:relative;overflow:hidden;isolation:isolate}
+.grand-prize .trophy-orbit{position:absolute;inset:0;z-index:2;pointer-events:none;animation:orbitSpin 9s linear infinite}
+.grand-prize .trophy-orbit .orbit-diamond{position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px;display:grid;place-items:center;font-size:25px;filter:drop-shadow(0 0 6px #9fdcff) drop-shadow(0 0 12px #d9a93699);transform:rotate(var(--angle)) translateX(var(--radius));animation:diamondPulse 1.8s ease-in-out infinite}
+.grand-prize .trophy-orbit .orbit-diamond span{display:block;transform:rotate(calc(var(--angle) * -1))}
+.grand-prize .trophy-orbit .orbit-diamond:nth-child(1){--angle:0deg;--radius:62px}
+.grand-prize .trophy-orbit .orbit-diamond:nth-child(2){--angle:60deg;--radius:62px}
+.grand-prize .trophy-orbit .orbit-diamond:nth-child(3){--angle:120deg;--radius:62px}
+.grand-prize .trophy-orbit .orbit-diamond:nth-child(4){--angle:180deg;--radius:62px}
+.grand-prize .trophy-orbit .orbit-diamond:nth-child(5){--angle:240deg;--radius:62px}
+.grand-prize .trophy-orbit .orbit-diamond:nth-child(6){--angle:300deg;--radius:62px}
+@media(max-width:760px){
+ .grand-prize .prize{height:110px;overflow:hidden}
+ .grand-prize .trophy-orbit .orbit-diamond{width:27px;height:27px;margin:-13.5px;font-size:21px}
+ .grand-prize .trophy-orbit .orbit-diamond:nth-child(n){--radius:43px}
+}
+</style></head>
 <body>
 <header>
 <div class="nav">
@@ -63,8 +80,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 <p>Participa en nuestras rifas, elige tus números y cruza los dedos.</p>
 <a class="btn" href="#numeros">Quiero participar</a>
 </div>
-<div class="card grand-prize"><div class="diamond-track" aria-hidden="true"><span class="diamond">💎</span></div>
-<div class="sparkles">✦ ✨ ✦ ✨ ✦</div>
+<div class="card grand-prize"><div class="sparkles">✦ ✨ ✦ ✨ ✦</div>
 <div class="premium-badge">👑 EDICIÓN ESPECIAL 👑</div>
 <div class="prize"><div class="trophy-orbit" aria-hidden="true"><div class="orbit-diamond"><span>💎</span></div><div class="orbit-diamond"><span>💎</span></div><div class="orbit-diamond"><span>💎</span></div><div class="orbit-diamond"><span>💎</span></div><div class="orbit-diamond"><span>💎</span></div><div class="orbit-diamond"><span>💎</span></div></div><div style="position:relative;z-index:3">🏆</div></div>
 <div class="official" id="officialTitle">SORTEO ESPECIAL</div>
