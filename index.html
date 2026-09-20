@@ -59,9 +59,9 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 .cup-hand.right{right:-9px;border-left:0;transform:rotate(10deg)}
 .cup-stem{position:absolute;left:67px;top:94px;width:14px;height:40px;background:linear-gradient(90deg,#8c5106,#f8d66a,#9c5d08);border-radius:4px}
 .cup-base{position:absolute;left:39px;top:130px;width:70px;height:13px;border-radius:7px 7px 4px 4px;background:linear-gradient(90deg,#824a05,#f5cb52,#fff0a0,#a86307);box-shadow:0 5px 0 #6e3f04,0 8px 13px rgba(217,169,54,.35)}
-.orbit{position:absolute;left:50%;top:50%;width:230px;height:90px;border:2px solid rgba(246,210,91,.72);border-radius:50%;transform-style:preserve-3d;z-index:2;pointer-events:none;box-shadow:0 0 10px rgba(217,169,54,.25),inset 0 0 8px rgba(217,169,54,.12)}
+.orbit{position:absolute;left:50%;top:50%;width:230px;height:90px;border:0 solid transparent;border-radius:50%;transform-style:preserve-3d;z-index:2;pointer-events:none}
 .orbit-a{transform:translate(-50%,-50%) rotateX(62deg) rotateZ(8deg);animation:orbitSpinA 4.8s linear infinite}
-.orbit-b{width:195px;height:72px;border-color:rgba(255,232,147,.45);transform:translate(-50%,-50%) rotateX(62deg) rotateZ(-32deg);animation:orbitSpinB 3.8s linear infinite reverse}
+.orbit-b{width:195px;height:72px;border:0 solid transparent;transform:translate(-50%,-50%) rotateX(62deg) rotateZ(-32deg);animation:orbitSpinB 3.8s linear infinite reverse}
 .diamond{position:absolute;width:14px;height:14px;display:block;background:linear-gradient(135deg,#fff,#dff7ff 38%,#9fb9c9 55%,#fff 72%);transform:rotate(45deg);box-shadow:0 0 10px rgba(235,249,255,.9),0 0 20px rgba(217,169,54,.55);clip-path:polygon(50% 0,100% 38%,72% 100%,28% 100%,0 38%)}
 .d1{left:10%;top:35%}.d2{left:47%;top:-8%}.d3{right:4%;top:43%}.d4{left:28%;top:-7%;width:11px;height:11px}.d5{right:17%;bottom:-5%;width:12px;height:12px}
 @keyframes orbitSpinA{from{transform:translate(-50%,-50%) rotateX(62deg) rotateZ(8deg) rotateZ(0)}to{transform:translate(-50%,-50%) rotateX(62deg) rotateZ(8deg) rotateZ(360deg)}}
