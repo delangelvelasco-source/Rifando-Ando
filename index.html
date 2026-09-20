@@ -907,9 +907,31 @@ function ejecutarActualizacionesEnSegundoPlano(){
   revisarPruebaPersistente().catch(()=>{});
   revisarSorteoRealPersistente().catch(()=>{});
 }
-setInterval(ejecutarActualizacionesEnSegundoPlano,2000);
-setInterval(()=>{if(document.visibilityState==='visible'&&rifa)actualizarInfoLoteria(rifa).catch(()=>{})},30000);
-setInterval(()=>{if(document.visibilityState==='visible')mostrarGanadorPublico().catch(()=>{})},10000);
+let segundoPlanoTimer=null;
+let loteriaTimer=null;
+let ganadorTimer=null;
+function iniciarActualizacionesEnSegundoPlano(){
+  if(segundoPlanoTimer)clearInterval(segundoPlanoTimer);
+  if(loteriaTimer)clearInterval(loteriaTimer);
+  if(ganadorTimer)clearInterval(ganadorTimer);
+  segundoPlanoTimer=setInterval(ejecutarActualizacionesEnSegundoPlano,2000);
+  loteriaTimer=setInterval(()=>{if(document.visibilityState==='visible'&&rifa)actualizarInfoLoteria(rifa).catch(()=>{})},30000);
+  ganadorTimer=setInterval(()=>{if(document.visibilityState==='visible')mostrarGanadorPublico().catch(()=>{})},10000);
+}
+function detenerActualizacionesEnSegundoPlano(){
+  if(segundoPlanoTimer){clearInterval(segundoPlanoTimer);segundoPlanoTimer=null}
+  if(loteriaTimer){clearInterval(loteriaTimer);loteriaTimer=null}
+  if(ganadorTimer){clearInterval(ganadorTimer);ganadorTimer=null}
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'){
+    ejecutarActualizacionesEnSegundoPlano();
+    iniciarActualizacionesEnSegundoPlano();
+  }else{
+    detenerActualizacionesEnSegundoPlano();
+  }
+});
+iniciarActualizacionesEnSegundoPlano();
 </script>
 </body>
 </html>
