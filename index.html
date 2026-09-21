@@ -447,7 +447,7 @@ body{overflow-x:hidden}
 
 <section class="section" id="numeros">
 <h2>Elige tus números</h2><div class="legend"><span><i class="lg-green"></i>Disponible</span><span><i class="lg-yellow"></i>Seleccionado</span><span><i class="lg-orange"></i>En proceso de compra</span><span><i class="lg-gray"></i>Vendido</span></div>
-<div class="tickets-zone" id="ticketsZone"><div class="tickets" id="tickets"><p style="color:#aaa">Cargando números...</p></div><div id="ventasCerradasOverlay" class="ventas-cerradas-overlay" aria-hidden="true"><div class="ventas-cerradas-card"><div class="ventas-lock">🔒</div><h3>VENTAS CERRADAS</h3><p>Las ventas de boletos para este sorteo han finalizado.</p><small>Gracias por tu participación.</small></div></div></div>
+<div class="tickets-zone" id="ticketsZone"><div class="tickets" id="tickets"><p style="color:#aaa">Cargando números...</p></div><div id="ventasCerradasOverlay" class="ventas-cerradas-overlay" aria-hidden="true"><div class="ventas-cerradas-card"><div class="ventas-lock">🔒</div><h3>VENTAS CERRADAS</h3><p>Las ventas de boletos para este sorteo han finalizado.</p><small id="ventasCerradasThanks">Gracias por tu comprensión.</small></div></div></div>
 <div class="summary">
 <div>Números: <b class="gold" id="count">0</b> · Total: <b class="gold">$<span id="total">0</span></b></div>
 <button class="btn" onclick="abrirFormulario()">Continuar</button>
@@ -976,7 +976,7 @@ async function cargarRifa(){
   cargarHistorialGanadores().catch(()=>{});
 }
 function obtenerNombrePublicoRifa(r){return r?.id==='4b23f516-7973-4a04-bff6-9b9b5cb90f4d'?'Sorteo Regular':(r?.nombre||'Sorteo');}
-function actualizarEstadoVentasPublico(r){const box=document.getElementById('ventasStatus'),title=document.getElementById('ventasStatusTitle'),text=document.getElementById('ventasStatusText'),overlay=document.getElementById('ventasCerradasOverlay');if(!box||!title||!text)return;const cerrada=r?.estado==='cerrada';box.classList.toggle('cerrada',cerrada);box.classList.toggle('abierta',!cerrada);title.textContent=cerrada?'VENTAS CERRADAS':'VENTAS ABIERTAS';text.textContent=cerrada?'Las ventas están temporalmente cerradas. No se pueden seleccionar nuevos números.':'Puedes seleccionar tus números.';if(overlay){overlay.classList.toggle('visible',cerrada);overlay.setAttribute('aria-hidden',cerrada?'false':'true')}}
+function actualizarEstadoVentasPublico(r){const box=document.getElementById('ventasStatus'),title=document.getElementById('ventasStatusTitle'),text=document.getElementById('ventasStatusText'),overlay=document.getElementById('ventasCerradasOverlay');if(!box||!title||!text)return;const cerrada=r?.estado==='cerrada';box.classList.toggle('cerrada',cerrada);box.classList.toggle('abierta',!cerrada);title.textContent=cerrada?'VENTAS CERRADAS':'VENTAS ABIERTAS';text.textContent=cerrada?'El sistema está en mantenimiento.':'Puedes seleccionar tus números.';if(overlay){overlay.classList.toggle('visible',cerrada);overlay.setAttribute('aria-hidden',cerrada?'false':'true')}}
 async function cargarHistorialGanadores(){
   const el=document.getElementById('winnerHistory');
   const {data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').order('created_at',{ascending:false});
