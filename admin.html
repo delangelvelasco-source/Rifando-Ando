@@ -251,13 +251,26 @@ async function iniciarSorteo(){
   const total=nGlobal.length;
   const vendidos=nGlobal.filter(x=>x.estado==='vendido').length;
   const apartados=nGlobal.filter(x=>x.estado==='apartado' && (!x.apartado_hasta || new Date(x.apartado_hasta)>new Date())).length;
-  if(total===0 || vendidos!==total){alert('⚠️ El sorteo solo puede iniciar cuando todos los boletos estén vendidos.\\n\\nVendidos: '+vendidos+' de '+total);return;}
-  if(apartados>0){alert('⚠️ Todavía hay '+apartados+' número(s) apartados.');return;}
-  if(!confirm('🏆 INICIAR SORTEO\\n\\nTodos los boletos están vendidos.\\nLas ventas se bloquearán y comenzará la selección del ganador.\\n\\n¿Continuar?'))return;
-  const {error}=await db.from('rifas').update({estado:'preparando'}).eq('id',rifa.id).in('estado',['activa','preparando']);
-  if(error){alert('No se pudo iniciar el sorteo: '+error.message);return}
-  rifa.estado='preparando';
-  await actualizarBotonCerrarSorteo();
+  if(total===0 || vendidos!==total){
+    alert('⚠️ El sorteo solo puede iniciar cuando todos los boletos estén vendidos.\n\nVendidos: '+vendidos+' de '+total);
+    return;
+  }
+  if(apartados>0){
+    alert('⚠️ Todavía hay '+apartados+' número(s) apartados.');
+    return;
+  }
+  const continuar=rifa.estado==='preparando';
+  const titulo=continuar?'🎲 CONTINUAR SORTEO':'🏆 INICIAR SORTEO';
+  const mensaje=continuar
+    ? titulo+'\n\nEl sorteo ya está preparado.\nLa selección del ganador continuará ahora.\n\n¿Continuar?'
+    : titulo+'\n\nTodos los boletos están vendidos.\nLas ventas se bloquearán y comenzará la selección del ganador.\n\n¿Continuar?';
+  if(!confirm(mensaje))return;
+  if(!continuar){
+    const {error}=await db.from('rifas').update({estado:'preparando'}).eq('id',rifa.id).in('estado',['activa','preparando']);
+    if(error){alert('No se pudo iniciar el sorteo: '+error.message);return}
+    rifa.estado='preparando';
+  }
+  actualizarBotonCerrarSorteo();
   await realizarSorteo();
 }
 async function realizarSorteo(){if(!rifa)return;
