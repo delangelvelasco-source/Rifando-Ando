@@ -1304,18 +1304,13 @@ async function confirmar(e){
   await cargarRifa();
 }
 
-// Navegación entre rifas sin recargar toda la página: evita parpadeos y estados mezclados durante la carga.
+// Navegación entre rifas: los enlaces usan navegación nativa para evitar que un fallo
+// de JavaScript impida cambiar de sorteo. Al cargar la nueva rifa, cargarRifa()
+// marca automáticamente el sorteo activo en verde.
 document.querySelectorAll('.raffle-link[data-rifa]').forEach(link=>{
-  link.addEventListener('click',async e=>{
-    e.preventDefault();
-    const id=link.dataset.rifa;
-    if(!id)return;
-    if(rifa?.id===id){history.replaceState({},'',link.getAttribute('href'));sel.clear();update();return;}
-    sel.clear(); update();
+  link.addEventListener('click',()=>{
     document.querySelectorAll('.raffle-link[data-rifa]').forEach(x=>x.classList.remove('loading'));
     link.classList.add('loading');
-    history.pushState({},'',link.getAttribute('href'));
-    try{await cargarRifa();}finally{link.classList.remove('loading');}
   });
 });
 window.addEventListener('popstate',()=>cargarRifa());
