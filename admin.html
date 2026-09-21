@@ -121,6 +121,16 @@
   .ticket>b{font-size:12px}
   .ticket .small{font-size:10px!important}
 }
+/* Ajuste final de lectura en botones de la cuadrícula */
+@media(max-width:700px){
+  #nums .ticket .small{font-size:9px!important;letter-spacing:-.35px;padding:2px 0!important;overflow:visible;text-overflow:clip;}
+}
+@media(max-width:520px){
+  #nums .ticket .small{font-size:8.5px!important;letter-spacing:-.45px;}
+}
+@media(max-width:420px){
+  #nums .ticket .small{font-size:10px!important;letter-spacing:-.2px;}
+}
 </style></head><body>
 <div id="login" class="box login"><h1>🔐 Rifando <span class="gold">Ando</span></h1><h2>Acceso de administrador</h2><div class="field"><input id="email" type="email" placeholder="Correo"></div><div class="field"><input id="pass" type="password" placeholder="Contraseña"></div><button class="btn" onclick="entrar()" style="width:100%">Entrar</button><p id="msg"></p></div>
 <div id="app" class="wrap hidden"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h1>RIFANDO <span class="gold">ANDO</span> · ADMIN</h1><div><a class="btn secondary" href="index.html">Ver página</a> <button class="btn" onclick="realizarSorteo()">🏆 Sorteo interno</button> <button class="btn secondary" onclick="realizarSorteoLoteria()">🇲🇽 Lotería Nacional</button> <button class="btn danger" onclick="restablecerSorteo()">🔄 Restablecer</button> <button class="btn" onclick="salir()">Salir</button> <button class="btn secondary" onclick="probarAnimacionSorteo()">👁️ Ver animación</button> <button class="btn secondary" onclick="abrirPruebaPublica()">🌐 Probar en clientes</button></div></div><div id="adminRaffleNav" class="admin-raffle-nav" aria-label="Acceso rápido a sorteos"></div><p id="status">Cargando...</p>
