@@ -888,8 +888,7 @@ async function cargarRifa(){
     document.getElementById('ticketInfoCount').textContent=base.numeros;
     meta.innerHTML='<span>0% ocupados</span><span>Cargando sorteo…</span>';
     bar.style.width='0%';
-    const grandAmount=document.getElementById('grandAmount');
-    if(grandAmount)grandAmount.textContent='';
+    document.getElementById('grandAmount')?.replaceChildren();
   // La información de estado debe ser siempre fresca; no usar caché para evitar
   // mostrar "sorteo realizado" o "ventas abiertas" con datos anteriores.
   let r=null,errorRe=null;
