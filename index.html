@@ -1259,14 +1259,27 @@ async function confirmar(e){
 document.querySelectorAll('.raffle-link[data-rifa]').forEach(link=>{
   link.addEventListener('click',async e=>{
     e.preventDefault();
-    const id=link.dataset.rifa;
+    e.stopPropagation();
+    const id=String(link.dataset.rifa||'');
     if(!id)return;
-    if(rifa?.id===id){history.replaceState({},'',link.getAttribute('href'));sel.clear();update();return;}
-    sel.clear(); update();
+    if(String(rifa?.id||'')===id){
+      sel.clear();
+      update();
+      document.getElementById('rifas')?.scrollIntoView({behavior:'smooth',block:'start'});
+      return;
+    }
+    sel.clear();
+    update();
     document.querySelectorAll('.raffle-link[data-rifa]').forEach(x=>x.classList.remove('loading'));
     link.classList.add('loading');
-    history.pushState({},'',link.getAttribute('href'));
-    try{await cargarRifa();}finally{link.classList.remove('loading');}
+    const href=link.getAttribute('href')||('?rifa='+encodeURIComponent(id));
+    history.pushState({},'',href);
+    try{
+      await cargarRifa();
+      document.getElementById('numeros')?.scrollIntoView({behavior:'smooth',block:'start'});
+    }finally{
+      link.classList.remove('loading');
+    }
   });
 });
 window.addEventListener('popstate',()=>cargarRifa());
@@ -1274,7 +1287,13 @@ window.addEventListener('popstate',()=>cargarRifa());
 const topRaffles=document.getElementById('topRaffles');
 topRaffles?.addEventListener('click',e=>{
   e.preventDefault();
-  document.getElementById('rifas')?.scrollIntoView({behavior:'smooth',block:'start'});
+  e.stopPropagation();
+  const target=document.getElementById('rifas');
+  if(!target)return;
+  const header=document.querySelector('header');
+  const offset=(header?.getBoundingClientRect().height||0)+10;
+  const top=target.getBoundingClientRect().top+window.scrollY-offset;
+  window.scrollTo({top:Math.max(0,top),behavior:'smooth'});
 });
 document.getElementById('shareRaffle')?.addEventListener('click',compartirRifa);
 document.getElementById('topContinue')?.addEventListener('click',()=>{
