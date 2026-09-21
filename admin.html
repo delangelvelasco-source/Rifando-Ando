@@ -342,6 +342,14 @@ async function alternarPreparando(){
 
 async function alternarPausaRifa(){
   if(!rifa)return;
+  if(rifa.estado==='preparando'||rifa.estado==='sorteada'){
+    alert('⚠️ Las ventas no se pueden habilitar o bloquear mientras el sorteo está en preparación o ya fue realizado.');
+    return;
+  }
+  if(!['activa','cerrada'].includes(rifa.estado)){
+    alert('⚠️ El estado actual de este sorteo no permite cambiar las ventas.');
+    return;
+  }
   const pausada=rifa.estado==='cerrada';
   const nuevoEstado=pausada?'activa':'cerrada';
   const mensaje=pausada
