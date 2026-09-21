@@ -10,8 +10,9 @@ function abrir(){
   const basePrecio=Number(rifa.precio_numero||15);
   const baseMetodo=String(rifa.metodo_sorteo||'interno');
   const totalNumeros=Number(rifa._total_numeros||0)||({express:30,iphone:250,regular:100,especial:100}[rifa.grupo_rifa]||100);
-  const maxNumero=totalNumeros-1;
-  const rangoNumeros='00–'+String(maxNumero).padStart(2,'0');
+  const inicioNumeros=({iphone:1,express:1,regular:0,especial:0}[rifa.grupo_rifa]??0);
+  const finNumeros=inicioNumeros+totalNumeros-1;
+  const rangoNumeros=String(inicioNumeros).padStart(2,'0')+'–'+String(finNumeros).padStart(2,'0');
   o.innerHTML='<div style="width:min(460px,100%);background:#151515;border:1px solid #363636;border-radius:18px;padding:22px"><button id="nrClose" class="btn secondary" style="float:right">×</button><h2>➕ Iniciar nuevo sorteo</h2><p class="muted">El sorteo actual se cerrará y quedará guardado en el historial.</p><div class="field"><label>Nombre del sorteo</label><input id="nrName" maxlength="100"></div><div class="field"><label>Premio</label><input id="nrPrize" type="text" maxlength="50"></div><div class="field"><label>Costo por boleto</label><input id="nrPrice" type="number" min="0.01" step="0.01"></div><div class="field"><label>Método del sorteo</label><select id="nrMethod"><option value="interno">🎲 Sorteo interno aleatorio</option><option value="loteria_nacional">🇲🇽 Lotería Nacional · últimas 2 cifras del Tris</option></select></div><p style="color:#d9a936">🎟️ Se crearán automáticamente los números '+rangoNumeros+'.</p><button id="nrCreate" class="btn" style="width:100%">🚀 Crear nuevo sorteo</button><p id="nrMsg"></p></div>';
   document.body.appendChild(o);
   document.getElementById('nrName').value=baseNombre;
@@ -22,7 +23,7 @@ function abrir(){
   document.getElementById('nrCreate').onclick=async()=>{
     const nombre=document.getElementById('nrName').value.trim(),premio=document.getElementById('nrPrize').value.trim(),precio=Number(document.getElementById('nrPrice').value),metodo=document.getElementById('nrMethod').value;
     if(!nombre||!premio||!Number.isFinite(precio)||precio<=0){document.getElementById('nrMsg').innerHTML='<span class="error">Completa nombre, premio y costo del boleto.</span>';return}
-    if(!confirm('¿Crear este nuevo sorteo?\n\n'+nombre+'\nPremio: '+premio+'\nBoleto: $'+precio.toLocaleString('es-MX',{minimumFractionDigits:2})+'\n\nMétodo: '+(metodo==='loteria_nacional'?'Lotería Nacional · últimas 2 cifras del Tris':'Sorteo interno aleatorio')+'\n\nEl sorteo anterior ya fue realizado y quedará guardado en el historial.\n\nSe creará un nuevo ID dentro del mismo bloque con el mismo número de boletos.'))return;
+    if(!confirm('¿Crear este nuevo sorteo?\n\n'+nombre+'\nPremio: '+premio+'\nBoleto: $'+precio.toLocaleString('es-MX',{minimumFractionDigits:2})+'\n\nMétodo: '+(metodo==='loteria_nacional'?'Lotería Nacional · últimas 2 cifras del Tris':'Sorteo interno aleatorio')+'\n\nEl sorteo anterior ya fue realizado y quedará guardado en el historial.\n\nSe creará un nuevo ID dentro del mismo bloque con '+totalNumeros+' números ('+rangoNumeros+').'))return;
     const b=document.getElementById('nrCreate');b.disabled=true;b.textContent='Creando...';
     try{
       const grupo=rifa.grupo_rifa||({ '4b23f516-7973-4a04-bff6-9b9b5cb90f4d':'regular','60f9a81d-bdd6-4e28-b330-dc92cfe4d113':'especial','9a9bca1f-3f22-4a1a-8813-70c7f5914f65':'iphone','af9945a6-fe0d-4f53-a147-d8e332e39b59':'express' }[rifa.id]||'regular');
