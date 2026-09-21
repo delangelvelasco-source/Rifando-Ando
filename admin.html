@@ -422,17 +422,18 @@ async function cargarSelectorRifas(){
   const fallback=[
     {id:ids[0],nombre:'Sorteo Regular'},
     {id:ids[1],nombre:'Sorteo Especial'},
-    {id:ids[2],nombre:'Sorteo iPhone 18 Pro Max 256 GB'}
+    {id:ids[2],nombre:'Sorteo iPhone 18 Pro Max 256 GB'},
+    {id:ids[3],nombre:'Sorteo Express'}
   ];
   const source=error||!list?.length?fallback:list;
-  const order={'Sorteo Regular':1,'Sorteo Especial':2,'Sorteo iPhone 18 Pro Max 256 GB':3};
+  const order={'Sorteo Regular':1,'Sorteo Especial':2,'Sorteo iPhone 18 Pro Max 256 GB':3,'Sorteo Express':4};
   source.sort((a,b)=>(order[nombreRifaAdmin(a)]||99)-(order[nombreRifaAdmin(b)]||99));
   $('adminRaffleNav').innerHTML=source.map(x=>{
     const active=x.id===(selected||rifa?.id||source[0]?.id)?' active':'';
     return '<a class="raffle-nav-btn'+active+'" href="?rifa='+encodeURIComponent(x.id)+'">'+esc(nombreRifaAdmin(x))+'</a>';
   }).join('');
 }
-async function cargar(){const params=new URLSearchParams(window.location.search);const requestedRifa=params.get('rifa');const query=db.from('rifas').select('*').in('id',['4b23f516-7973-4a04-bff6-9b9b5cb90f4d','60f9a81d-bdd6-4e28-b330-dc92cfe4d113','9a9bca1f-3f22-4a1a-8813-70c7f5914f65','e26f7533-0497-4f0d-a2e6-8d9e5254554b']).order('created_at',{ascending:false});const {data:list,error:re}=await query;if(re||!list?.length){$('status').textContent='No se pudo cargar la rifa.';return}const r=list.find(x=>x.id===requestedRifa)||list[0];if(re||!r){$('status').textContent='No se pudo cargar la rifa.';return}rifa=r;await cargarSelectorRifas();await mostrarGanador();await cargarListaGanadores();await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});const {data:n,error:ne}=await db.from('numeros').select('id,numero,estado,apartado_hasta,participante_id,vendido_at').eq('rifa_id',r.id).order('numero');if(ne){$('status').textContent='No se pudieron cargar los números.';return}nGlobal=n||[];
+async function cargar(){const params=new URLSearchParams(window.location.search);const requestedRifa=params.get('rifa');const query=db.from('rifas').select('*').in('id',['4b23f516-7973-4a04-bff6-9b9b5cb90f4d','60f9a81d-bdd6-4e28-b330-dc92cfe4d113','9a9bca1f-3f22-4a1a-8813-70c7f5914f65','af9945a6-fe0d-4f53-a147-d8e332e39b59','e26f7533-0497-4f0d-a2e6-8d9e5254554b']).order('created_at',{ascending:false});const {data:list,error:re}=await query;if(re||!list?.length){$('status').textContent='No se pudo cargar la rifa.';return}const r=list.find(x=>x.id===requestedRifa)||list[0];if(re||!r){$('status').textContent='No se pudo cargar la rifa.';return}rifa=r;await cargarSelectorRifas();await mostrarGanador();await cargarListaGanadores();await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});const {data:n,error:ne}=await db.from('numeros').select('id,numero,estado,apartado_hasta,participante_id,vendido_at').eq('rifa_id',r.id).order('numero');if(ne){$('status').textContent='No se pudieron cargar los números.';return}nGlobal=n||[];
 if(r.estado==='activa'&&r.metodo_sorteo==='loteria_nacional'&&nGlobal.filter(x=>x.estado==='vendido').length===100){const fechaAuto=calcularFechaSorteoDesdeUltimaVenta(nGlobal,r.loteria_tipo);if(fechaAuto&&r.loteria_fecha!==fechaAuto){await db.from('rifas').update({loteria_fecha:fechaAuto}).eq('id',r.id);r.loteria_fecha=fechaAuto;rifa=r;}}
 $('disp').textContent=n.filter(x=>estado(x)==='disponible').length;$('apart').textContent=n.filter(x=>estado(x)==='apartado').length;$('vend').textContent=n.filter(x=>x.estado==='vendido').length;actualizarBotonCerrarSorteo();$('nums').innerHTML=n.map(x=>{const st=estado(x);let b='';if(st==='apartado')b='<button class="btn small danger" title="Liberar número" aria-label="Liberar número" onclick="liberar(\''+x.id+'\')">Liberar</button>';if(st==='disponible')b='<button class="btn small" title="Marcar como vendido" aria-label="Marcar como vendido" onclick="vender(\''+x.id+'\')">Vendido</button>';if(st==='vendido')b='<button class="btn small secondary" title="Liberar número vendido" aria-label="Liberar número vendido" onclick="liberar(\''+x.id+'\')">Liberar</button>';return '<div class="ticket '+st+'"><b>'+String(x.numero).padStart(2,'0')+'</b><div class="actions">'+b+'</div></div>'}).join('');
 const participantIds=[...new Set((nGlobal||[]).filter(z=>z.participante_id).map(z=>z.participante_id))];
