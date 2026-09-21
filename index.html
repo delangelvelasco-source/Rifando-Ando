@@ -1283,6 +1283,7 @@ topRaffles?.addEventListener('click',()=>{
   const link=document.querySelector('.raffle-link[data-rifa="'+siguiente+'"]');
   if(link)link.click();
 });
+document.getElementById('shareRaffle')?.addEventListener('click',compartirRifa);
 document.getElementById('topContinue')?.addEventListener('click',()=>{
   if(sel.size){abrirFormulario();}
   else{document.getElementById('numeros')?.scrollIntoView({behavior:'smooth',block:'start'});}
