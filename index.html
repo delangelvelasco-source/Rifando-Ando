@@ -65,6 +65,9 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 @media(max-width:760px){.modal-box{width:calc(100% - 12px);padding:28px 24px;border-radius:24px}.modal-box h2{font-size:29px}.modal-box .field label{font-size:22px}.modal-box .field input{font-size:23px;min-height:64px;padding:17px;border-width:2px;box-shadow:0 0 0 3px #d9a93612}.modal-box .field input:focus{box-shadow:0 0 0 4px #d9a93622}.modal-box .notice{font-size:19px;padding:16px}.modal-box form>p{font-size:20px}.modal-box .field label{display:flex;align-items:center;gap:8px}.modal-box .field input::placeholder{color:#777;opacity:1}.modal-box form .btn{min-height:64px;font-size:20px}}
 @media(prefers-reduced-motion:reduce){.grand-prize *{animation:none!important}}\n</style>
 <style>
+.share-raffle{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;max-width:560px;margin:14px 0 0;padding:13px 16px;border:1px solid #5e4816;border-radius:13px;background:#111;color:#fff;font-weight:1000;font-size:15px;cursor:pointer;transition:.2s}.share-raffle:hover{border-color:#d9a936;background:#18140a;transform:translateY(-1px)}.share-raffle:active{transform:translateY(0)}.share-raffle.copied{border-color:#4ade80;background:#0b2413;color:#4ade80}
+</style>
+<style>
 .sparkles{position:absolute;top:10px;left:0;right:0;color:#f5d36a;font-size:20px;letter-spacing:12px;animation:twinkle 1s infinite alternate}.grand-prize{width:100%;max-width:350px;justify-self:center;padding:13px 12px 12px;background:radial-gradient(circle at 50% 35%,#33280d 0%,#151515 45%,#101010 100%);border:2px solid #9b7418;box-shadow:0 0 18px #d9a93655, inset 0 0 35px #d9a93612}.grand-prize .prize{height:125px;font-size:64px;margin-top:8px;border-radius:16px}.official{font-size:16px;font-weight:1000;letter-spacing:2px;color:#f5d36a;margin-top:5px}.grand-label{display:inline-block;margin:10px 0 3px;padding:7px 18px;border-radius:999px;background:#d9a936;color:#111;font-weight:1000;font-size:14px;letter-spacing:1px}.grand-amount{font-size:clamp(52px,10vw,78px);line-height:.95;font-weight:1000;color:#fff;letter-spacing:-4px;text-shadow:0 0 6px #fff,0 0 18px #d9a936,0 0 38px #d9a936;animation:prizePulse 1.1s ease-in-out infinite}.winner-text{font-size:clamp(21px,5vw,31px);font-weight:1000;font-style:italic;color:#f5d36a;margin:12px 0;animation:blink 1.35s ease-in-out infinite}.raffle-info{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:8px 0 13px}.raffle-info span{padding:7px 11px;border:1px solid #5e4816;border-radius:10px;background:#0d0d0d;color:#eee}..raffle-id{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:8px auto 5px;padding:8px 12px;width:max-content;max-width:100%;border:1px solid #6d5215;border-radius:11px;background:linear-gradient(135deg,#17130a,#0d0d0d);color:#bbb;font-size:13px;font-weight:800}.tickets-zone{position:relative;overflow:hidden;border-radius:16px;min-height:120px}.ventas-cerradas-overlay{display:none;position:absolute;inset:0;z-index:20;align-items:center;justify-content:center;padding:24px;border-radius:16px;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;pointer-events:none;touch-action:pan-y}.ventas-cerradas-overlay.visible{display:flex}.ventas-cerradas-card{width:min(520px,92%);padding:26px 22px;pointer-events:none;text-align:center;border:2px solid #d9a936;border-radius:18px;background:rgba(12,12,12,.72);box-shadow:0 10px 28px rgba(0,0,0,.35);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}.ventas-lock{font-size:52px;line-height:1;margin-bottom:8px}.ventas-cerradas-card h3{margin:0 0 10px;color:#fff;font-size:28px;font-weight:1000;letter-spacing:.5px}.ventas-cerradas-card p{margin:0;color:#eee;font-size:17px;line-height:1.35}.ventas-cerradas-card small{display:block;margin-top:10px;color:#cfcfcf;font-size:13px}@media(max-width:760px){.ventas-cerradas-overlay{padding:14px}.ventas-cerradas-card{padding:22px 16px;border-radius:16px}.ventas-lock{font-size:44px}.ventas-cerradas-card h3{font-size:23px}.ventas-cerradas-card p{font-size:15px}.ventas-cerradas-card small{font-size:12px}}.ventas-status{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin:10px auto 12px;padding:10px 13px;border:1px solid #2e7d32;border-radius:12px;background:linear-gradient(135deg,#0b1f10,#101010);text-align:left}.ventas-status .ventas-dot{width:10px;height:10px;border-radius:50%;background:#22c55e;box-shadow:0 0 10px #22c55e;flex:0 0 auto}.ventas-status b{display:block;color:#4ade80;font-size:14px;letter-spacing:.5px}.ventas-status small{display:block;color:#aaa;margin-top:2px;font-size:11px}.ventas-status.cerrada{border-color:#8b2525;background:linear-gradient(135deg,#250d0d,#101010)}.ventas-status.cerrada .ventas-dot{background:#ef4444;box-shadow:0 0 10px #ef4444}.ventas-status.cerrada b{color:#ff6b6b}.ventas-status.cerrada small{color:#c9a0a0}.raffle-id b{color:#f5d36a;font-size:15px;letter-spacing:.8px}.raffle-id span{color:#aaa}.grand-prize h2{margin:8px 0 3px}.grand-prize .price{font-size:22px}.grand-prize .meta{margin-top:10px}.grand-prize{text-align:center;position:relative;overflow:hidden;border:1px solid #6d5215;box-shadow:0 0 25px #d9a93622}
 .grand-prize:before{content:'✨ ✦ ✨ ✦ ✨ ✦ ✨';position:absolute;inset:8px 0 auto;font-size:18px;color:#d9a936;letter-spacing:10px;animation:twinkle 1.2s infinite alternate}
 .official{display:none!important;margin-top:25px;color:#f5d36a;font-weight:900;font-size:18px;letter-spacing:1px}
@@ -343,6 +346,8 @@ body{overflow-x:hidden}
 <a class="raffle-link" data-rifa="9a9bca1f-3f22-4a1a-8813-70c7f5914f65" href="?rifa=9a9bca1f-3f22-4a1a-8813-70c7f5914f65">iPhone 18 Pro Max 256 GB <span class="raffle-link-arrow">›</span></a>
 <a class="raffle-link" data-rifa="af9945a6-fe0d-4f53-a147-d8e332e39b59" href="?rifa=af9945a6-fe0d-4f53-a147-d8e332e39b59">Sorteo Express <span class="raffle-link-arrow">›</span></a>
 </div></nav>
+
+<button type="button" class="share-raffle" id="shareRaffle" aria-label="Compartir este sorteo">📤 Compartir este sorteo</button>
 </div>
 <div class="card grand-prize">
 <div class="sparkles" aria-hidden="true">✦ ✨ ✦ ✨ ✦</div>
@@ -1008,6 +1013,332 @@ async function cargarHistorialGanadores(){
     return '<div class="winner-card"><div><div class="wname">'+esc(codigo)+'</div><div class="wdate">'+esc(d)+'</div></div><div class="wname">'+esc(nombreVisible)+'</div><div class="wprize">'+esc(premio)+'</div><div class="wnum">#'+esc(String(w.numero).padStart(2,'0'))+'</div></div>';
   }).join('');
 }
+function obtenerDatosCompartir(){
+  const nombre=obtenerNombrePublicoRifa(rifa);
+  const url=new URL(window.location.href);
+  if(rifa?.id)url.searchParams.set('rifa',String(rifa.id));
+  return {
+    title:nombre+' | Rifando Ando',
+    text:'🎟️ '+nombre+'\n💰 Premio: '+String(rifa?.premio||'')+'\n🎫 Boleto: 
+  if(sel.size){abrirFormulario();return;}
+  document.getElementById('numeros')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function actualizarWhatsAppAyuda(){
+  const link=document.getElementById('helpWhatsApp');
+  if(!link)return;
+  const seleccion=nums();
+  const message=seleccion.length
+    ? 'Hola Rifando Ando 👋, necesito ayuda o soporte con mi participación. Mis números seleccionados son: '+seleccion.join(', ')+'.'
+    : 'Hola Rifando Ando 👋, necesito ayuda o soporte con mi participación.';
+  link.href='https://wa.me/528123859824?text='+encodeURIComponent(message);
+}
+function abrirFormulario(){
+  if(solicitudPendiente){
+    alert('Tienes una solicitud pendiente. Primero envía la confirmación por WhatsApp.');
+    return;
+  }
+  if(!sel.size){
+    alert('Primero elige al menos un número, compa.');
+    return;
+  }
+  formNumbers.textContent=nums().join(', ');
+  actualizarWhatsAppAyuda();
+  modal.classList.add('open');
+}
+function bloquearNuevaSeleccion(bloquear){
+  solicitudPendiente=bloquear;
+  document.querySelectorAll('#tickets .ticket').forEach(b=>{
+    b.disabled=bloquear || b.classList.contains('sold') || b.classList.contains('pending');
+    b.style.opacity=bloquear?'0.55':'';
+    b.style.cursor=bloquear?'not-allowed':'';
+  });
+}
+function obtenerSolicitudesPendientes(){
+  try{
+    const raw=localStorage.getItem('rifando_pendiente_whatsapp');
+    if(!raw)return [];
+    const parsed=JSON.parse(raw);
+    const lista=Array.isArray(parsed)?parsed:(parsed?[parsed]:[]);
+    const ahora=Date.now();
+    const vigentes=lista.filter(p=>p&&p.timestamp&&ahora-Number(p.timestamp)<=30*60*1000);
+    if(vigentes.length!==lista.length)localStorage.setItem('rifando_pendiente_whatsapp',JSON.stringify(vigentes));
+    return vigentes;
+  }catch(e){return []}
+}
+function construirMensajeSolicitudes(lista){
+  const rifaNombre=obtenerNombrePublicoRifa(rifa);
+  const bloques=lista.map((p,i)=>'🎫 Solicitud '+(i+1)+' · '+rifaNombre+'\nNúmeros: '+String(p.numbers||'')+'\nTotal: '+String(p.total||'')+'\nNombre: '+String(p.name||'')).join('\n\n');
+  return '🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mis apartados:\n\n'+bloques+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
+}
+function agregarMasNumeros(){
+  const pendientes=obtenerSolicitudesPendientes().filter(p=>!rifa||String(p.rifaId)===String(rifa.id));
+  if(!pendientes.length)return;
+  try{localStorage.setItem('rifando_modo_agregar','1')}catch(e){}
+  solicitudPendiente=false;
+  sel.clear();
+  update();
+  modal.classList.remove('open');
+  confirmation.classList.remove('show');
+  formView.style.display='';
+  document.getElementById('modalClose')?.classList.remove('locked-close');
+  document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
+  document.getElementById('addMoreNumbersBtn')?.classList.remove('locked-close');
+  cargarRifa().catch(()=>{});
+}
+function restaurarSolicitudPendiente(){
+  try{
+    const pendientes=obtenerSolicitudesPendientes();
+    const pendientesRifa=pendientes.filter(p=>rifa&&p&&String(p.rifaId)===String(rifa.id));
+    if(!pendientesRifa.length)return;
+    const modoAgregar=localStorage.getItem('rifando_modo_agregar')==='1';
+    if(modoAgregar){
+      solicitudPendiente=false;
+      sel.clear();
+      update();
+      return;
+    }
+    const numerosPendientes=pendientesRifa.flatMap(p=>String(p.numbers||'').split(',').map(x=>parseInt(x.trim(),10)).filter(Number.isFinite));
+    sel=new Set(numerosPendientes);
+    solicitudPendiente=true;
+    const ultimo=pendientesRifa[pendientesRifa.length-1];
+    document.getElementById('confirmName').textContent=ultimo.name||'';
+    document.getElementById('confirmNumbers').textContent=pendientesRifa.map(p=>p.numbers).join(' · ');
+    document.getElementById('confirmTotal').textContent='$'+pendientesRifa.reduce((sum,p)=>sum+Number(String(p.total||'').replace(/[^0-9.]/g,'')),0).toLocaleString('es-MX');
+    update();
+    bloquearNuevaSeleccion(true);
+    const waConfirm=document.getElementById('waConfirm');
+    waConfirm.href='https://wa.me/528123859824?text='+encodeURIComponent(construirMensajeSolicitudes(pendientesRifa));
+    confirmWhatsAppClicked=false;
+    waConfirm.onclick=()=>{
+      if(confirmWhatsAppClicked)return false;
+      confirmWhatsAppClicked=true;
+      localStorage.removeItem('rifando_pendiente_whatsapp');
+      localStorage.removeItem('rifando_modo_agregar');
+      solicitudPendiente=false;
+      sel.clear();
+      bloquearNuevaSeleccion(false);
+      update();
+      waConfirm.style.pointerEvents='none';
+      waConfirm.style.opacity='.65';
+      waConfirm.textContent='✅ Solicitud enviada por WhatsApp';
+      document.getElementById('modalClose')?.classList.remove('locked-close');
+      document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
+    };
+    formView.style.display='none';
+    confirmation.classList.add('show');
+    modal.classList.add('open');
+    document.getElementById('modalClose')?.classList.add('locked-close');
+    document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
+  }catch(e){}
+}
+function cerrarFormulario(){
+  if(confirmation.classList.contains('show')&&!confirmWhatsAppClicked)return;
+  modal.classList.remove('open');
+  confirmWhatsAppClicked=false;
+  document.getElementById('modalClose')?.classList.remove('locked-close');
+  document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
+}
+async function confirmar(e){
+  e.preventDefault();
+  if(!rifa||!sel.size) return;
+  const btn=e.submitter||e.target.querySelector('button[type="submit"]');
+  const selected=Array.from(sel);
+  const name=nombre.value.trim();
+  const phone=whatsapp.value.trim();
+  const email='';
+  if(!name||!phone){
+    alert('Completa tu nombre y WhatsApp, compa.');
+    return;
+  }
+  btn.disabled=true;
+  btn.textContent='Apartando...';
+  const {data,error}=await db.rpc('apartar_numeros',{
+    p_rifa_id:rifa.id,
+    p_nombre:name,
+    p_whatsapp:phone,
+    p_correo:email,
+    p_numeros:selected
+  });
+  if(error){
+    alert('No se pudo apartar: '+error.message);
+    btn.disabled=false;
+    btn.textContent='Solicitar apartado';
+    await cargarRifa();
+    return;
+  }
+  const displayNumbers=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');
+  const displayTotal=Number(data?.total||selected.length*Number(rifa.precio_numero)).toLocaleString('es-MX');
+  document.getElementById('confirmName').textContent=name;
+  document.getElementById('confirmNumbers').textContent=displayNumbers;
+  document.getElementById('confirmTotal').textContent='$'+displayTotal;
+  const nuevaSolicitud={rifaId:rifa.id,numbers:displayNumbers,name:name,total:'$'+displayTotal,timestamp:Date.now()};
+  let solicitudesPendientes=[];
+  try{
+    const rawPendientes=localStorage.getItem('rifando_pendiente_whatsapp');
+    const parsedPendientes=rawPendientes?JSON.parse(rawPendientes):null;
+    solicitudesPendientes=Array.isArray(parsedPendientes)?parsedPendientes:(parsedPendientes?[parsedPendientes]:[]);
+  }catch(e){solicitudesPendientes=[]}
+  solicitudesPendientes=solicitudesPendientes.filter(p=>p&&p.timestamp&&Date.now()-Number(p.timestamp)<=30*60*1000&&String(p.rifaId)===String(rifa.id));
+  solicitudesPendientes.push(nuevaSolicitud);
+  try{
+    localStorage.setItem('rifando_pendiente_whatsapp',JSON.stringify(solicitudesPendientes));
+    localStorage.removeItem('rifando_modo_agregar');
+  }catch(e){}
+  const message=construirMensajeSolicitudes(solicitudesPendientes);
+  const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
+  const waConfirm=document.getElementById('waConfirm');
+  waConfirm.href=waLink;
+  confirmWhatsAppClicked=false;
+  document.getElementById('modalClose')?.classList.add('locked-close');
+  document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
+  waConfirm.onclick=()=>{
+    if(confirmWhatsAppClicked)return false;
+    confirmWhatsAppClicked=true;
+
+    solicitudPendiente=false;
+    sel.clear();
+    update();
+    bloquearNuevaSeleccion(false);
+
+    modal.classList.remove('open');
+    confirmation.classList.remove('show');
+    formView.style.display='';
+    nombre.value='';
+    whatsapp.value='';
+
+    waConfirm.style.pointerEvents='';
+    waConfirm.style.opacity='';
+    waConfirm.textContent='📲 Enviar solicitud por WhatsApp';
+    document.getElementById('modalClose')?.classList.remove('locked-close');
+    document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
+
+    try{localStorage.removeItem('rifando_pendiente_whatsapp');localStorage.removeItem('rifando_modo_agregar')}catch(e){}
+    confirmWhatsAppClicked=false;
+
+    // Refrescar los estados reales sin recargar la página.
+    setTimeout(()=>cargarRifa().catch(()=>{}),100);
+  };
+  formView.style.display='none';
+  confirmation.classList.add('show');
+  sel.clear();
+  btn.disabled=false;
+  btn.textContent='Solicitar apartado';
+  await cargarRifa();
+}
+
+// Navegación entre rifas sin recargar toda la página: evita parpadeos y estados mezclados durante la carga.
+document.querySelectorAll('.raffle-link[data-rifa]').forEach(link=>{
+  link.addEventListener('click',async e=>{
+    e.preventDefault();
+    const id=link.dataset.rifa;
+    if(!id)return;
+    if(rifa?.id===id){history.replaceState({},'',link.getAttribute('href'));sel.clear();update();return;}
+    sel.clear(); update();
+    document.querySelectorAll('.raffle-link[data-rifa]').forEach(x=>x.classList.remove('loading'));
+    link.classList.add('loading');
+    history.pushState({},'',link.getAttribute('href'));
+    try{await cargarRifa();}finally{link.classList.remove('loading');}
+  });
+});
+window.addEventListener('popstate',()=>cargarRifa());
+
+const topRaffles=document.getElementById('topRaffles');
+const topRaffleIds=[
+  '4b23f516-7973-4a04-bff6-9b9b5cb90f4d',
+  '60f9a81d-bdd6-4e28-b330-dc92cfe4d113',
+  '9a9bca1f-3f22-4a1a-8813-70c7f5914f65'
+];
+topRaffles?.addEventListener('click',()=>{
+  const actual=String(rifa?.id||topRaffleIds[0]);
+  const indice=topRaffleIds.indexOf(actual);
+  const siguiente=topRaffleIds[(indice+1+topRaffleIds.length)%topRaffleIds.length];
+  const link=document.querySelector('.raffle-link[data-rifa="'+siguiente+'"]');
+  if(link)link.click();
+});
+document.getElementById('shareRaffle')?.addEventListener('click',compartirRifa);
+document.getElementById('topContinue')?.addEventListener('click',()=>{
+  if(sel.size){abrirFormulario();}
+  else{document.getElementById('numeros')?.scrollIntoView({behavior:'smooth',block:'start'});}
+});
+modal.addEventListener('click',e=>{
+  if(e.target===modal) cerrarFormulario();
+});
+cargarRifa().then(()=>{
+  restaurarSolicitudPendiente();
+}).catch(()=>{
+  raffleName.textContent='No se pudo cargar el sorteo';
+  priceEl.textContent='Intenta actualizar la página';
+  tickets.innerHTML='<p style="color:#aaa">No se pudieron cargar los números. Actualiza la página para intentar de nuevo.</p>';
+});
+mostrarGanadorPublico().catch(()=>{});
+function ejecutarActualizacionesEnSegundoPlano(){
+  if(document.visibilityState!=='visible')return;
+  revisarPruebaPersistente().catch(()=>{});
+  revisarSorteoRealPersistente().catch(()=>{});
+}
+let segundoPlanoTimer=null;
+let loteriaTimer=null;
+let ganadorTimer=null;
+let loteriaEnVuelo=false;
+let ultimaInfoLoteriaConsulta=0;
+function iniciarActualizacionesEnSegundoPlano(){
+  if(segundoPlanoTimer)clearInterval(segundoPlanoTimer);
+  if(loteriaTimer)clearInterval(loteriaTimer);
+  if(ganadorTimer)clearInterval(ganadorTimer);
+  segundoPlanoTimer=setInterval(ejecutarActualizacionesEnSegundoPlano,2000);
+  loteriaTimer=setInterval(()=>{
+    if(document.visibilityState==='visible'&&rifa&&!loteriaEnVuelo&&Date.now()-ultimaInfoLoteriaConsulta>=30000){
+      loteriaEnVuelo=true;
+      ultimaInfoLoteriaConsulta=Date.now();
+      actualizarInfoLoteria(rifa).catch(()=>{}).finally(()=>{loteriaEnVuelo=false});
+    }
+  },30000);
+  ganadorTimer=setInterval(()=>{if(document.visibilityState==='visible')mostrarGanadorPublico().catch(()=>{})},30000);
+}
+function detenerActualizacionesEnSegundoPlano(){
+  if(segundoPlanoTimer){clearInterval(segundoPlanoTimer);segundoPlanoTimer=null}
+  if(loteriaTimer){clearInterval(loteriaTimer);loteriaTimer=null}
+  if(ganadorTimer){clearInterval(ganadorTimer);ganadorTimer=null}
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'){
+    ejecutarActualizacionesEnSegundoPlano();
+    iniciarActualizacionesEnSegundoPlano();
+  }else{
+    detenerActualizacionesEnSegundoPlano();
+  }
+});
+iniciarActualizacionesEnSegundoPlano();
+</script>
+</body>
+</html>+Number(rifa?.precio_numero||0).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2})+'\n👉 Participa aquí:',
+    url:url.href
+  };
+}
+async function compartirRifa(){
+  const btn=document.getElementById('shareRaffle');
+  if(!btn)return;
+  const data=obtenerDatosCompartir();
+  try{
+    if(navigator.share && (!navigator.canShare || navigator.canShare({title:data.title,text:data.text,url:data.url}))){
+      await navigator.share(data);
+      return;
+    }
+    await navigator.clipboard.writeText(data.text+'\n'+data.url);
+    const original=btn.textContent;
+    btn.classList.add('copied');
+    btn.textContent='✅ Enlace copiado';
+    setTimeout(()=>{btn.classList.remove('copied');btn.textContent=original},1800);
+  }catch(e){
+    if(e?.name==='AbortError')return;
+    try{await navigator.clipboard.writeText(data.text+'\n'+data.url)}catch(_e){}
+    const original=btn.textContent;
+    btn.classList.add('copied');
+    btn.textContent='✅ Enlace copiado';
+    setTimeout(()=>{btn.classList.remove('copied');btn.textContent=original},1800);
+  }
+}
+
 function continuarNavegacion(){
   if(sel.size){abrirFormulario();return;}
   document.getElementById('numeros')?.scrollIntoView({behavior:'smooth',block:'start'});
