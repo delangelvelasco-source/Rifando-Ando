@@ -1316,18 +1316,15 @@ document.querySelectorAll('.raffle-link[data-rifa]').forEach(link=>{
 window.addEventListener('popstate',()=>cargarRifa());
 
 const topRaffles=document.getElementById('topRaffles');
-topRaffles?.addEventListener('click',e=>{
-  e.preventDefault();
-  e.stopPropagation();
+topRaffles?.addEventListener('click',()=>{
+  // No bloquear el enlace: href="#rifas" hace la navegación incluso si otro
+  // JavaScript falla. Solo añadimos el efecto visual cuando el JS está disponible.
   const target=document.getElementById('rifas');
   if(!target)return;
-  target.scrollIntoView({behavior:'smooth',block:'start'});
   target.classList.remove('top-open');
   void target.offsetWidth;
   target.classList.add('top-open');
   setTimeout(()=>target.classList.remove('top-open'),900);
-  const first=target.querySelector('.raffle-link[data-rifa]');
-  if(first) setTimeout(()=>first.focus({preventScroll:true}),350);
 });
 document.getElementById('topContinue')?.addEventListener('click',e=>{
   e.preventDefault();
