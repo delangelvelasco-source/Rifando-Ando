@@ -1033,7 +1033,7 @@ function obtenerDatosCompartir(){
   }
   return {
     title:nombre+' | Rifando Ando',
-    text:'🎟️ '+nombre+'\\n💰 Premio: '+String(rifa?.premio||'')+'\\n🎫 Boleto: $'+Number(rifa?.precio_numero||0).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2})+'\\n👉 Participa aquí:',
+    text:'🎟️ '+nombre+'\n💰 Premio: '+String(rifa?.premio||'')+'\n🎫 Boleto: $'+Number(rifa?.precio_numero||0).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2})+'\n👉 Participa aquí:',
     url:url.href
   };
 }
@@ -1043,11 +1043,10 @@ async function compartirRifa(){
   const data=obtenerDatosCompartir();
   try{
     if(navigator.share && (!navigator.canShare || navigator.canShare({title:data.title,text:data.text,url:data.url}))){await navigator.share(data);return;}
-    const waUrl='https://wa.me/?text='+encodeURIComponent(data.text+'\\n'+data.url);
-    window.location.href=waUrl;
+    window.location.href='https://wa.me/?text='+encodeURIComponent(data.text+'\n'+data.url);
   }catch(e){
     if(e?.name==='AbortError')return;
-    try{window.location.href='https://wa.me/?text='+encodeURIComponent(data.text+'\\n'+data.url)}catch(_e){}
+    try{window.location.href='https://wa.me/?text='+encodeURIComponent(data.text+'\n'+data.url)}catch(_e){}
   }
 }
 function continuarNavegacion(){
