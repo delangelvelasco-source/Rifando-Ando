@@ -1181,10 +1181,10 @@ function restaurarSolicitudPendiente(){
     sel=new Set(numerosPendientes);
     solicitudPendiente=true;
     const ultimo=pendientesRifa[pendientesRifa.length-1];
+    const totalPendiente=pendientesRifa.reduce((sum,p)=>sum+Number(String(p.total||'').replace(/[^0-9.]/g,'')),0);
     document.getElementById('confirmName').textContent=ultimo.name||'';
     document.getElementById('confirmNumbers').textContent=numerosPendientes.map(n=>String(n).padStart(2,'0')).join(', ');
-    document.getElementById('confirmTotal').textContent='
-    update();
+    document.getElementById('confirmTotal').textContent='$'+totalPendiente.toLocaleString('es-MX');
     bloquearNuevaSeleccion(true);
     const waConfirm=document.getElementById('waConfirm');
     waConfirm.href='https://wa.me/528123859824?text='+encodeURIComponent(construirMensajeSolicitudes(pendientesRifa));
@@ -1251,7 +1251,6 @@ async function confirmar(e){
   document.getElementById('confirmName').textContent=name;
   document.getElementById('confirmNumbers').textContent=displayNumbers;
   document.getElementById('confirmTotal').textContent='$'+displayTotal;
-  const nuevaSolicitud={rifaId:rifa.id,numbers:displayNumbers,name:name,total:'$'+displayTotal,timestamp:Date.now()};
   let solicitudesPendientes=[];
   try{
     const rawPendientes=localStorage.getItem('rifando_pendiente_whatsapp');
@@ -1259,7 +1258,8 @@ async function confirmar(e){
     solicitudesPendientes=Array.isArray(parsedPendientes)?parsedPendientes:(parsedPendientes?[parsedPendientes]:[]);
   }catch(e){solicitudesPendientes=[]}
   solicitudesPendientes=solicitudesPendientes.filter(p=>p&&p.timestamp&&Date.now()-Number(p.timestamp)<=30*60*1000&&String(p.rifaId)===String(rifa.id));
-  // Una sola solicitud general por rifa: cada "Agregar más números" se acumula aquí.
+
+  // Una sola solicitud general por rifa: "Agregar más números" acumula todo en el mismo apartado.
   const numerosAcumulados=[...new Set(
     solicitudesPendientes
       .flatMap(p=>String(p.numbers||'').split(',').map(x=>parseInt(x.trim(),10)).filter(Number.isFinite))
@@ -1276,7 +1276,8 @@ async function confirmar(e){
   solicitudesPendientes=[solicitudGeneral];
   document.getElementById('confirmName').textContent=name;
   document.getElementById('confirmNumbers').textContent=solicitudGeneral.numbers;
-  document.getElementById('confirmTotal').textContent=solicitudGeneral.total; 
+  document.getElementById('confirmTotal').textContent=solicitudGeneral.total;
+  try{
     localStorage.setItem('rifando_pendiente_whatsapp',JSON.stringify(solicitudesPendientes));
     localStorage.removeItem('rifando_modo_agregar');
   }catch(e){}
