@@ -1018,7 +1018,7 @@ function obtenerDatosCompartir(){
   const url=new URL(window.location.href);
   const esGithub=window.location.hostname==='delangelvelasco-source.github.io';
   if(esGithub&&rifa?.id==='af9945a6-fe0d-4f53-a147-d8e332e39b59'){
-    url.pathname=url.pathname.replace(/[^/]*$/,'express.html');
+    url.pathname=url.pathname.replace(/[^/]*$/,'express/');
     url.search='';
   }else if(esGithub&&rifa?.id){
     url.searchParams.set('rifa',String(rifa.id));
