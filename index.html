@@ -391,7 +391,9 @@ body{overflow-x:hidden}
   const regular='4b23f516-7973-4a04-bff6-9b9b5cb90f4d';
   const especial='60f9a81d-bdd6-4e28-b330-dc92cfe4d113';
   const iphone='9a9bca1f-3f22-4a1a-8813-70c7f5914f65';
-  const id=new URLSearchParams(window.location.search).get('rifa')||regular;
+  const ruta=window.location.pathname.replace(/\/+$/,'').split('/').pop().toLowerCase();
+  const rutasRifa={regular:regular,especial:especial,iphone:iphone};
+  const id=new URLSearchParams(window.location.search).get('rifa')||rutasRifa[ruta]||regular;
   window.__initialRifaId=id;
   const img=document.getElementById('prizeImage'), amount=document.getElementById('grandAmount');
   const price=document.getElementById('ticketInfoPrice'), count=document.getElementById('ticketInfoCount');
@@ -828,7 +830,9 @@ let cargarRifaSeq=0;
 async function cargarRifa(){
   const loadSeq=++cargarRifaSeq;
   const params=new URLSearchParams(window.location.search);
-  const requestedParam=params.get('rifa')||window.__initialRifaId||'4b23f516-7973-4a04-bff6-9b9b5cb90f4d';
+  const rutaRifa=window.location.pathname.replace(/\/+$/,'').split('/').pop().toLowerCase();
+  const mapaRutas={regular:'4b23f516-7973-4a04-bff6-9b9b5cb90f4d',especial:'60f9a81d-bdd6-4e28-b330-dc92cfe4d113',iphone:'9a9bca1f-3f22-4a1a-8813-70c7f5914f65'};
+  const requestedParam=params.get('rifa')||window.__initialRifaId||mapaRutas[rutaRifa]||'4b23f516-7973-4a04-bff6-9b9b5cb90f4d';
   const rifasPermitidas=['4b23f516-7973-4a04-bff6-9b9b5cb90f4d','60f9a81d-bdd6-4e28-b330-dc92cfe4d113','9a9bca1f-3f22-4a1a-8813-70c7f5914f65'];
   const requestedRifa=rifasPermitidas.includes(String(requestedParam))?String(requestedParam):'4b23f516-7973-4a04-bff6-9b9b5cb90f4d';
 
