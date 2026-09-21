@@ -1336,23 +1336,6 @@ topRaffles?.addEventListener('click',e=>{
   url.hash='';
   window.location.href=url.href;
 });
-topRaffles?.addEventListener('click',e=>{
-  e.preventDefault();
-  e.stopPropagation();
-  const target=document.getElementById('rifas');
-  if(!target)return;
-  document.getElementById('modal')?.classList.remove('open');
-  document.querySelector('.modal.open')?.classList.remove('open');
-  const hashUrl=window.location.pathname+window.location.search+'#rifas';
-  history.replaceState(null,'',hashUrl);
-  setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),0);
-  const active=document.querySelector('.raffle-link.active');
-  if(active){
-    document.querySelectorAll('.raffle-link').forEach(x=>x.classList.remove('focus'));
-    active.classList.add('focus');
-    setTimeout(()=>active.classList.remove('focus'),1200);
-  }
-});
 document.getElementById('topContinue')?.addEventListener('click',e=>{
   e.preventDefault();
   const target=document.getElementById('numeros');
