@@ -734,7 +734,7 @@ async function actualizarInfoLoteria(r){
   const details=document.getElementById('lotteryDetails');
   const result=document.getElementById('lotteryResult');
   if(!box||!internalBox||!status||!details||!result)return;
-  if(r && r.metodo_sorteo==='juego_interno'){
+  if(r && r.metodo_sorteo==='interno'){
     box.style.display='none';
     internalBox.style.display='';
     return;
