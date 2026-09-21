@@ -889,6 +889,7 @@ async function cargarRifa(){
     meta.innerHTML='<span>0% ocupados</span><span>Cargando sorteo…</span>';
     bar.style.width='0%';
     document.getElementById('grandAmount')?.replaceChildren();
+  }
   // La información de estado debe ser siempre fresca; no usar caché para evitar
   // mostrar "sorteo realizado" o "ventas abiertas" con datos anteriores.
   let r=null,errorRe=null;
