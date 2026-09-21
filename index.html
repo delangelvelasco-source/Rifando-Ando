@@ -1017,11 +1017,21 @@ function obtenerDatosCompartir(){
   const nombre=obtenerNombrePublicoRifa(rifa);
   const url=new URL(window.location.href);
   const esGithub=window.location.hostname==='delangelvelasco-source.github.io';
-  if(esGithub&&rifa?.id==='af9945a6-fe0d-4f53-a147-d8e332e39b59'){
-    url.pathname=url.pathname.replace(/[^/]*$/,'express/');
-    url.search='';
-  }else if(esGithub&&rifa?.id){
-    url.searchParams.set('rifa',String(rifa.id));
+  if(esGithub&&rifa?.id){
+    const rutasLimpias={
+      '4b23f516-7973-4a04-bff6-9b9b5cb90f4d':'regular/',
+      '60f9a81d-bdd6-4e28-b330-dc92cfe4d113':'especial/',
+      '9a9bca1f-3f22-4a1a-8813-70c7f5914f65':'iphone/',
+      'af9945a6-fe0d-4f53-a147-d8e332e39b59':'express/'
+    };
+    const ruta=rutasLimpias[String(rifa.id)];
+    if(ruta){
+      url.pathname=url.pathname.replace(/[^/]*$/,'');
+      url.pathname=url.pathname.replace(/\/$/,'/')+ruta;
+      url.search='';
+    }else{
+      url.searchParams.set('rifa',String(rifa.id));
+    }
   }
   return {
     title:nombre+' | Rifando Ando',
