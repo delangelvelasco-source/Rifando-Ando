@@ -1019,7 +1019,7 @@ function obtenerDatosCompartir(){
   if(rifa?.id)url.searchParams.set('rifa',String(rifa.id));
   return {
     title:nombre+' | Rifando Ando',
-    text:'🎟️ '+nombre+'\\n💰 Premio: '+String(rifa?.premio||'')+'\\n🎫 Boleto: $'+Number(rifa?.precio_numero||0).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2})+'\\n👉 Participa aquí:',
+    text:'🎟️ '+nombre+'\n💰 Premio: '+String(rifa?.premio||'')+'\n🎫 Boleto: $'+Number(rifa?.precio_numero||0).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2})+'\n👉 Participa aquí:',
     url:url.href
   };
 }
@@ -1032,14 +1032,14 @@ async function compartirRifa(){
       await navigator.share(data);
       return;
     }
-    await navigator.clipboard.writeText(data.text+'\\n'+data.url);
+    await navigator.clipboard.writeText(data.text+'\n'+data.url);
     const original=btn.textContent;
     btn.classList.add('copied');
     btn.textContent='✅ Enlace copiado';
     setTimeout(()=>{btn.classList.remove('copied');btn.textContent=original},1800);
   }catch(e){
     if(e?.name==='AbortError')return;
-    try{await navigator.clipboard.writeText(data.text+'\\n'+data.url)}catch(_e){}
+    try{await navigator.clipboard.writeText(data.text+'\n'+data.url)}catch(_e){}
     const original=btn.textContent;
     btn.classList.add('copied');
     btn.textContent='✅ Enlace copiado';
