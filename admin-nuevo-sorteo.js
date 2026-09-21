@@ -21,7 +21,8 @@ function abrir(){
     if(!confirm('¿Crear este nuevo sorteo?\n\n'+nombre+'\nPremio: '+premio+'\nBoleto: $'+precio.toLocaleString('es-MX',{minimumFractionDigits:2})+'\n\nMétodo: '+(metodo==='loteria_nacional'?'Lotería Nacional · últimas 2 cifras del Tris':'Sorteo interno aleatorio')+'\n\nEl actual se cerrará y se crearán 100 números nuevos.'))return;
     const b=document.getElementById('nrCreate');b.disabled=true;b.textContent='Creando...';
     try{
-      const r=await db.rpc('crear_nueva_rifa',{p_rifa_id:rifa.id,p_nombre:nombre,p_premio:premio,p_precio_numero:precio,p_metodo_sorteo:metodo});
+      const grupo=rifa.grupo_rifa||({ '4b23f516-7973-4a04-bff6-9b9b5cb90f4d':'regular','60f9a81d-bdd6-4e28-b330-dc92cfe4d113':'especial','9a9bca1f-3f22-4a1a-8813-70c7f5914f65':'iphone','af9945a6-fe0d-4f53-a147-d8e332e39b59':'express' }[rifa.id]||'regular');
+      const r=await db.rpc('crear_nueva_rifa',{p_rifa_id:rifa.id,p_nombre:nombre,p_premio:premio,p_precio_numero:precio,p_metodo_sorteo:metodo,p_grupo_rifa:grupo});
       if(r.error){document.getElementById('nrMsg').innerHTML='<span class="error">❌ '+esc(r.error.message)+'</span>';b.disabled=false;b.textContent='🚀 Crear nuevo sorteo';return}
       o.remove();
       const d=r.data||{};
