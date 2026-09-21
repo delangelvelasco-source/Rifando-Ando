@@ -802,7 +802,7 @@ async function refrescarNumerosPublico(rifaId){
         update();
       });
     }else b.disabled=true;
-    if(r.estado==='pausada') b.disabled=true;
+    if(r.estado==='cerrada') b.disabled=true;
     tickets.appendChild(b);
   });
   sel.forEach(numero=>{if(!disponibles.has(Number(numero)))sel.delete(numero)});
@@ -918,7 +918,7 @@ async function cargarRifa(){
   const nombrePublico=obtenerNombrePublicoRifa(r);
   raffleName.textContent=nombrePublico;
   actualizarEstadoVentasPublico(r);
-  if(r.estado==='pausada'){sel.clear();update();}
+  if(r.estado==='cerrada'){sel.clear();update();}
   const raffleIdEl=document.getElementById('raffleId');
   if(raffleIdEl) raffleIdEl.textContent=String(r.codigo_sorteo||('RA-'+String(r.numero_sorteo||'?').padStart(4,'0')));
   officialTitle.textContent='SORTEO OFICIAL';
@@ -975,7 +975,7 @@ async function cargarRifa(){
   cargarHistorialGanadores().catch(()=>{});
 }
 function obtenerNombrePublicoRifa(r){return r?.id==='4b23f516-7973-4a04-bff6-9b9b5cb90f4d'?'Sorteo Regular':(r?.nombre||'Sorteo');}
-function actualizarEstadoVentasPublico(r){const box=document.getElementById('ventasStatus'),title=document.getElementById('ventasStatusTitle'),text=document.getElementById('ventasStatusText');if(!box||!title||!text)return;const cerrada=r?.estado==='pausada';box.classList.toggle('cerrada',cerrada);box.classList.toggle('abierta',!cerrada);title.textContent=cerrada?'VENTAS CERRADAS':'VENTAS ABIERTAS';text.textContent=cerrada?'Las ventas están temporalmente cerradas. No se pueden seleccionar nuevos números.':'Puedes seleccionar tus números.';}
+function actualizarEstadoVentasPublico(r){const box=document.getElementById('ventasStatus'),title=document.getElementById('ventasStatusTitle'),text=document.getElementById('ventasStatusText');if(!box||!title||!text)return;const cerrada=r?.estado==='cerrada';box.classList.toggle('cerrada',cerrada);box.classList.toggle('abierta',!cerrada);title.textContent=cerrada?'VENTAS CERRADAS':'VENTAS ABIERTAS';text.textContent=cerrada?'Las ventas están temporalmente cerradas. No se pueden seleccionar nuevos números.':'Puedes seleccionar tus números.';}
 async function cargarHistorialGanadores(){
   const el=document.getElementById('winnerHistory');
   const {data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').order('created_at',{ascending:false});
