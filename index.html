@@ -1150,7 +1150,7 @@ function construirMensajeSolicitudes(lista){
   const nombre=lista?.[lista.length-1]?.name||'';
   const displayNumbers=numeros.map(n=>String(n).padStart(2,'0')).join(', ');
   const money=String.fromCharCode(36);
-  return '🎟️✨ RIFANDO ANDO 🏆\\n\\n👋 Hola, confirmo mi apartado:\\n\\n🎫 '+rifaNombre+'\\n👤 Nombre: '+nombre+'\\n🔢 Números: '+displayNumbers+'\\n💰 Total: '+money+total.toLocaleString('es-MX')+'\\n\\n✅ Quedo atento para continuar con mi participación.\\n\\nGracias';
+  return '🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado:\n\n🎫 '+rifaNombre+'\n👤 Nombre: '+nombre+'\n🔢 Números: '+displayNumbers+'\n💰 Total: '+money+total.toLocaleString('es-MX')+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
 }
 function agregarMasNumeros(){
   const pendientes=obtenerSolicitudesPendientes().filter(p=>!rifa||String(p.rifaId)===String(rifa.id));
