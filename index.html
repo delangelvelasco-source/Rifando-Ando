@@ -889,18 +889,16 @@ async function cargarRifa(){
     bar.style.width='0%';
   }
 
-  const cachedRifa=window.__rifaCache?.[requestedRifa];
-  let r=cachedRifa||null,errorRe=null;
-  if(!r){
-    let respuesta=null;
-    for(let intento=1;intento<=3;intento++){
-      respuesta=await db.from('rifas').select('*').eq('id',requestedRifa).maybeSingle();
-      if(!respuesta.error && respuesta.data)break;
-      if(intento<3)await new Promise(resolve=>setTimeout(resolve,500*intento));
-    }
-    r=respuesta?.data||null; errorRe=respuesta?.error||null;
-    if(r){window.__rifaCache??={};window.__rifaCache[requestedRifa]=r;}
+  // La información de estado debe ser siempre fresca; no usar caché para evitar
+  // mostrar "sorteo realizado" o "ventas abiertas" con datos anteriores.
+  let r=null,errorRe=null;
+  let respuesta=null;
+  for(let intento=1;intento<=3;intento++){
+    respuesta=await db.from('rifas').select('*').eq('id',requestedRifa).maybeSingle();
+    if(!respuesta.error && respuesta.data)break;
+    if(intento<3)await new Promise(resolve=>setTimeout(resolve,500*intento));
   }
+  r=respuesta?.data||null; errorRe=respuesta?.error||null;
   if(loadSeq!==cargarRifaSeq)return;
   if(errorRe||!r){
     tickets.innerHTML='<p style="color:#aaa">No hay una rifa activa disponible.</p>';
