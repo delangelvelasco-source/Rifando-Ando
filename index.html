@@ -1108,13 +1108,8 @@ function obtenerDatosCompartir(){
   const ruta=rutasPorGrupo[String(rifa?.grupo_rifa||'').toLowerCase()];
   const baseCloudflare='https://rifando-ando-mx.pages.dev/';
   if(ruta){
-    // Compartir siempre el enlace corto del bloque actual, nunca ?rifa=UUID.
-    // En GitHub Pages conservamos su prefijo; en Cloudflare usamos el dominio público corto.
     if(window.location.hostname.includes('github.io')){
       const base=url.pathname.includes('/Rifando-Ando/')?url.pathname.split('/Rifando-Ando/')[0]+'/Rifando-Ando/':'/Rifando-Ando/';
-      url.protocol=window.location.protocol;
-      url.hostname=window.location.hostname;
-      url.port='';
       url.pathname=base+ruta;
     }else{
       url.href=baseCloudflare+ruta;
@@ -1125,9 +1120,13 @@ function obtenerDatosCompartir(){
     url.searchParams.set('rifa',String(rifa.id));
     url.hash='';
   }
+  const nl=String.fromCharCode(10);
   return {
     title:nombre+' | Rifando Ando',
-    text:'🎟️ '+nombre+'\n💰 Premio: '+String(rifa?.premio||'')+'\n🎫 Boleto: 
+    text:'🎟️ '+nombre+nl+'💰 Premio: '+String(rifa?.premio||'')+nl+'🎫 Boleto: $'+Number(rifa?.precio_numero||0).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2})+nl+'👉 Participa aquí:',
+    url:url.href
+  };
+}
 async function compartirRifa(){
   const btn=document.getElementById('shareRaffle');
   if(!btn)return;
