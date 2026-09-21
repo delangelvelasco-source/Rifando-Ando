@@ -729,10 +729,17 @@ async function mostrarGanadorPublico(){
 
 async function actualizarInfoLoteria(r){
   const box=document.getElementById('lotteryInfo');
+  const internalBox=document.getElementById('internalInfo');
   const status=document.getElementById('lotteryStatus');
   const details=document.getElementById('lotteryDetails');
   const result=document.getElementById('lotteryResult');
-  if(!box||!status||!details||!result)return;
+  if(!box||!internalBox||!status||!details||!result)return;
+  if(r && r.metodo_sorteo==='juego_interno'){
+    box.style.display='none';
+    internalBox.style.display='';
+    return;
+  }
+  internalBox.style.display='none';
   if(!r || r.metodo_sorteo!=='loteria_nacional'){
     box.style.display='none'; return;
   }
