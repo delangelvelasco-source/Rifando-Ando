@@ -1362,8 +1362,9 @@ topRaffles?.addEventListener('click',e=>{
   e.stopPropagation();
   document.querySelectorAll('.modal.open,.draw-public.open').forEach(x=>x.classList.remove('open'));
   const actual=String(rifa?.id||new URLSearchParams(window.location.search).get('rifa')||'');
-  const indice=ordenRifas.indexOf(actual);
-  const siguiente=ordenRifas[(indice+1+ordenRifas.length)%ordenRifas.length];
+  const orden=window.__ordenRifasActuales?.length?window.__ordenRifasActuales:ordenRifas;
+  const indice=orden.indexOf(actual);
+  const siguiente=orden[(indice+1+orden.length)%orden.length];
   // Usamos el mismo parámetro ?rifa= que ya utiliza el menú de sorteos.
   // Así funciona igual en GitHub Pages, Cloudflare Pages y en cualquier navegador.
   const url=new URL(window.location.href);
