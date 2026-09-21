@@ -133,7 +133,7 @@
 }
 </style></head><body>
 <div id="login" class="box login"><h1>🔐 Rifando <span class="gold">Ando</span></h1><h2>Acceso de administrador</h2><div class="field"><input id="email" type="email" placeholder="Correo"></div><div class="field"><input id="pass" type="password" placeholder="Contraseña"></div><button class="btn" onclick="entrar()" style="width:100%">Entrar</button><p id="msg"></p></div>
-<div id="app" class="wrap hidden"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h1>RIFANDO <span class="gold">ANDO</span> · ADMIN</h1><div><a class="btn secondary" href="index.html">Ver página</a> <button class="btn" onclick="realizarSorteo()">🏆 Sorteo interno</button> <button class="btn secondary" onclick="realizarSorteoLoteria()">🇲🇽 Lotería Nacional</button> <button class="btn danger" onclick="restablecerSorteo()">🔄 Restablecer</button> <button class="btn" onclick="salir()">Salir</button> <button class="btn secondary" onclick="probarAnimacionSorteo()">👁️ Ver animación</button> <button id="pauseBtn" class="btn danger" onclick="alternarPausaRifa()">⏸️ Pausar ventas</button> <button id="prepareBtn" class="btn secondary" onclick="alternarPreparando()">🟡 Preparar sorteo</button> <button id="closeRaffleBtn" class="btn danger" onclick="cerrarSorteoVendido()" style="display:none">🔒 Cerrar sorteo</button> <button class="btn secondary" onclick="abrirPruebaPublica()">🌐 Probar en clientes</button></div></div><div id="adminRaffleNav" class="admin-raffle-nav" aria-label="Acceso rápido a sorteos"></div><p id="status">Cargando...</p>
+<div id="app" class="wrap hidden"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h1>RIFANDO <span class="gold">ANDO</span> · ADMIN</h1><div><a class="btn secondary" href="index.html">Ver página</a> <button id="startDrawBtn" class="btn" onclick="iniciarSorteo()">🏆 Iniciar sorteo</button> <button class="btn secondary" onclick="realizarSorteoLoteria()">🇲🇽 Lotería Nacional</button> <button class="btn danger" onclick="restablecerSorteo()">🔄 Restablecer</button> <button class="btn" onclick="salir()">Salir</button></div></div><div id="adminRaffleNav" class="admin-raffle-nav" aria-label="Acceso rápido a sorteos"></div><p id="status">Cargando...</p>
 <div class="cards"><div class="card">Disponibles<div class="num gold" id="disp">0</div></div><div class="card">Apartados<div class="num" id="apart">0</div></div><div class="card">Vendidos<div class="num" id="vend">0</div></div><div class="card">Participantes<div class="num" id="people">0</div></div></div>
 <div class="box"><h2>Números</h2><p class="muted">Apartado = dorado · Vendido = tachado.</p><div class="grid" id="nums"></div></div><div class="box" style="margin-top:18px"><div class="collapseHead" style="cursor:default"><span class="collapseTitle">👥 Últimos participantes</span></div><div id="participantsBody" class="collapseBody open"><div id="participants">Cargando...</div></div></div><div class="box" style="margin-top:18px"><h2>📊 Historial y movimientos por sorteo</h2><div class="field"><label>Seleccionar sorteo</label><select id="historyRaffle" onchange="cargarHistorialRifa()"><option value="">Selecciona un sorteo...</option></select></div><div id="historySummary" class="muted">Selecciona un sorteo para consultar sus movimientos.</div><div id="historyParticipants" style="margin-top:12px"></div></div>
 <div id="winnerListBox" class="box" style="margin-top:18px;border-color:#d9a936"><h2>🏆 Lista de Ganadores</h2><p class="muted">Aquí puedes contactar directamente al ganador de cada sorteo.</p><div id="winnerList"><div class="muted">Cargando ganadores...</div></div></div>
@@ -245,6 +245,21 @@ async function confirmarSorteoLoteria(){
   if(error){$('lotMsg').innerHTML='<span class="error">❌ '+esc(error.message)+'</span>';if(btn){btn.disabled=false;btn.textContent='🏆 Registrar ganador'}return}
   $('loteriaModal').classList.remove('open');await cargar();await mostrarGanador();alert('🏆 ¡GANADOR REGISTRADO!\n\nResultado Lotería Nacional: '+resultado+'\nNúmero ganador: '+String(data.numero).padStart(2,'0')+'\nGanador: '+data.nombre);
 }
+async function iniciarSorteo(){
+  if(!rifa)return;
+  if(rifa.estado==='sorteada'){alert('🏆 Este sorteo ya fue realizado.');return;}
+  const total=nGlobal.length;
+  const vendidos=nGlobal.filter(x=>x.estado==='vendido').length;
+  const apartados=nGlobal.filter(x=>x.estado==='apartado' && (!x.apartado_hasta || new Date(x.apartado_hasta)>new Date())).length;
+  if(total===0 || vendidos!==total){alert('⚠️ El sorteo solo puede iniciar cuando todos los boletos estén vendidos.\\n\\nVendidos: '+vendidos+' de '+total);return;}
+  if(apartados>0){alert('⚠️ Todavía hay '+apartados+' número(s) apartados.');return;}
+  if(!confirm('🏆 INICIAR SORTEO\\n\\nTodos los boletos están vendidos.\\nLas ventas se bloquearán y comenzará la selección del ganador.\\n\\n¿Continuar?'))return;
+  const {error}=await db.from('rifas').update({estado:'preparando'}).eq('id',rifa.id).in('estado',['activa','preparando']);
+  if(error){alert('No se pudo iniciar el sorteo: '+error.message);return}
+  rifa.estado='preparando';
+  await actualizarBotonCerrarSorteo();
+  await realizarSorteo();
+}
 async function realizarSorteo(){if(!rifa)return;
 const {data:sold,error:se}=await db.from('numeros').select('numero,participante_id').eq('rifa_id',rifa.id).eq('estado','vendido').not('participante_id','is',null);
 if(se){alert('No se pudo verificar los números vendidos: '+se.message);return}
@@ -275,12 +290,12 @@ await publicDraw.send({type:'broadcast',event:'sorteo_resultado',payload:{rifa_i
 await publicDraw.unsubscribe();
 await new Promise(r=>setTimeout(r,2500));$('drawModal').classList.remove('open');await mostrarGanador();alert('🏆 ¡SORTEO REALIZADO!\n\nNúmero ganador: '+numero+'\nGanador: '+data.nombre);if(btn){btn.disabled=true;btn.textContent='🏆 Sorteo realizado'}await cargar();}
 function actualizarBotonCerrarSorteo(){
-  const b=$('closeRaffleBtn');
+  const b=$('startDrawBtn');
   if(!b)return;
-  const total=nGlobal.length;
-  const vendidos=nGlobal.filter(x=>x.estado==='vendido').length;
-  const mostrar=rifa && rifa.estado==='activa' && total>0 && vendidos===total;
-  b.style.display=mostrar?'inline-flex':'none';
+  const terminado=rifa?.estado==='sorteada';
+  const preparando=rifa?.estado==='preparando';
+  b.disabled=!!terminado;
+  b.textContent=terminado?'🏆 Sorteo realizado':preparando?'🎲 Continuar sorteo':'🏆 Iniciar sorteo';
 }
 async function cerrarSorteoVendido(){
   if(!rifa)return;
