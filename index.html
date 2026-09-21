@@ -932,6 +932,8 @@ async function cargarRifa(){
     const precioFormateado='$'+Number(r.precio_numero).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
     const nombrePublico=obtenerNombrePublicoRifa(r);
     raffleName.textContent=nombrePublico;
+    const raffleIdEl=document.getElementById('raffleId');
+    if(raffleIdEl) raffleIdEl.textContent=String(r.codigo_sorteo||('RA-'+String(r.numero_sorteo||'?').padStart(4,'0')));
     officialTitle.textContent='SORTEO OFICIAL';
     priceEl.textContent=precioFormateado+' por número';
     ticketInfoPrice.textContent=precioFormateado;
