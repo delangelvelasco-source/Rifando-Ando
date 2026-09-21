@@ -26,7 +26,7 @@ function abrir(){
       o.remove();
       const d=r.data||{};
       alert('✅ Nuevo sorteo creado.\n\nID: '+(d.codigo_sorteo||('RA-'+String(d.numero_sorteo||'').padStart(4,'0')))+'\n'+(d.nombre||nombre)+'\nPremio: '+(d.premio||premio)+'\nBoleto: $'+Number(d.precio_numero??precio).toLocaleString('es-MX',{minimumFractionDigits:2})+'\nMétodo: '+(d.metodo_sorteo==='loteria_nacional'?'Lotería Nacional':'Sorteo interno')+'\n\n100 números disponibles.');
-      await cargar();
+      if(d.rifa_id){ window.location.href='?rifa='+encodeURIComponent(d.rifa_id); } else { await cargar(); }
     }catch(e){
       document.getElementById('nrMsg').innerHTML='<span class="error">❌ '+esc(e?.message||e)+'</span>';
       b.disabled=false;b.textContent='🚀 Crear nuevo sorteo';
