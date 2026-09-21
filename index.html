@@ -1028,16 +1028,34 @@ function actualizarEstadoVentasPublico(r){
 }
 async function cargarHistorialGanadores(){
   const el=document.getElementById('winnerHistory');
-  const {data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').order('created_at',{ascending:false});
-  if(error){el.innerHTML='<div class="winner-empty">No se pudo cargar el historial.</div>';return}
-  if(!data||!data.length){el.innerHTML='<div class="winner-empty">Aún no hay ganadores registrados.</div>';return}
+  if(!el)return;
+  let data=null,error=null;
+  for(let intento=1;intento<=3;intento++){
+    const respuesta=await db.from('ganadores')
+      .select('numero,nombre_snapshot,created_at,rifa_id')
+      .order('created_at',{ascending:false})
+      .limit(50);
+    data=respuesta.data; error=respuesta.error;
+    if(!error && Array.isArray(data) && data.length)break;
+    if(intento<3)await new Promise(resolve=>setTimeout(resolve,400*intento));
+  }
+  if(error){
+    el.innerHTML='<div class="winner-empty">No se pudo cargar el historial. Actualiza la página para volver a intentarlo.</div>';
+    return;
+  }
+  if(!Array.isArray(data)||!data.length){
+    el.innerHTML='<div class="winner-empty">Aún no hay ganadores registrados.</div>';
+    return;
+  }
   const rifaIds=[...new Set(data.map(w=>w.rifa_id).filter(Boolean))];
-  const {data:rifasData}=rifaIds.length?await db.from('rifas').select('id,codigo_sorteo,numero_sorteo,premio').in('id',rifaIds):{data:[]};
+  const {data:rifasData,error:rifasError}=rifaIds.length
+    ?await db.from('rifas').select('id,codigo_sorteo,numero_sorteo,premio').in('id',rifaIds)
+    :{data:[],error:null};
   const rifasMap=new Map((rifasData||[]).map(r=>[r.id,r]));
   el.innerHTML='<div class="winner-head"><div>🎟️ No. de sorteo</div><div>👤 Nombre del ganador</div><div>💰 Monto ganado</div><div>⭐ # ganador</div></div>'+data.map(w=>{
     const r=rifasMap.get(w.rifa_id);
     const codigo=r?.codigo_sorteo||('RA-'+String(r?.numero_sorteo||'?').padStart(4,'0'));
-    const d=new Date(w.created_at).toLocaleDateString('es-MX');
+    const d=w.created_at?new Date(w.created_at).toLocaleDateString('es-MX'):'';
     const nombreVisible=formatearNombrePublico(w.nombre_snapshot);
     const premio=String(r?.premio||'No disponible');
     return '<div class="winner-card"><div><div class="wname">'+esc(codigo)+'</div><div class="wdate">'+esc(d)+'</div></div><div class="wname">'+esc(nombreVisible)+'</div><div class="wprize">'+esc(premio)+'</div><div class="wnum">#'+esc(String(w.numero).padStart(2,'0'))+'</div></div>';
