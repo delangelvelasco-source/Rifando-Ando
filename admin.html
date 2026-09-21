@@ -416,13 +416,20 @@ function calcularFechaSorteoDesdeUltimaVenta(numeros, tipo){
   return new Date(Date.UTC(base.getUTCFullYear(),base.getUTCMonth(),base.getUTCDate(),3,0,0)).toISOString();
 }
 async function cargarSelectorRifas(){
-  const {data:list,error}=await db.from('rifas').select('id,nombre,numero_sorteo,estado,precio_numero,codigo_sorteo').in('id',['4b23f516-7973-4a04-bff6-9b9b5cb90f4d','60f9a81d-bdd6-4e28-b330-dc92cfe4d113','9a9bca1f-3f22-4a1a-8813-70c7f5914f65','e26f7533-0497-4f0d-a2e6-8d9e5254554b']);
-  if(list) list.sort((a,b)=>{const order={'Sorteo Regular':1,'Sorteo Especial':2,'Sorteo iPhone 18 Pro Max 256 GB':3};return (order[nombreRifaAdmin(a)]||99)-(order[nombreRifaAdmin(b)]||99);});
-  if(error||!list)return;
+  const ids=['4b23f516-7973-4a04-bff6-9b9b5cb90f4d','60f9a81d-bdd6-4e28-b330-dc92cfe4d113','9a9bca1f-3f22-4a1a-8813-70c7f5914f65'];
+  const {data:list,error}=await db.from('rifas').select('id,nombre,numero_sorteo,estado,precio_numero,codigo_sorteo').in('id',ids);
   const selected=new URLSearchParams(window.location.search).get('rifa');
-  $('adminRaffleNav').innerHTML=list.map(x=>{
-    const active=x.id===(selected||list[0]?.id)?' active':'';
-    return '<a class="raffle-nav-btn'+active+'" href="?rifa='+encodeURIComponent(x.id)+'">'+esc(nombreRifaAdmin(x)||('Sorteo #'+(x.numero_sorteo||'')))+'</a>';
+  const fallback=[
+    {id:ids[0],nombre:'Sorteo Regular'},
+    {id:ids[1],nombre:'Sorteo Especial'},
+    {id:ids[2],nombre:'Sorteo iPhone 18 Pro Max 256 GB'}
+  ];
+  const source=error||!list?.length?fallback:list;
+  const order={'Sorteo Regular':1,'Sorteo Especial':2,'Sorteo iPhone 18 Pro Max 256 GB':3};
+  source.sort((a,b)=>(order[nombreRifaAdmin(a)]||99)-(order[nombreRifaAdmin(b)]||99));
+  $('adminRaffleNav').innerHTML=source.map(x=>{
+    const active=x.id===(selected||rifa?.id||source[0]?.id)?' active':'';
+    return '<a class="raffle-nav-btn'+active+'" href="?rifa='+encodeURIComponent(x.id)+'">'+esc(nombreRifaAdmin(x))+'</a>';
   }).join('');
 }
 async function cargar(){const params=new URLSearchParams(window.location.search);const requestedRifa=params.get('rifa');const query=db.from('rifas').select('*').in('id',['4b23f516-7973-4a04-bff6-9b9b5cb90f4d','60f9a81d-bdd6-4e28-b330-dc92cfe4d113','9a9bca1f-3f22-4a1a-8813-70c7f5914f65','e26f7533-0497-4f0d-a2e6-8d9e5254554b']).order('created_at',{ascending:false});const {data:list,error:re}=await query;if(re||!list?.length){$('status').textContent='No se pudo cargar la rifa.';return}const r=list.find(x=>x.id===requestedRifa)||list[0];if(re||!r){$('status').textContent='No se pudo cargar la rifa.';return}rifa=r;await cargarSelectorRifas();await mostrarGanador();await cargarListaGanadores();await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});const {data:n,error:ne}=await db.from('numeros').select('id,numero,estado,apartado_hasta,participante_id,vendido_at').eq('rifa_id',r.id).order('numero');if(ne){$('status').textContent='No se pudieron cargar los números.';return}nGlobal=n||[];
