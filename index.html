@@ -341,10 +341,10 @@ body{overflow-x:hidden}
 <nav class="raffle-links" id="rifas" aria-label="Nuestros sorteos">
 <div class="raffle-links-title">🎟️ Nuestros sorteos</div>
 <div class="raffle-links-list">
-<a class="raffle-link" data-rifa="4b23f516-7973-4a04-bff6-9b9b5cb90f4d" href="?rifa=4b23f516-7973-4a04-bff6-9b9b5cb90f4d" onclick="window.location.assign('?rifa=4b23f516-7973-4a04-bff6-9b9b5cb90f4d'); return false;">Sorteo Regular <span class="raffle-link-arrow">›</span></a>
-<a class="raffle-link" data-rifa="60f9a81d-bdd6-4e28-b330-dc92cfe4d113" href="?rifa=60f9a81d-bdd6-4e28-b330-dc92cfe4d113" onclick="window.location.assign('?rifa=60f9a81d-bdd6-4e28-b330-dc92cfe4d113'); return false;">Sorteo Especial <span class="raffle-link-arrow">›</span></a>
-<a class="raffle-link" data-rifa="9a9bca1f-3f22-4a1a-8813-70c7f5914f65" href="?rifa=9a9bca1f-3f22-4a1a-8813-70c7f5914f65" onclick="window.location.assign('?rifa=9a9bca1f-3f22-4a1a-8813-70c7f5914f65'); return false;">iPhone 18 Pro Max 256 GB <span class="raffle-link-arrow">›</span></a>
-<a class="raffle-link" data-rifa="af9945a6-fe0d-4f53-a147-d8e332e39b59" href="?rifa=af9945a6-fe0d-4f53-a147-d8e332e39b59" onclick="window.location.assign('?rifa=af9945a6-fe0d-4f53-a147-d8e332e39b59'); return false;">Sorteo Express <span class="raffle-link-arrow">›</span></a>
+<a class="raffle-link" data-grupo="regular" data-rifa="" href="?rifa=4b23f516-7973-4a04-bff6-9b9b5cb90f4d" onclick="return false;">Sorteo Regular <span class="raffle-link-arrow">›</span></a>
+<a class="raffle-link" data-grupo="especial" data-rifa="" href="?rifa=60f9a81d-bdd6-4e28-b330-dc92cfe4d113" onclick="return false;">Sorteo Especial <span class="raffle-link-arrow">›</span></a>
+<a class="raffle-link" data-grupo="iphone" data-rifa="" href="?rifa=9a9bca1f-3f22-4a1a-8813-70c7f5914f65" onclick="return false;">iPhone 18 Pro Max 256 GB <span class="raffle-link-arrow">›</span></a>
+<a class="raffle-link" data-grupo="express" data-rifa="" href="?rifa=af9945a6-fe0d-4f53-a147-d8e332e39b59" onclick="return false;">Sorteo Express <span class="raffle-link-arrow">›</span></a>
 </div></nav>
 
 <button type="button" class="share-raffle" id="shareRaffle" aria-label="Compartir este sorteo">📤 Compartir este sorteo</button>
@@ -859,10 +859,17 @@ async function cargarRifa(){
   const loadSeq=++cargarRifaSeq;
   const params=new URLSearchParams(window.location.search);
   const rutaRifa=window.location.pathname.replace(/\/+$/,'').split('/').pop().toLowerCase();
-  const mapaRutas={regular:'4b23f516-7973-4a04-bff6-9b9b5cb90f4d',especial:'60f9a81d-bdd6-4e28-b330-dc92cfe4d113',iphone:'9a9bca1f-3f22-4a1a-8813-70c7f5914f65',express:'af9945a6-fe0d-4f53-a147-d8e332e39b59'};
-  const requestedParam=params.get('rifa')||window.__initialRifaId||mapaRutas[rutaRifa]||'4b23f516-7973-4a04-bff6-9b9b5cb90f4d';
-  const rifasPermitidas=['4b23f516-7973-4a04-bff6-9b9b5cb90f4d','60f9a81d-bdd6-4e28-b330-dc92cfe4d113','9a9bca1f-3f22-4a1a-8813-70c7f5914f65','af9945a6-fe0d-4f53-a147-d8e332e39b59'];
-  const requestedRifa=rifasPermitidas.includes(String(requestedParam))?String(requestedParam):'4b23f516-7973-4a04-bff6-9b9b5cb90f4d';
+  const gruposRifa={regular:'regular',especial:'especial',iphone:'iphone',express:'express'};
+  const mapaRutas={regular:null,especial:null,iphone:null,express:null};
+  let rifasActuales={};
+  const {data:listaActuales}=await db.from('rifas').select('id,grupo_rifa,estado,numero_sorteo,created_at').in('grupo_rifa',Object.values(gruposRifa)).order('created_at',{ascending:false});
+  (listaActuales||[]).forEach(x=>{if(x.grupo_rifa&&!rifasActuales[x.grupo_rifa])rifasActuales[x.grupo_rifa]=x;});
+  Object.keys(mapaRutas).forEach(k=>{mapaRutas[k]=rifasActuales[k]?.id||null;});
+  window.__rifasActuales=mapaRutas;
+  const requestedParam=params.get('rifa')||window.__initialRifaId;
+  const requestedRifa=requestedParam
+    ? String(requestedParam)
+    : (mapaRutas[rutaRifa]||mapaRutas.regular);
 
   // Al cambiar de rifa, cualquier número seleccionado pertenece a la rifa anterior
   // y no debe sobrevivir ni mezclarse con la nueva. Este control también cubre
@@ -901,6 +908,16 @@ async function cargarRifa(){
   }
   r=respuesta?.data||null; errorRe=respuesta?.error||null;
   if(loadSeq!==cargarRifaSeq)return;
+  // Los botones públicos siempre deben apuntar al ID vigente de cada bloque.
+  Object.entries(mapaRutas).forEach(([grupo,id])=>{
+    if(!id)return;
+    document.querySelectorAll('.raffle-link[data-grupo="'+grupo+'"]').forEach(a=>{
+      a.dataset.rifa=id;
+      a.href='?rifa='+encodeURIComponent(id);
+      a.onclick=ev=>{ev.preventDefault();window.location.assign('?rifa='+encodeURIComponent(id));};
+    });
+  });
+  window.__ordenRifasActuales=Object.values(mapaRutas).filter(Boolean);
   if(errorRe||!r){
     tickets.innerHTML='<p style="color:#aaa">No hay una rifa activa disponible.</p>';
     await mostrarGanadorPublico();
@@ -1337,12 +1354,9 @@ document.querySelectorAll('.raffle-link[data-rifa]').forEach(link=>{
 window.addEventListener('popstate',()=>cargarRifa());
 
 const topRaffles=document.getElementById('topRaffles');
-const ordenRifas=[
-  '4b23f516-7973-4a04-bff6-9b9b5cb90f4d',
-  '60f9a81d-bdd6-4e28-b330-dc92cfe4d113',
-  '9a9bca1f-3f22-4a1a-8813-70c7f5914f65',
-  'af9945a6-fe0d-4f53-a147-d8e332e39b59'
-];
+const ordenRifas=window.__ordenRifasActuales?.length
+  ? window.__ordenRifasActuales
+  : ['4b23f516-7973-4a04-bff6-9b9b5cb90f4d','60f9a81d-bdd6-4e28-b330-dc92cfe4d113','9a9bca1f-3f22-4a1a-8813-70c7f5914f65','af9945a6-fe0d-4f53-a147-d8e332e39b59'];
 topRaffles?.addEventListener('click',e=>{
   e.preventDefault();
   e.stopPropagation();
