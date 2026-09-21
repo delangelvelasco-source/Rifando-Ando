@@ -326,7 +326,7 @@ body{overflow-x:hidden}
 <div style="display:flex;gap:8px;align-items:center">
 <a class="btn" href="#numeros">Elegir números</a>
 <a class="btn" href="#ultimo-ganador">🏆 Último ganador</a>
-<a class="btn" id="topRaffles" href="#rifas" style="position:relative;z-index:1001;pointer-events:auto" onclick="event.preventDefault();event.stopPropagation();document.querySelectorAll('.modal.open,.draw-public.open').forEach(function(x){x.classList.remove('open')});history.replaceState(null,'','#rifas');document.getElementById('rifas')?.scrollIntoView({behavior:'smooth',block:'start'});return false;">🎟️ Nuestros sorteos</a>
+<a class="btn" id="topRaffles" href="#rifas" style="position:relative;z-index:1001;pointer-events:auto">🎟️ Cambiar sorteo</a>
 <a class="btn" id="topContinue" href="#numeros">Continuar</a>
 </div>
 </div>
@@ -1316,6 +1316,28 @@ document.querySelectorAll('.raffle-link[data-rifa]').forEach(link=>{
 window.addEventListener('popstate',()=>cargarRifa());
 
 const topRaffles=document.getElementById('topRaffles');
+const ordenRifas=[
+  '4b23f516-7973-4a04-bff6-9b9b5cb90f4d',
+  '60f9a81d-bdd6-4e28-b330-dc92cfe4d113',
+  '9a9bca1f-3f22-4a1a-8813-70c7f5914f65',
+  'af9945a6-fe0d-4f53-a147-d8e332e39b59'
+];
+topRaffles?.addEventListener('click',e=>{
+  e.preventDefault();
+  e.stopPropagation();
+  document.querySelectorAll('.modal.open,.draw-public.open').forEach(x=>x.classList.remove('open'));
+  const actual=String(rifa?.id||new URLSearchParams(window.location.search).get('rifa')||'');
+  const indice=ordenRifas.indexOf(actual);
+  const siguiente=ordenRifas[(indice+1+ordenRifas.length)%ordenRifas.length];
+  const rutas={
+    '4b23f516-7973-4a04-bff6-9b9b5cb90f4d':'regular/',
+    '60f9a81d-bdd6-4e28-b330-dc92cfe4d113':'especial/',
+    '9a9bca1f-3f22-4a1a-8813-70c7f5914f65':'iphone/',
+    'af9945a6-fe0d-4f53-a147-d8e332e39b59':'express/'
+  };
+  const base=window.location.pathname.includes('/Rifando-Ando/')?window.location.pathname.split('/Rifando-Ando/')[0]+'/Rifando-Ando/':'/';
+  window.location.href=base+rutas[siguiente];
+});
 topRaffles?.addEventListener('click',e=>{
   e.preventDefault();
   e.stopPropagation();
