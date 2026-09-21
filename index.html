@@ -822,7 +822,7 @@ async function refrescarNumerosPublico(rifaId){
         update();
       });
     }else b.disabled=true;
-    if(r.estado==='cerrada') b.disabled=true;
+    if(['cerrada','preparando','sorteada'].includes(String(r.estado))) b.disabled=true;
     tickets.appendChild(b);
   });
   sel.forEach(numero=>{if(!disponibles.has(Number(numero)))sel.delete(numero)});
@@ -1000,7 +1000,26 @@ async function cargarRifa(){
   cargarHistorialGanadores().catch(()=>{});
 }
 function obtenerNombrePublicoRifa(r){return r?.id==='4b23f516-7973-4a04-bff6-9b9b5cb90f4d'?'Sorteo Regular':(r?.nombre||'Sorteo');}
-function actualizarEstadoVentasPublico(r){const box=document.getElementById('ventasStatus'),title=document.getElementById('ventasStatusTitle'),text=document.getElementById('ventasStatusText'),overlay=document.getElementById('ventasCerradasOverlay'),overlayText=document.getElementById('ventasCerradasText');if(!box||!title||!text)return;const cerrada=r?.estado==='cerrada'||r?.estado==='preparando';box.classList.toggle('cerrada',cerrada);box.classList.toggle('abierta',!cerrada);title.textContent=r?.estado==='preparando'?'🟡 PREPARANDO SORTEO':cerrada?'VENTAS CERRADAS':'VENTAS ABIERTAS';text.textContent=r?.estado==='preparando'?'El sistema ha detectado que la venta de boletos ha finalizado.':'El sistema está en mantenimiento.';if(overlay){overlay.classList.toggle('visible',cerrada);overlay.setAttribute('aria-hidden',cerrada?'false':'true')}if(overlayText)overlayText.textContent=r?.estado==='preparando'?'El sistema ha detectado que la venta de boletos ha finalizado.':cerrada?'El sistema está en mantenimiento.':'Puedes seleccionar tus números.';const thanks=document.getElementById('ventasCerradasThanks');if(thanks)thanks.textContent=r?.estado==='preparando'?'Pronto tendremos ganador.':'Gracias por tu comprensión.'}
+function actualizarEstadoVentasPublico(r){
+  const box=document.getElementById('ventasStatus'),title=document.getElementById('ventasStatusTitle'),text=document.getElementById('ventasStatusText'),overlay=document.getElementById('ventasCerradasOverlay'),overlayText=document.getElementById('ventasCerradasText');
+  if(!box||!title||!text)return;
+  const estado=String(r?.estado||'activa');
+  const preparando=estado==='preparando';
+  const cerrada=estado==='cerrada';
+  const sorteada=estado==='sorteada';
+  box.classList.toggle('cerrada',preparando||cerrada);
+  box.classList.toggle('abierta',estado==='activa');
+  title.textContent=sorteada?'🏆 SORTEO REALIZADO':preparando?'🟡 SORTEO EN PROCESO':cerrada?'VENTAS CERRADAS':'VENTAS ABIERTAS';
+  text.textContent=sorteada?'El ganador ya fue seleccionado.':preparando?'Las ventas han finalizado. Estamos seleccionando al ganador.':cerrada?'Las ventas están temporalmente cerradas.':'Puedes seleccionar tus números.';
+  const bloqueo=preparando||cerrada;
+  if(overlay){
+    overlay.classList.toggle('visible',bloqueo);
+    overlay.setAttribute('aria-hidden',bloqueo?'false':'true');
+  }
+  if(overlayText)overlayText.textContent=preparando?'Las ventas han finalizado. Estamos seleccionando al ganador.':cerrada?'Las ventas están temporalmente cerradas.':'Puedes seleccionar tus números.';
+  const thanks=document.getElementById('ventasCerradasThanks');
+  if(thanks)thanks.textContent=preparando?'Pronto tendremos ganador.':cerrada?'Gracias por tu comprensión.':sorteada?'El sorteo ya fue realizado.':'¡Elige tus números y participa!';
+}
 async function cargarHistorialGanadores(){
   const el=document.getElementById('winnerHistory');
   const {data,error}=await db.from('ganadores').select('numero,nombre_snapshot,created_at,rifa_id').order('created_at',{ascending:false});
