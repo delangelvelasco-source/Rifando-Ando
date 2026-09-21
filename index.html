@@ -1309,18 +1309,28 @@ async function confirmar(e){
   await cargarRifa();
 }
 
-// Navegación entre rifas sin recargar toda la página: evita parpadeos y estados mezclados durante la carga.
+// Navegación entre rifas: "Nuestros sorteos" abre el selector y cada opción
+// cambia realmente la rifa, actualizando todos sus datos y números.
 document.querySelectorAll('.raffle-link[data-rifa]').forEach(link=>{
   link.addEventListener('click',async e=>{
     e.preventDefault();
-    const id=link.dataset.rifa;
+    e.stopPropagation();
+    const id=String(link.dataset.rifa||'');
     if(!id)return;
-    if(rifa?.id===id){history.replaceState({},'',link.getAttribute('href'));sel.clear();update();return;}
-    sel.clear(); update();
+    const href=link.getAttribute('href')||('?rifa='+encodeURIComponent(id));
     document.querySelectorAll('.raffle-link[data-rifa]').forEach(x=>x.classList.remove('loading'));
     link.classList.add('loading');
-    history.pushState({},'',link.getAttribute('href'));
-    try{await cargarRifa();}finally{link.classList.remove('loading');}
+    sel.clear();
+    update();
+    history.pushState(null,'',href);
+    try{
+      await cargarRifa();
+      document.getElementById('numeros')?.scrollIntoView({behavior:'smooth',block:'start'});
+    }catch(err){
+      console.error('Error cambiando de rifa',err);
+    }finally{
+      link.classList.remove('loading');
+    }
   });
 });
 window.addEventListener('popstate',()=>cargarRifa());
@@ -1329,18 +1339,16 @@ const topRaffles=document.getElementById('topRaffles');
 topRaffles?.addEventListener('click',e=>{
   e.preventDefault();
   e.stopPropagation();
-  const target=document.getElementById('rifas');
-  if(!target)return;
-  target.scrollIntoView({behavior:'smooth',block:'start'});
+  document.getElementById('rifas')?.scrollIntoView({behavior:'smooth',block:'start'});
 });
 
 document.getElementById('topContinue')?.addEventListener('click',e=>{
   e.preventDefault();
   const target=document.getElementById('numeros');
   if(!target)return;
-  history.replaceState(null,'','#numeros');
   target.scrollIntoView({behavior:'smooth',block:'start'});
 });
+
 document.getElementById('shareRaffle')?.addEventListener('click',compartirRifa);
 document.getElementById('topContinue')?.addEventListener('click',()=>{
   if(sel.size){abrirFormulario();}
