@@ -1,7 +1,7 @@
 (function(){
 function el(t,a){const e=document.createElement(t);Object.assign(e,a||{});return e}
 function abrir(){
-  if(!window.rifa){alert('Primero espera a que cargue el sorteo actual.');return}
+  if(typeof rifa==='undefined'||!rifa){alert('Primero espera a que cargue el sorteo actual.');return}
   const o=el('div',{id:'newRaffleOverlay'});
   o.style='position:fixed;inset:0;background:#000b;display:grid;place-items:center;padding:18px;z-index:50';
   o.innerHTML='<div style="width:min(460px,100%);background:#151515;border:1px solid #363636;border-radius:18px;padding:22px"><button id="nrClose" class="btn secondary" style="float:right">×</button><h2>➕ Iniciar nuevo sorteo</h2><p class="muted">El sorteo actual se cerrará y quedará guardado en el historial.</p><div class="field"><label>Nombre del sorteo</label><input id="nrName" value="Nuevo sorteo oficial" maxlength="100"></div><div class="field"><label>Premio</label><input id="nrPrize" type="text" placeholder="$1,000.00" maxlength="50"></div><div class="field"><label>Costo por boleto</label><input id="nrPrice" type="number" min="0.01" step="0.01" placeholder="15.00"></div><div class="field"><label>Método del sorteo</label><select id="nrMethod"><option value="interno">🎲 Sorteo interno aleatorio</option><option value="loteria_nacional">🇲🇽 Lotería Nacional · últimas 2 cifras del Tris</option></select></div><p style="color:#d9a936">🎟️ Se crearán automáticamente los números 00–99.</p><button id="nrCreate" class="btn" style="width:100%">🚀 Crear nuevo sorteo</button><p id="nrMsg"></p></div>';
