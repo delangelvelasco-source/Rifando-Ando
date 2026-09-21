@@ -1331,18 +1331,9 @@ topRaffles?.addEventListener('click',e=>{
   e.stopPropagation();
   const target=document.getElementById('rifas');
   if(!target)return;
-  // Mantener siempre la rifa seleccionada (?rifa=...) al abrir "Nuestros sorteos".
-  // Antes se reemplazaba toda la URL por #rifas y se perdía el sorteo actual.
-  const hashUrl=window.location.pathname+window.location.search+'#rifas';
-  history.replaceState(null,'',hashUrl);
   target.scrollIntoView({behavior:'smooth',block:'start'});
-  const active=document.querySelector('.raffle-link.active');
-  if(active){
-    document.querySelectorAll('.raffle-link').forEach(x=>x.classList.remove('focus'));
-    active.classList.add('focus');
-    setTimeout(()=>active.classList.remove('focus'),1200);
-  }
 });
+
 document.getElementById('topContinue')?.addEventListener('click',e=>{
   e.preventDefault();
   const target=document.getElementById('numeros');
