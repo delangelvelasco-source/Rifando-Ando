@@ -1016,7 +1016,10 @@ async function cargarHistorialGanadores(){
 function obtenerDatosCompartir(){
   const nombre=obtenerNombrePublicoRifa(rifa);
   const url=new URL(window.location.href);
-  if(rifa?.id)url.searchParams.set('rifa',String(rifa.id));
+  if(rifa?.id==='af9945a6-fe0d-4f53-a147-d8e332e39b59'){
+    url.pathname=url.pathname.replace(/[^/]*$/,'express.html');
+    url.search='';
+  }else if(rifa?.id)url.searchParams.set('rifa',String(rifa.id));
   return {
     title:nombre+' | Rifando Ando',
     text:'🎟️ '+nombre+'\n💰 Premio: '+String(rifa?.premio||'')+'\n🎫 Boleto: $'+Number(rifa?.precio_numero||0).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2})+'\n👉 Participa aquí:',
