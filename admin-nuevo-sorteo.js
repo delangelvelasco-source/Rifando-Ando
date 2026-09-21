@@ -2,6 +2,7 @@
 function el(t,a){const e=document.createElement(t);Object.assign(e,a||{});return e}
 function abrir(){
   if(typeof rifa==='undefined'||!rifa){alert('Primero espera a que cargue el sorteo actual.');return}
+  if(rifa.estado!=='sorteada'){alert('🏆 Primero debes realizar el sorteo actual y seleccionar al ganador.\n\nDespués podrás crear el siguiente ID dentro de este mismo bloque.');return}
   const o=el('div',{id:'newRaffleOverlay'});
   o.style='position:fixed;inset:0;background:#000b;display:grid;place-items:center;padding:18px;z-index:50';
   const baseNombre=String(rifa.nombre||'Nuevo sorteo oficial');
@@ -21,7 +22,7 @@ function abrir(){
   document.getElementById('nrCreate').onclick=async()=>{
     const nombre=document.getElementById('nrName').value.trim(),premio=document.getElementById('nrPrize').value.trim(),precio=Number(document.getElementById('nrPrice').value),metodo=document.getElementById('nrMethod').value;
     if(!nombre||!premio||!Number.isFinite(precio)||precio<=0){document.getElementById('nrMsg').innerHTML='<span class="error">Completa nombre, premio y costo del boleto.</span>';return}
-    if(!confirm('¿Crear este nuevo sorteo?\n\n'+nombre+'\nPremio: '+premio+'\nBoleto: $'+precio.toLocaleString('es-MX',{minimumFractionDigits:2})+'\n\nMétodo: '+(metodo==='loteria_nacional'?'Lotería Nacional · últimas 2 cifras del Tris':'Sorteo interno aleatorio')+'\n\nEl actual se cerrará y se crearán 100 números nuevos.'))return;
+    if(!confirm('¿Crear este nuevo sorteo?\n\n'+nombre+'\nPremio: '+premio+'\nBoleto: $'+precio.toLocaleString('es-MX',{minimumFractionDigits:2})+'\n\nMétodo: '+(metodo==='loteria_nacional'?'Lotería Nacional · últimas 2 cifras del Tris':'Sorteo interno aleatorio')+'\n\nEl sorteo anterior ya fue realizado y quedará guardado en el historial.\n\nSe creará un nuevo ID dentro del mismo bloque con el mismo número de boletos.'))return;
     const b=document.getElementById('nrCreate');b.disabled=true;b.textContent='Creando...';
     try{
       const grupo=rifa.grupo_rifa||({ '4b23f516-7973-4a04-bff6-9b9b5cb90f4d':'regular','60f9a81d-bdd6-4e28-b330-dc92cfe4d113':'especial','9a9bca1f-3f22-4a1a-8813-70c7f5914f65':'iphone','af9945a6-fe0d-4f53-a147-d8e332e39b59':'express' }[rifa.id]||'regular');
@@ -29,7 +30,7 @@ function abrir(){
       if(r.error){document.getElementById('nrMsg').innerHTML='<span class="error">❌ '+esc(r.error.message)+'</span>';b.disabled=false;b.textContent='🚀 Crear nuevo sorteo';return}
       o.remove();
       const d=r.data||{};
-      alert('✅ Nuevo sorteo creado.\n\nID: '+(d.codigo_sorteo||('RA-'+String(d.numero_sorteo||'').padStart(4,'0')))+'\n'+(d.nombre||nombre)+'\nPremio: '+(d.premio||premio)+'\nBoleto: $'+Number(d.precio_numero??precio).toLocaleString('es-MX',{minimumFractionDigits:2})+'\nMétodo: '+(d.metodo_sorteo==='loteria_nacional'?'Lotería Nacional':'Sorteo interno')+'\n\n100 números disponibles.');
+      alert('✅ Nuevo sorteo creado.\n\nID: '+(d.codigo_sorteo||('RA-'+String(d.numero_sorteo||'').padStart(4,'0')))+'\n'+(d.nombre||nombre)+'\nPremio: '+(d.premio||premio)+'\nBoleto: $'+Number(d.precio_numero??precio).toLocaleString('es-MX',{minimumFractionDigits:2})+'\nMétodo: '+(d.metodo_sorteo==='loteria_nacional'?'Lotería Nacional':'Sorteo interno')+'\n\n'+(d.numeros||totalNumeros)+' números disponibles.');
       if(d.rifa_id){ window.location.href='?rifa='+encodeURIComponent(d.rifa_id); } else { await cargar(); }
     }catch(e){
       document.getElementById('nrMsg').innerHTML='<span class="error">❌ '+esc(e?.message||e)+'</span>';
@@ -40,7 +41,10 @@ function abrir(){
 function instalar(){
   const h=document.querySelector('#app h1');
   if(!h||document.getElementById('newRaffleBtn')){if(!document.getElementById('newRaffleBtn'))setTimeout(instalar,500);return}
-  const b=el('button',{id:'newRaffleBtn',className:'btn'});b.textContent='➕ Nuevo sorteo';b.onclick=abrir;h.parentElement.appendChild(b)
+  const b=el('button',{id:'newRaffleBtn',className:'btn'});b.textContent='➕ Nuevo sorteo';b.onclick=abrir;h.parentElement.appendChild(b);
+  const actualizarDisponibilidad=()=>{const listo=typeof rifa!=='undefined'&&rifa&&rifa.estado==='sorteada';b.disabled=!listo;b.title=listo?'Crear el siguiente ID dentro de este mismo bloque':'Primero realiza el sorteo actual para habilitar un nuevo ID';b.style.opacity=listo?'1':'.55';};
+  actualizarDisponibilidad();
+  setInterval(actualizarDisponibilidad,1000)
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',instalar);else instalar()
 })();
