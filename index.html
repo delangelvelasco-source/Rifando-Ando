@@ -1329,14 +1329,12 @@ topRaffles?.addEventListener('click',e=>{
   const actual=String(rifa?.id||new URLSearchParams(window.location.search).get('rifa')||'');
   const indice=ordenRifas.indexOf(actual);
   const siguiente=ordenRifas[(indice+1+ordenRifas.length)%ordenRifas.length];
-  const rutas={
-    '4b23f516-7973-4a04-bff6-9b9b5cb90f4d':'regular/',
-    '60f9a81d-bdd6-4e28-b330-dc92cfe4d113':'especial/',
-    '9a9bca1f-3f22-4a1a-8813-70c7f5914f65':'iphone/',
-    'af9945a6-fe0d-4f53-a147-d8e332e39b59':'express/'
-  };
-  const base=window.location.pathname.includes('/Rifando-Ando/')?window.location.pathname.split('/Rifando-Ando/')[0]+'/Rifando-Ando/':'/';
-  window.location.href=base+rutas[siguiente];
+  // Usamos el mismo parámetro ?rifa= que ya utiliza el menú de sorteos.
+  // Así funciona igual en GitHub Pages, Cloudflare Pages y en cualquier navegador.
+  const url=new URL(window.location.href);
+  url.searchParams.set('rifa',siguiente);
+  url.hash='';
+  window.location.href=url.href;
 });
 topRaffles?.addEventListener('click',e=>{
   e.preventDefault();
