@@ -828,7 +828,12 @@ async function refrescarNumerosPublico(rifaId){
   sel.forEach(numero=>{if(!disponibles.has(Number(numero)))sel.delete(numero)});
   document.getElementById('ticketInfoCount').textContent=String(n?.length||0);
   const pct=n?.length?Math.round(busy/n.length*100):0;
-  meta.innerHTML='<span>'+pct+'% ocupados</span><span>'+(rifa.fecha_sorteo?'Sorteo: '+new Date(rifa.fecha_sorteo).toLocaleDateString('es-MX'):'Sorteo próximamente')+'</span>';
+  let metaEstado='Sorteo próximamente';
+  if(r.estado==='preparando')metaEstado='🟡 Sorteo en proceso';
+  else if(r.estado==='cerrada')metaEstado='🔒 Ventas cerradas';
+  else if(r.estado==='sorteada')metaEstado='🎉 Sorteo realizado';
+  else if(r.fecha_sorteo)metaEstado='Sorteo: '+new Date(r.fecha_sorteo).toLocaleDateString('es-MX');
+  meta.innerHTML='<span>'+pct+'% ocupados</span><span>'+metaEstado+'</span>';
   bar.style.width=pct+'%';
   update();
   actualizarWhatsAppAyuda();
@@ -932,6 +937,7 @@ async function cargarRifa(){
     officialTitle.textContent='SORTEO OFICIAL';
     priceEl.textContent=precioFormateado+' por número';
     ticketInfoPrice.textContent=precioFormateado;
+    actualizarEstadoVentasPublico(r);
     meta.innerHTML='<span>🎉 Sorteo realizado</span><span>'+(r.fecha_sorteo?'Fecha: '+new Date(r.fecha_sorteo).toLocaleDateString('es-MX'):'')+'</span>';
     bar.style.width='100%';
     update();
