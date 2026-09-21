@@ -867,9 +867,20 @@ async function cargarRifa(){
   Object.keys(mapaRutas).forEach(k=>{mapaRutas[k]=rifasActuales[k]?.id||null;});
   window.__rifasActuales=mapaRutas;
   const requestedParam=params.get('rifa')||window.__initialRifaId;
-  const requestedRifa=requestedParam
-    ? String(requestedParam)
-    : (mapaRutas[rutaRifa]||mapaRutas.regular);
+  const legacyGrupoPorId={
+    '4b23f516-7973-4a04-bff6-9b9b5cb90f4d':'regular',
+    '60f9a81d-bdd6-4e28-b330-dc92cfe4d113':'especial',
+    '9a9bca1f-3f22-4a1a-8813-70c7f5914f65':'iphone',
+    'af9945a6-fe0d-4f53-a147-d8e332e39b59':'express'
+  };
+  let requestedRifa=requestedParam?String(requestedParam):(mapaRutas[rutaRifa]||mapaRutas.regular);
+  const legacyGrupo=legacyGrupoPorId[requestedRifa];
+  if(legacyGrupo&&mapaRutas[legacyGrupo]&&mapaRutas[legacyGrupo]!==requestedRifa){
+    requestedRifa=mapaRutas[legacyGrupo];
+    const cleanUrl=new URL(window.location.href);
+    cleanUrl.searchParams.set('rifa',requestedRifa);
+    window.history.replaceState(null,'',cleanUrl.href);
+  }
 
   // Al cambiar de rifa, cualquier número seleccionado pertenece a la rifa anterior
   // y no debe sobrevivir ni mezclarse con la nueva. Este control también cubre
