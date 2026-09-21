@@ -429,7 +429,14 @@ function activarTiempoReal(){
 function toggleParticipantes(){const body=$('participantsBody'),head=$('participantsToggle');const open=body.classList.toggle('open');head.classList.toggle('open',open);$('participantsIcon').textContent=open?'▲':'▼'}
 async function cargarHistorialRifas(){const {data,error}=await db.from('rifas').select('id,nombre,numero_sorteo,codigo_sorteo,estado,created_at,fecha_sorteo').order('created_at',{ascending:false});const sel=$('historyRaffle');if(!sel)return;if(error){sel.innerHTML='<option value="">No se pudieron cargar los sorteos</option>';if($('historySummary')){$('historySummary').textContent='';$('historySummary').style.display='none'}if($('historyParticipants')){$('historyParticipants').innerHTML='';$('historyParticipants').style.display='none'}return}sel.innerHTML='<option value="">Selecciona un sorteo...</option>'+(data||[]).map(x=>'<option value="'+x.id+'">'+esc(x.codigo_sorteo||('Sorteo #'+(x.numero_sorteo||'')))+' · '+esc(nombreRifaAdmin(x))+' · '+esc(x.estado)+'</option>').join('');if($('historySummary')){$('historySummary').textContent='';$('historySummary').style.display='none'}if($('historyParticipants')){$('historyParticipants').innerHTML='';$('historyParticipants').style.display='none'}}
 async function cargarHistorialRifa(){const id=$('historyRaffle')?.value;if(!id){$('historySummary').textContent='';$('historySummary').style.display='none';$('historyParticipants').innerHTML='';$('historyParticipants').style.display='none';return}$('historySummary').style.display='block';$('historyParticipants').style.display='block';const {data:n,error:ne}=await db.from('numeros').select('numero,estado,participante_id,apartado_hasta').eq('rifa_id',id).order('numero');if(ne){$('historySummary').textContent='No se pudieron cargar los números.';return}const ns=n||[];const ids=[...new Set(ns.filter(x=>x.participante_id).map(x=>x.participante_id))];const {data:p}=ids.length?await db.from('participantes').select('id,nombre,whatsapp').in('id',ids):{data:[]};const {data:pay}=ids.length?await db.from('pagos').select('participante_id,monto,metodo,estado,confirmado_at,confirmado_por_email').eq('rifa_id',id).in('participante_id',ids).order('confirmado_at',{ascending:false}):{data:[]};const by={};(p||[]).forEach(x=>by[x.id]=x);const paid={};(pay||[]).forEach(x=>{if(x.estado==='confirmado')paid[x.participante_id]=(paid[x.participante_id]||0)+Number(x.monto||0)});const sold=ns.filter(x=>x.estado==='vendido').length,apart=ns.filter(x=>x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)>new Date()).length;const money=(pay||[]).filter(x=>x.estado==='confirmado').reduce((s,x)=>s+Number(x.monto||0),0);$('historySummary').innerHTML='<b>'+ids.length+'</b> participantes · <b>'+sold+'</b> vendidos · <b>'+apart+'</b> apartados activos · <b>$'+money.toLocaleString('es-MX')+'</b> cobrado';$('historyParticipants').innerHTML=ids.length?ids.map(pid=>{const x=by[pid]||{};const nums=ns.filter(z=>z.participante_id===pid&&(z.estado==='vendido'||z.estado==='apartado')).map(z=>String(z.numero).padStart(2,'0'));const rows=(pay||[]).filter(q=>q.participante_id===pid&&q.estado==='confirmado').map(q=>'<div>💳 $'+Number(q.monto).toLocaleString('es-MX')+' · '+esc(q.metodo||'')+' · '+new Date(q.confirmado_at||0).toLocaleString('es-MX')+' · '+esc(q.confirmado_por_email||'Administrador')+'</div>').join('');return '<div class="row"><b>'+esc(x.nombre||'Participante')+'</b> · '+esc(x.whatsapp||'')+'<br><span class="gold">🎟️ Números: '+(nums.join(', ')||'—')+'</span><br>'+(paid[pid]?'🟢 Pagado: $'+paid[pid].toLocaleString('es-MX'):'⚪ Sin pago confirmado')+'<div class="pay">'+(rows||'Sin movimientos de pago')+'</div></div>'}).join(''):'Sin participantes registrados en este sorteo.'}
-function nombreRifaAdmin(r){return r?.id==='4b23f516-7973-4a04-bff6-9b9b5cb90f4d'?'Sorteo Regular':(r?.id==='60f9a81d-bdd6-4e28-b330-dc92cfe4d113'?'Sorteo Especial':(r?.nombre||'Sorteo'));}
+function nombreRifaAdmin(r){
+  const g=r?.grupo_rifa;
+  if(g==='regular')return 'Sorteo Regular';
+  if(g==='especial')return 'Sorteo Especial';
+  if(g==='iphone')return 'Sorteo iPhone 18 Pro Max 256 GB';
+  if(g==='express')return 'Sorteo Express';
+  return r?.id==='4b23f516-7973-4a04-bff6-9b9b5cb90f4d'?'Sorteo Regular':(r?.id==='60f9a81d-bdd6-4e28-b330-dc92cfe4d113'?'Sorteo Especial':(r?.id==='9a9bca1f-3f22-4a1a-8813-70c7f5914f65'?'Sorteo iPhone 18 Pro Max 256 GB':(r?.id==='af9945a6-fe0d-4f53-a147-d8e332e39b59'?'Sorteo Express':(r?.nombre||'Sorteo'))));
+}
 function calcularFechaSorteoDesdeUltimaVenta(numeros, tipo){
   const vendidos=(numeros||[]).filter(x=>x.estado==='vendido'&&x.vendido_at);
   if(vendidos.length<100)return null;
@@ -444,24 +451,24 @@ function calcularFechaSorteoDesdeUltimaVenta(numeros, tipo){
   return new Date(Date.UTC(base.getUTCFullYear(),base.getUTCMonth(),base.getUTCDate(),3,0,0)).toISOString();
 }
 async function cargarSelectorRifas(){
-  const {data:list,error}=await db.from('rifas').select('id,nombre,numero_sorteo,estado,precio_numero,codigo_sorteo').order('numero_sorteo',{ascending:true,nullsFirst:false}).order('created_at',{ascending:true});
-  const selected=new URLSearchParams(window.location.search).get('rifa');
-  const fallback=[
-    {id:'4b23f516-7973-4a04-bff6-9b9b5cb90f4d',nombre:'Sorteo Regular',numero_sorteo:2},
-    {id:'60f9a81d-bdd6-4e28-b330-dc92cfe4d113',nombre:'Sorteo Especial'},
-    {id:'9a9bca1f-3f22-4a1a-8813-70c7f5914f65',nombre:'Sorteo iPhone 18 Pro Max 256 GB',numero_sorteo:3},
-    {id:'af9945a6-fe0d-4f53-a147-d8e332e39b59',nombre:'Sorteo Express',numero_sorteo:4}
+  const grupos=[
+    {key:'regular',label:'Sorteo Regular'},
+    {key:'especial',label:'Sorteo Especial'},
+    {key:'iphone',label:'Sorteo iPhone 18 Pro Max 256 GB'},
+    {key:'express',label:'Sorteo Express'}
   ];
-  const source=error||!list?.length?fallback:list;
-  source.sort((a,b)=>{
-    const na=Number.isFinite(Number(a.numero_sorteo))?Number(a.numero_sorteo):999999;
-    const nb=Number.isFinite(Number(b.numero_sorteo))?Number(b.numero_sorteo):999999;
-    return na-nb;
+  const {data:list,error}=await db.from('rifas').select('id,nombre,numero_sorteo,estado,precio_numero,codigo_sorteo,grupo_rifa,created_at').order('created_at',{ascending:false});
+  const selected=new URLSearchParams(window.location.search).get('rifa');
+  const source=error||!list?.length?[]:list;
+  const actuales=grupos.map(g=>{
+    const r=source.find(x=>x.grupo_rifa===g.key);
+    return r||{id:'',nombre:g.label,grupo_rifa:g.key};
   });
-  $('adminRaffleNav').innerHTML=source.map(x=>{
-    const active=x.id===(selected||rifa?.id||source[0]?.id)?' active':'';
+  $('adminRaffleNav').innerHTML=actuales.map(x=>{
+    if(!x.id)return '<span class="raffle-nav-btn" style="opacity:.45;cursor:default">'+esc(nombreRifaAdmin(x))+'</span>';
+    const active=x.id===(selected||rifa?.id)?' active':'';
     const estado=x.estado==='sorteada'?' · 🏆':x.estado==='cerrada'?' · 🔒':'';
-    return '<a class="raffle-nav-btn'+active+'" href="?rifa='+encodeURIComponent(x.id)+'">'+esc(nombreRifaAdmin(x))+(x.codigo_sorteo?' · '+esc(x.codigo_sorteo):'')+estado+'</a>';
+    return '<a class="raffle-nav-btn'+active+'" href="?rifa='+encodeURIComponent(x.id)+'">'+esc(nombreRifaAdmin(x))+' · '+esc(x.codigo_sorteo||'')+estado+'</a>';
   }).join('');
 }
 async function cargar(){const params=new URLSearchParams(window.location.search);const requestedRifa=params.get('rifa');const query=db.from('rifas').select('*').order('created_at',{ascending:false});const {data:list,error:re}=await query;if(re||!list?.length){$('status').textContent='No se pudo cargar la rifa.';return}const r=list.find(x=>x.id===requestedRifa)||list[0];if(re||!r){$('status').textContent='No se pudo cargar la rifa.';return}rifa=r;await cargarSelectorRifas();await mostrarGanador();await cargarListaGanadores();await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});const {data:n,error:ne}=await db.from('numeros').select('id,numero,estado,apartado_hasta,participante_id,vendido_at').eq('rifa_id',r.id).order('numero');if(ne){$('status').textContent='No se pudieron cargar los números.';return}nGlobal=n||[];
