@@ -326,7 +326,7 @@ body{overflow-x:hidden}
 <div style="display:flex;gap:8px;align-items:center">
 <a class="btn" href="#numeros">Elegir números</a>
 <a class="btn" href="#ultimo-ganador">🏆 Último ganador</a>
-<a class="btn" id="topRaffles" href="#rifas" onclick="window.location.hash='rifas'; setTimeout(function(){var t=document.getElementById('rifas'); if(t)t.scrollIntoView({behavior:'auto',block:'start'});},0); return false;">🎟️ Nuestros sorteos</a>
+<a class="btn" id="topRaffles" href="#rifas">🎟️ Nuestros sorteos</a>
 <a class="btn" id="topContinue" href="#numeros">Continuar</a>
 </div>
 </div>
@@ -1316,15 +1316,20 @@ document.querySelectorAll('.raffle-link[data-rifa]').forEach(link=>{
 window.addEventListener('popstate',()=>cargarRifa());
 
 const topRaffles=document.getElementById('topRaffles');
-topRaffles?.addEventListener('click',()=>{
-  // No bloquear el enlace: href="#rifas" hace la navegación incluso si otro
-  // JavaScript falla. Solo añadimos el efecto visual cuando el JS está disponible.
+topRaffles?.addEventListener('click',e=>{
+  e.preventDefault();
+  e.stopPropagation();
   const target=document.getElementById('rifas');
   if(!target)return;
-  target.classList.remove('top-open');
-  void target.offsetWidth;
-  target.classList.add('top-open');
-  setTimeout(()=>target.classList.remove('top-open'),900);
+  const hashUrl=window.location.pathname+window.location.search+'#rifas';
+  history.replaceState(null,'',hashUrl);
+  target.scrollIntoView({behavior:'smooth',block:'start'});
+  const active=document.querySelector('.raffle-link.active');
+  if(active){
+    document.querySelectorAll('.raffle-link').forEach(x=>x.classList.remove('focus'));
+    active.classList.add('focus');
+    setTimeout(()=>active.classList.remove('focus'),1200);
+  }
 });
 document.getElementById('topContinue')?.addEventListener('click',e=>{
   e.preventDefault();
