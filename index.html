@@ -1390,6 +1390,11 @@ document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='visible'){
     ejecutarActualizacionesEnSegundoPlano();
     iniciarActualizacionesEnSegundoPlano();
+  }else{
+    detenerActualizacionesEnSegundoPlano();
+  }
+});
+iniciarActualizacionesEnSegundoPlano();
 </script>
 </body>
 </html>
