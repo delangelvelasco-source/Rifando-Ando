@@ -503,7 +503,7 @@ body{overflow-x:hidden}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=20260919-2020"></script>
+<script src="config.js?v=20260920-2218"></script>
 <script>
 'use strict';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -887,8 +887,13 @@ async function cargarRifa(){
   const cachedRifa=window.__rifaCache?.[requestedRifa];
   let r=cachedRifa||null,errorRe=null;
   if(!r){
-    const respuesta=await db.from('rifas').select('*').eq('id',requestedRifa).maybeSingle();
-    r=respuesta.data; errorRe=respuesta.error;
+    let respuesta=null;
+    for(let intento=1;intento<=3;intento++){
+      respuesta=await db.from('rifas').select('*').eq('id',requestedRifa).maybeSingle();
+      if(!respuesta.error && respuesta.data)break;
+      if(intento<3)await new Promise(resolve=>setTimeout(resolve,500*intento));
+    }
+    r=respuesta?.data||null; errorRe=respuesta?.error||null;
     if(r){window.__rifaCache??={};window.__rifaCache[requestedRifa]=r;}
   }
   if(loadSeq!==cargarRifaSeq)return;
