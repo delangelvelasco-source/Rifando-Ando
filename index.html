@@ -497,8 +497,7 @@ body{overflow-x:hidden}
   }).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()})
     .then(pintar)
     .catch(()=>{});
-  }
-  if(document.readyState==='loading'){    document.addEventListener('DOMContentLoaded',init,{once:true});
+  }  if(document.readyState==='loading'){    document.addEventListener('DOMContentLoaded',init,{once:true});
   }else{
     init();
   }
@@ -998,7 +997,6 @@ async function cargarNumerosPublico(rifaId){
     return {data:null,error:e};
   }
 }
-
 let cargarRifaSeq=0;
 let numerosCacheMemoria=new Map();
 async function cargarRifa(){
@@ -1368,7 +1366,16 @@ function actualizarWhatsAppAyuda(){
     : 'Hola Rifando Ando 👋, necesito ayuda o soporte con mi participación.';
   link.href='https://wa.me/528123859824?text='+encodeURIComponent(message);
 }
+function sincronizarSeleccionEmergencia(){
+  try{
+    const early=window.__raEarlySelected;
+    if(early instanceof Set && early.size){
+      sel=new Set(Array.from(early).map(Number).filter(Number.isFinite));
+    }
+  }catch(_e){}
+}
 function abrirFormulario(){
+  sincronizarSeleccionEmergencia();
   if(solicitudPendiente){
     alert('Tienes una solicitud pendiente. Primero envía la confirmación por WhatsApp.');
     return;
@@ -1497,8 +1504,7 @@ function restaurarSolicitudPendiente(){
     };
     formView.style.display='none';
     confirmation.classList.add('show');
-    modal.classList.add('open');
-    document.getElementById('modalClose')?.classList.add('locked-close');
+    modal.classList.add('open');    document.getElementById('modalClose')?.classList.add('locked-close');
     document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
   }catch(e){}
 }
@@ -1899,6 +1905,7 @@ document.querySelectorAll('.raffle-link[data-rifa]').forEach(link=>{
 });
 window.addEventListener('popstate',()=>cargarRifa());
 
+document.getElementById('modal')?.style.setProperty('z-index','2000');
 const topRaffles=document.getElementById('topRaffles');
 const ordenRifas=window.__ordenRifasActuales?.length
   ? window.__ordenRifasActuales
@@ -1920,6 +1927,7 @@ topRaffles?.addEventListener('click',e=>{
 });
 document.getElementById('topContinue')?.addEventListener('click',e=>{
   e.preventDefault();
+  sincronizarSeleccionEmergencia();
   if(sel.size){abrirFormulario();return}
   const target=document.getElementById('numeros');
   if(!target)return;
