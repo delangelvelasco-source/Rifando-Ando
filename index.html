@@ -1466,6 +1466,8 @@ async function confirmar(e){
           total:String.fromCharCode(36)+displayTotal,
           name:name
         });
+        const recoverBtn=document.getElementById('recoverPaymentBtn');
+        if(recoverBtn)recoverBtn.style.display='block';
       }else{
         const codigo=String(paymentData.code||'').trim();
         const detalle=String(paymentData.detail||'').trim();
