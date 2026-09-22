@@ -327,7 +327,7 @@ body{overflow-x:hidden}
 <a class="btn" href="#numeros">Elegir números</a>
 <a class="btn" href="#ultimo-ganador">🏆 Último ganador</a>
 <a class="btn" id="topRaffles" href="#rifas" style="position:relative;z-index:1001;pointer-events:auto">🎟️ Cambiar sorteo</a>
-<a class="btn" id="topContinue" href="#numeros">Continuar</a>
+<a class="btn" id="topContinue" href="#numeros" onclick="return window.__raOpenFormEmergency ? window.__raOpenFormEmergency(event) : true;">Continuar</a>
 </div>
 </div>
 </header>
@@ -492,13 +492,29 @@ body{overflow-x:hidden}
     const c=document.getElementById('ticketInfoCount'); if(c)c.textContent=String(data.length);
   }
   window.__raEarlySelected=new Set();
+  window.__raOpenFormEmergency=function(ev){
+    if(ev){ev.preventDefault();ev.stopPropagation();}
+    const selected=window.__raEarlySelected instanceof Set ? Array.from(window.__raEarlySelected).map(Number).filter(Number.isFinite) : [];
+    if(!selected.length){
+      alert('Primero elige al menos un número, compa.');
+      return false;
+    }
+    const modal=document.getElementById('modal');
+    const formView=document.getElementById('formView');
+    const confirmation=document.getElementById('confirmation');
+    const formNumbers=document.getElementById('formNumbers');
+    if(formNumbers)formNumbers.textContent=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');
+    if(formView)formView.style.display='';
+    if(confirmation)confirmation.classList.remove('show');
+    if(modal){modal.classList.add('open');modal.style.zIndex='2000';}
+    return false;
+  };
   fetch(API+'/rest/v1/numeros?select=numero,estado,apartado_hasta&rifa_id=eq.'+encodeURIComponent(RIFA_ID)+'&order=numero.asc',{
     headers:{apikey:KEY,Authorization:'Bearer '+KEY,Accept:'application/json'},cache:'no-store'
   }).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()})
     .then(pintar)
     .catch(()=>{});
-  }  if(document.readyState==='loading'){    document.addEventListener('DOMContentLoaded',init,{once:true});
-  }else{
+  }  if(document.readyState==='loading'){    document.addEventListener('DOMContentLoaded',init,{once:true});  }else{
     init();
   }
 })();
@@ -997,8 +1013,7 @@ async function cargarNumerosPublico(rifaId){
     return {data:null,error:e};
   }
 }
-let cargarRifaSeq=0;
-let numerosCacheMemoria=new Map();
+let cargarRifaSeq=0;let numerosCacheMemoria=new Map();
 async function cargarRifa(){
   const loadSeq=++cargarRifaSeq;
   const params=new URLSearchParams(window.location.search);
@@ -1497,8 +1512,7 @@ function restaurarSolicitudPendiente(){
       bloquearNuevaSeleccion(false);
       update();
       waConfirm.style.pointerEvents='none';
-      waConfirm.style.opacity='.65';
-      waConfirm.textContent='✅ Solicitud enviada por WhatsApp';
+      waConfirm.style.opacity='.65';      waConfirm.textContent='✅ Solicitud enviada por WhatsApp';
       document.getElementById('modalClose')?.classList.remove('locked-close');
       document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
     };
