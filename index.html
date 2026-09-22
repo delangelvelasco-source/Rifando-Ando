@@ -933,97 +933,25 @@ async function cargarRifa(){
   const rutaRifa=window.location.pathname.replace(/\/+$/,'').split('/').pop().toLowerCase();
   const gruposRifa={regular:'regular',especial:'especial',iphone:'iphone',express:'express'};
   const fallbackRutas={regular:'4b23f516-7973-4a04-bff6-9b9b5cb90f4d',especial:'60f9a81d-bdd6-4e28-b330-dc92cfe4d113',iphone:'9a9bca1f-3f22-4a1a-8813-70c7f5914f65',express:'af9945a6-fe0d-4f0d-a2e6-8d9e5254554b'};
-  // Arrancamos las consultas inmediatamente. La consulta de IDs actualizados
-  // y la rifa/números pueden viajar en paralelo.
-  const listaPromise=db.from('rifas')
-    .select('id,grupo_rifa,estado,numero_sorteo,created_at')
-    .in('grupo_rifa',Object.values(gruposRifa))
-    .order('created_at',{ascending:false});
-
-  const requestedParam=params.get('rifa')||window.__initialRifaId;
   const legacyGrupoPorId={
+    '4b23f516-7973-4a1a-8813-70c7f5914f65':'regular',
     '4b23f516-7973-4a04-bff6-9b9b5cb90f4d':'regular',
     '60f9a81d-bdd6-4e28-b330-dc92cfe4d113':'especial',
     '9a9bca1f-3f22-4a1a-8813-70c7f5914f65':'iphone',
-    'af9945a6-fe0d-4f53-a147-d8e332e39b59':'express'
+    'af9945a6-fe0d-4f0d-a2e6-8d9e5254554b':'express'
   };
-  const rutaInicial=requestedParam?String(requestedParam):(fallbackRutas[rutaRifa]||fallbackRutas.regular);
-  const inicialGrupo=legacyGrupoPorId[rutaInicial]||rutaRifa;
-  const requestedInicial=fallbackRutas[inicialGrupo]||rutaInicial;
 
-  const datosBase={
-    '4b23f516-7973-4a1a-bff6-9b9b5cb90f4d':{nombre:'Sorteo Regular',precio:'$15.00 por número',boleto:'$15.00',numeros:'100',premio:'$1,000.00'},
-    '60f9a81d-bdd6-4e28-b330-dc92cfe4d113':{nombre:'Sorteo Especial',precio:'$100.00 por número',boleto:'$100.00',numeros:'100',premio:'$10,000.00'},
-    '9a9bca1f-3f22-4a1a-8813-70c7f5914f65':{nombre:'iPhone 18 Pro Max 256 GB',precio:'$180.00 por número',boleto:'$180.00',numeros:'250',premio:'$31,999.00'},
-    'af9945a6-fe0d-4f0d-a2e6-8d9e5254554b':{nombre:'Sorteo Express',precio:'$25.00 por número',boleto:'$25.00',numeros:'30',premio:'$500.00'}
-  };
-  const base=datosBase[requestedInicial];
-  if(base){
-    raffleName.textContent=base.nombre;
-    priceEl.textContent=base.precio;
-    ticketInfoPrice.textContent=base.boleto;
-    document.getElementById('ticketInfoCount').textContent=base.numeros;
-    meta.innerHTML='<span>0% ocupados</span><span>Cargando sorteo…</span>';
-    bar.style.width='0%';
-    document.getElementById('grandAmount')?.replaceChildren();
-  }
-
-  const consultaInicial=Promise.all([
-    db.from('rifas')
-      .select('id,nombre,premio,precio_numero,fecha_sorteo,estado,numero_sorteo,codigo_sorteo,metodo_sorteo,loteria_tipo,loteria_sorteo,loteria_resultado,loteria_numero_ganador,loteria_fuente,loteria_fecha,grupo_rifa')
-      .eq('id',requestedInicial).maybeSingle(),
-    cargarNumerosPublico(requestedInicial)
-  ]);
-
-  let rifasActuales={};
-  const listaRespuesta=await listaPromise;
-  const listaActuales=listaRespuesta.error?[]:(listaRespuesta.data||[]);
-  listaActuales.forEach(x=>{if(x.grupo_rifa&&!rifasActuales[x.grupo_rifa])rifasActuales[x.grupo_rifa]=x;});
-  const mapaRutas={...fallbackRutas};
-  Object.keys(mapaRutas).forEach(k=>{if(rifasActuales[k]?.id)mapaRutas[k]=rifasActuales[k].id;});
-  window.__rifasActuales=mapaRutas;
-
-  let requestedRifa=requestedParam?String(requestedParam):(mapaRutas[rutaRifa]||mapaRutas.regular);
+  const requestedParam=params.get('rifa')||window.__initialRifaId;
+  let requestedRifa=requestedParam?String(requestedParam):(fallbackRutas[rutaRifa]||fallbackRutas.regular);
   const legacyGrupo=legacyGrupoPorId[requestedRifa];
-  if(legacyGrupo&&mapaRutas[legacyGrupo]&&mapaRutas[legacyGrupo]!==requestedRifa){
-    requestedRifa=mapaRutas[legacyGrupo];
-    const cleanUrl=new URL(window.location.href);
-    cleanUrl.searchParams.set('rifa',requestedRifa);
-    window.history.replaceState(null,'',cleanUrl.href);
-  }
+  if(legacyGrupo)requestedRifa=fallbackRutas[legacyGrupo];
 
-  let respuestaRifa,respuestaNumeros;
-  if(String(requestedRifa)===String(requestedInicial)){
-    [respuestaRifa,respuestaNumeros]=await consultaInicial;
-  }else{
-    [respuestaRifa,respuestaNumeros]=await Promise.all([
-      db.from('rifas')
-        .select('id,nombre,premio,precio_numero,fecha_sorteo,estado,numero_sorteo,codigo_sorteo,metodo_sorteo,loteria_tipo,loteria_sorteo,loteria_resultado,loteria_numero_ganador,loteria_fuente,loteria_fecha,grupo_rifa')
-        .eq('id',requestedRifa).maybeSingle(),
-      cargarNumerosPublico(requestedRifa)
-    ]);
-  }
-  const r=respuestaRifa?.data||null;
-  const errorRe=respuestaRifa?.error||null;
-  const numerosIniciales=respuestaNumeros?.data||null;
-  const errorNumerosIniciales=respuestaNumeros?.error||null;
-  if(loadSeq!==cargarRifaSeq)return;
-
-  // Al cambiar de rifa, cualquier número seleccionado pertenece a la rifa anterior
-  // y no debe sobrevivir ni mezclarse con la nueva. Este control también cubre
-  // navegación directa, botones del selector y el botón Atrás/Adelante del navegador.
-  if(rifa && String(rifa.id)!==String(requestedRifa)){
-    sel.clear();
-    update();
-  }
-
-  // Mostrar de inmediato la información conocida del sorteo solicitado.
-  // Así la tarjeta nunca se queda mostrando "Cargando..." mientras Supabase responde.
+  // Pintamos la ficha conocida inmediatamente.
   const datosBase={
-    '4b23f516-7973-4a04-bff6-9b9b5cb90f4d':{nombre:'Sorteo Regular',precio:'$15.00 por número',boleto:'$15.00',numeros:'100',premio:'$1,000.00'},
-    '60f9a81d-bdd6-4e28-b330-dc92cfe4d113':{nombre:'Sorteo Especial',precio:'$100.00 por número',boleto:'$100.00',numeros:'100',premio:'$10,000.00'},
-    '9a9bca1f-3f22-4a1a-8813-70c7f5914f65':{nombre:'iPhone 18 Pro Max 256 GB',precio:'$180.00 por número',boleto:'$180.00',numeros:'250',premio:'$31,999.00'},
-    'af9945a6-fe0d-4f53-a147-d8e332e39b59':{nombre:'Sorteo Express',precio:'$25.00 por número',boleto:'$25.00',numeros:'30',premio:'$500.00'}
+    '4b23f516-7973-4a04-bff6-9b9b5cb90f4d':{nombre:'Sorteo Regular',precio:'$15.00 por número',boleto:'$15.00',numeros:'100'},
+    '60f9a81d-bdd6-4e28-b330-dc92cfe4d113':{nombre:'Sorteo Especial',precio:'$100.00 por número',boleto:'$100.00',numeros:'100'},
+    '9a9bca1f-3f22-4a1a-8813-70c7f5914f65':{nombre:'iPhone 18 Pro Max 256 GB',precio:'$180.00 por número',boleto:'$180.00',numeros:'250'},
+    'af9945a6-fe0d-4f0d-a2e6-8d9e5254554b':{nombre:'Sorteo Express',precio:'$25.00 por número',boleto:'$25.00',numeros:'30'}
   };
   const base=datosBase[requestedRifa];
   if(base){
@@ -1031,26 +959,83 @@ async function cargarRifa(){
     priceEl.textContent=base.precio;
     ticketInfoPrice.textContent=base.boleto;
     document.getElementById('ticketInfoCount').textContent=base.numeros;
-    meta.innerHTML='<span>0% ocupados</span><span>Cargando sorteo…</span>';
+    meta.innerHTML='<span>0% ocupados</span><span>Cargando números…</span>';
     bar.style.width='0%';
-    document.getElementById('grandAmount')?.replaceChildren();
   }
-  // La información de estado debe ser siempre fresca; no usar caché para evitar
-  // mostrar "sorteo realizado" o "ventas abiertas" con datos anteriores.
-  // La ficha de la rifa y sus números empiezan a cargarse al mismo tiempo.
-  // Esto reduce una ida y vuelta completa al servidor.
-  const [respuestaRifa,respuestaNumeros] = await Promise.all([
-    db.from('rifas')
-      .select('id,nombre,premio,precio_numero,fecha_sorteo,estado,numero_sorteo,codigo_sorteo,metodo_sorteo,loteria_tipo,loteria_sorteo,loteria_resultado,loteria_numero_ganador,loteria_fuente,loteria_fecha,grupo_rifa')
-      .eq('id',requestedRifa)
-      .maybeSingle(),
-    cargarNumerosPublico(requestedRifa)
-  ]);
+
+  // Caché de último estado: permite mostrar números inmediatamente en visitas
+  // repetidas mientras llega la confirmación fresca de Supabase.
+  let cacheInicial=null;
+  try{
+    const raw=localStorage.getItem('RA_NUMBERS_'+requestedRifa);
+    if(raw){
+      const parsed=JSON.parse(raw);
+      if(parsed&&Array.isArray(parsed.data)&&Date.now()-Number(parsed.at)<60000) cacheInicial=parsed.data;
+    }
+  }catch(_e){}
+  if(cacheInicial&&cacheInicial.length){
+    tickets.innerHTML='';
+    cacheInicial.forEach(x=>{
+      const b=document.createElement('button');
+      b.type='button';
+      const free=x.estado==='disponible'||(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)<=new Date());
+      b.className='ticket '+(free?'available':(x.estado==='apartado'?'pending':'sold'));
+      b.textContent=String(x.numero).padStart(2,'0');
+      b.disabled=!free;
+      tickets.appendChild(b);
+    });
+    document.getElementById('ticketInfoCount').textContent=String(cacheInicial.length);
+  }
+
+  // La ficha y los números se solicitan al mismo tiempo. No esperamos a que
+  // termine la consulta de las demás rifas para pintar la actual.
+  const datosPromise=db.from('rifas')
+    .select('id,nombre,premio,precio_numero,fecha_sorteo,estado,numero_sorteo,codigo_sorteo,metodo_sorteo,loteria_tipo,loteria_sorteo,loteria_resultado,loteria_numero_ganador,loteria_fuente,loteria_fecha,grupo_rifa')
+    .eq('id',requestedRifa).maybeSingle();
+  const numerosPromise=cargarNumerosPublico(requestedRifa);
+
+  const [respuestaRifa,respuestaNumeros]=await Promise.all([datosPromise,numerosPromise]);
   const r=respuestaRifa?.data||null;
   const errorRe=respuestaRifa?.error||null;
   const numerosIniciales=respuestaNumeros?.data||null;
   const errorNumerosIniciales=respuestaNumeros?.error||null;
   if(loadSeq!==cargarRifaSeq)return;
+
+  // Guardar una copia local breve para que la siguiente apertura no empiece vacía.
+  if(Array.isArray(numerosIniciales)){
+    try{localStorage.setItem('RA_NUMBERS_'+requestedRifa,JSON.stringify({at:Date.now(),data:numerosIniciales}))}catch(_e){}
+  }
+
+  // Actualizar en segundo plano los IDs actuales de los cuatro sorteos.
+  const listaPromise=db.from('rifas')
+    .select('id,grupo_rifa,estado,numero_sorteo,created_at')
+    .in('grupo_rifa',Object.values(gruposRifa))
+    .order('created_at',{ascending:false});
+  listaPromise.then(respuesta=>{
+    if(respuesta?.error)return;
+    const mapa={...fallbackRutas};
+    (respuesta.data||[]).forEach(x=>{if(x.grupo_rifa&&!mapa[x.grupo_rifa])mapa[x.grupo_rifa]=x.id});
+    const ultimos={};
+    (respuesta.data||[]).forEach(x=>{if(x.grupo_rifa&&!ultimos[x.grupo_rifa])ultimos[x.grupo_rifa]=x.id});
+    Object.keys(ultimos).forEach(k=>{mapa[k]=ultimos[k]});
+    window.__rifasActuales=mapa;
+    window.__ordenRifasActuales=Object.values(mapa).filter(Boolean);
+    Object.entries(mapa).forEach(([grupo,id])=>{
+      document.querySelectorAll('.raffle-link[data-grupo="'+grupo+'"]').forEach(a=>{
+        a.dataset.rifa=id;
+        a.href='?rifa='+encodeURIComponent(id);
+      });
+    });
+    // Solo para URLs /regular, /especial, etc. sin ?rifa=: si existe una rifa
+    // nueva, corregimos la URL después de que la pantalla ya pudo empezar a pintar.
+    if(!requestedParam&&ultimos[rutaRifa]&&String(ultimos[rutaRifa])!==String(requestedRifa)){
+      const cleanUrl=new URL(window.location.href);
+      cleanUrl.searchParams.set('rifa',ultimos[rutaRifa]);
+      window.history.replaceState(null,'',cleanUrl.href);
+      cargarRifa().catch(()=>{});
+    }
+  }).catch(()=>{});
+
   // Los botones públicos siempre deben apuntar al ID vigente de cada bloque.
   Object.entries(mapaRutas).forEach(([grupo,id])=>{
     if(!id)return;
