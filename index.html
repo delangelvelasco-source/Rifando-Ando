@@ -1296,7 +1296,8 @@ async function confirmar(e){
   const displayTotal=Number(data?.total||selected.length*Number(rifa.precio_numero)).toLocaleString('es-MX');
   document.getElementById('confirmName').textContent=name;
   document.getElementById('confirmNumbers').textContent=displayNumbers;
-  document.getElementById('confirmTotal').textContent='  let solicitudesPendientes=[];
+  document.getElementById('confirmTotal').textContent='
+  let solicitudesPendientes=[];
   try{
     const rawPendientes=localStorage.getItem('rifando_pendiente_whatsapp');
     const parsedPendientes=rawPendientes?JSON.parse(rawPendientes):null;
