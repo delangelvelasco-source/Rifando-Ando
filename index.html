@@ -1264,6 +1264,46 @@ function cerrarFormulario(){
   document.getElementById('modalClose')?.classList.remove('locked-close');
   document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
 }
+async function reconciliarPagoDesdeRetorno(){
+  const params=new URLSearchParams(window.location.search);
+  const pagoId=params.get('pago_id');
+  const paymentToken=params.get('payment_token');
+  if(!pagoId||!paymentToken)return;
+  const endpoint=SUPABASE_URL+'/functions/v1/mercado-pago';
+  let resultado=null;
+  for(let intento=1;intento<=5;intento++){
+    try{
+      const res=await fetch(endpoint,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'status',payment_id:pagoId,payment_token:paymentToken})
+      });
+      const data=await res.json().catch(()=>({}));
+      if(res.ok){
+        resultado=data;
+        if(data.estado==='confirmado'||data.estado==='rechazado')break;
+      }
+    }catch(e){}
+    if(intento<5)await new Promise(r=>setTimeout(r,1500));
+  }
+  const clean=new URL(window.location.href);
+  ['mp_return','pago_id','payment_token'].forEach(k=>clean.searchParams.delete(k));
+  window.history.replaceState(null,'',clean.href);
+  if(resultado?.estado==='confirmado'){
+    const banner=document.createElement('div');
+    banner.textContent='✅ Pago confirmado. Tus números ya están vendidos.';
+    banner.style.cssText='position:fixed;left:12px;right:12px;top:12px;z-index:9999;padding:14px 16px;border:1px solid #22c55e;border-radius:14px;background:#0b2413;color:#4ade80;font-weight:900;text-align:center;box-shadow:0 8px 25px #0008';
+    document.body.appendChild(banner);
+    setTimeout(()=>banner.remove(),5000);
+  }else if(resultado?.estado==='pendiente'){
+    const banner=document.createElement('div');
+    banner.textContent='🟡 El pago sigue en proceso. Mercado Pago lo confirmará automáticamente.';
+    banner.style.cssText='position:fixed;left:12px;right:12px;top:12px;z-index:9999;padding:14px 16px;border:1px solid #d9a936;border-radius:14px;background:#201d14;color:#f5d36a;font-weight:900;text-align:center;box-shadow:0 8px 25px #0008';
+    document.body.appendChild(banner);
+    setTimeout(()=>banner.remove(),5000);
+  }
+}
+
 async function confirmar(e){
   e.preventDefault();
   if(!rifa||!sel.size) return;
@@ -1442,7 +1482,7 @@ document.getElementById('shareRaffle')?.addEventListener('click',compartirRifa);
 modal.addEventListener('click',e=>{
   if(e.target===modal) cerrarFormulario();
 });
-cargarRifa().then(()=>{
+reconciliarPagoDesdeRetorno().then(()=>cargarRifa()).then(()=>{
   restaurarSolicitudPendiente();
 }).catch(()=>{
   raffleName.textContent='No se pudo cargar el sorteo';
