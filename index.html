@@ -397,8 +397,7 @@ body{overflow-x:hidden}
 <script>
 (function(){
   const regular='4b23f516-7973-4a04-bff6-9b9b5cb90f4d';
-  const especial='60f9a81d-bdd6-4e28-b330-dc92cfe4d113';
-  const iphone='9a9bca1f-3f22-4a1a-8813-70c7f5914f65';
+  const especial='60f9a81d-bdd6-4e28-b330-dc92cfe4d113';  const iphone='9a9bca1f-3f22-4a1a-8813-70c7f5914f65';
   const express='af9945a6-fe0d-4f53-a147-d8e332e39b59';
   const ruta=window.location.pathname.replace(/\/+$/,'').split('/').pop().toLowerCase();
   const rutasRifa={regular:regular,especial:especial,iphone:iphone,express:express};
@@ -802,8 +801,7 @@ async function contarVendidosPublico(rifaId){
 }
 
 async function refrescarNumerosPublico(rifaId){
-  if(!rifa || String(rifa.id)!==String(rifaId))return;
-  const {data:n,error}=await cargarNumerosPublico(rifaId);
+  if(!rifa || String(rifa.id)!==String(rifaId))return;  const {data:n,error}=await cargarNumerosPublico(rifaId);
   if(!rifa || String(rifa.id)!==String(rifaId))return;
   if(error)return;
   actualizarEstadoVentasPublico(rifa);
@@ -1202,8 +1200,7 @@ function construirMensajeSolicitudes(lista){
 function agregarMasNumeros(){
   const pendientes=obtenerSolicitudesPendientes().filter(p=>!rifa||String(p.rifaId)===String(rifa.id));
   if(!pendientes.length)return;
-  try{localStorage.setItem('rifando_modo_agregar','1')}catch(e){}
-  solicitudPendiente=false;
+  try{localStorage.setItem('rifando_modo_agregar','1')}catch(e){}  solicitudPendiente=false;
   sel.clear();
   update();
   modal.classList.remove('open');
@@ -1299,8 +1296,7 @@ async function confirmar(e){
   const displayTotal=Number(data?.total||selected.length*Number(rifa.precio_numero)).toLocaleString('es-MX');
   document.getElementById('confirmName').textContent=name;
   document.getElementById('confirmNumbers').textContent=displayNumbers;
-  document.getElementById('confirmTotal').textContent='
-  let solicitudesPendientes=[];
+  document.getElementById('confirmTotal').textContent='  let solicitudesPendientes=[];
   try{
     const rawPendientes=localStorage.getItem('rifando_pendiente_whatsapp');
     const parsedPendientes=rawPendientes?JSON.parse(rawPendientes):null;
@@ -1462,8 +1458,7 @@ document.addEventListener('visibilitychange',()=>{
 iniciarActualizacionesEnSegundoPlano();
 </script>
 </body>
-</html>
-+displayTotal;
+</html>+displayTotal;
   const paymentBox=document.getElementById('paymentBox');
   const mpPayBtn=document.getElementById('mpPayBtn');
   const paymentMsg=document.getElementById('paymentMsg');
