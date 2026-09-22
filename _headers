@@ -1,0 +1,11 @@
+/*
+  Evita que Cloudflare Pages o el navegador sirvan una versión vieja del HTML.
+*/
+/index.html
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  CDN-Cache-Control: no-store
+/regular/*
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  CDN-Cache-Control: no-store
+/*
+  Cache-Control: no-cache
