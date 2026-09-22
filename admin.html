@@ -487,11 +487,37 @@ const {data:p,error:pe}=participantIds.length?await db.from('participantes').sel
 if(pe){$('participants').textContent='No se pudieron cargar participantes: '+pe.message;$('people').textContent='0';return}
 $('people').textContent=p?.length||0;const ids=(p||[]).map(x=>x.id);const {data:payments}=ids.length?await db.from('pagos').select('participante_id,monto,estado,confirmado_at,confirmado_por_email').eq('rifa_id',r.id).in('participante_id',ids):{data:[]};const paidBy={},lastPaymentBy={};(payments||[]).forEach(q=>{if(q.estado==='confirmado'){paidBy[q.participante_id]=(paidBy[q.participante_id]||0)+Number(q.monto||0);if(!lastPaymentBy[q.participante_id]||new Date(q.confirmado_at||0)>new Date(lastPaymentBy[q.participante_id].confirmado_at||0))lastPaymentBy[q.participante_id]=q}});$('participants').innerHTML=p?.length?p.map(x=>{const ns=nGlobal.filter(z=>z.participante_id===x.id&&(z.estado==='apartado'||z.estado==='vendido')).map(z=>String(z.numero).padStart(2,'0'));const total=ns.length*Number(r.precio_numero),pagado=paidBy[x.id]||0,saldo=Math.max(0,total-pagado);const ep=total===0?'Sin números':saldo===0?'Pagado':pagado>0?'Abono':'Pendiente';const lp=lastPaymentBy[x.id];const confirmInfo=saldo===0&&lp?'<br><small>🕒 Confirmado: '+new Date(lp.confirmado_at||0).toLocaleString('es-MX')+'</small>':'';const safe=esc(x.nombre).replace(/'/g,'');return '<div class="row"><b>'+esc(x.nombre)+'</b><br>'+esc(x.whatsapp)+'<br><span class="gold">Números: '+(ns.join(', ')||'—')+'</span><div class="pay"><span>Total: $'+total.toLocaleString('es-MX')+'</span><br><span>Pagado: $'+pagado.toLocaleString('es-MX')+' · Saldo: $'+saldo.toLocaleString('es-MX')+'</span><br><b>'+ep+'</b>'+confirmInfo+'<br>'+(saldo>0&&total>0?'<button class="btn small" onclick="abrirPago(\''+x.id+'\',\''+safe+'\','+saldo+')">Registrar pago</button>':'')+'<button class="btn small secondary" onclick="editarWhatsApp(\''+x.id+'\',\''+safe+'\',\''+esc(x.whatsapp)+'\')">✏️ Editar WhatsApp</button>'+(ns.length?'<button class="btn small secondary" onclick="enviarWhatsApp(\''+safe+'\',\''+esc(x.whatsapp)+'\',\''+ns.join(', ')+'\','+total+','+pagado+','+saldo+')">📲 WhatsApp</button><button class="btn small secondary" onclick="enviarDatosPagoWhatsApp(\''+esc(x.whatsapp)+'\')">💳 Datos de pago</button>':'')+'</div><small>'+new Date(x.created_at).toLocaleString('es-MX')+'</small></div>'}).join(''):'Sin participantes';$('status').textContent=nombreRifaAdmin(r)+' · '+String(r.codigo_sorteo||('RA-'+String(r.numero_sorteo||'?').padStart(4,'0')))+' · '+(r.estado==='sorteada'?'🏆 SORTEO REALIZADO':r.estado==='cerrada'?'🔴 VENTAS CERRADAS':r.estado==='preparando'?'🟡 PREPARANDO SORTEO':'🟢 VENTAS ABIERTAS')+' · '+Number(r.precio_numero).toLocaleString('es-MX')+' por número';
 const pauseBtn=$('salesToggleBtn');if(pauseBtn){const bloqueada=r.estado==='cerrada';const bloqueadoPorProceso=r.estado==='preparando'||r.estado==='sorteada';pauseBtn.textContent=bloqueada?'▶️ Habilitar ventas':'⏸️ Bloquear ventas';pauseBtn.className=bloqueada?'btn':'btn danger';pauseBtn.disabled=bloqueadoPorProceso;pauseBtn.style.opacity=bloqueadoPorProceso?'.55':'1';pauseBtn.title=bloqueadoPorProceso?'No se pueden habilitar o bloquear ventas mientras el sorteo está en proceso o ya fue realizado.':(bloqueada?'Habilitar ventas para que los clientes puedan seleccionar números.':'Bloquear temporalmente las ventas para impedir nuevas selecciones.');}const prepareBtn=$('prepareBtn');if(prepareBtn){const total=nGlobal.length;const vendidos=nGlobal.filter(x=>x.estado==='vendido').length;const completos=total>0&&vendidos===total;prepareBtn.style.display=(r.estado==='preparando'||completos)?'inline-flex':'none';prepareBtn.textContent=r.estado==='preparando'?'🟢 Abrir ventas':'🟡 Preparar sorteo';prepareBtn.className=r.estado==='preparando'?'btn':'btn secondary';}await cargarHistorialRifas()}
+async function reconciliarPagosMercadoPago(){
+  if(!db)return;
+  try{
+    const {data,error}=await db.from('pagos')
+      .select('id,payment_token,estado,mercado_pago_order_id')
+      .eq('estado','pendiente')
+      .not('mercado_pago_order_id','is',null)
+      .not('payment_token','is',null)
+      .order('updated_at',{ascending:false})
+      .limit(10);
+    if(error||!data?.length)return;
+    let cambio=false;
+    for(const p of data){
+      try{
+        const res=await fetch(SUPABASE_URL+'/functions/v1/mercado-pago',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({action:'status',payment_id:p.id,payment_token:p.payment_token})
+        });
+        const out=await res.json().catch(()=>({}));
+        if(res.ok&&(out.estado==='confirmado'||out.estado==='rechazado'))cambio=true;
+      }catch(_e){}
+    }
+    if(cambio)await cargar();
+  }catch(_e){}
+}
 async function iniciarAdmin(){
   if(!(await initDb()))return;
   db.auth.onAuthStateChange((e,s)=>{if(s)sesion();else mostrarLogin()});
   await sesion();
-  setInterval(()=>{if(!$('app').classList.contains('hidden'))cargar()},30000);
+  setInterval(()=>{if(!$('app').classList.contains('hidden')){reconciliarPagosMercadoPago();}},8000);
 }
 iniciarAdmin();
 </script><script src="admin-nuevo-sorteo.js?v=20260921-2"></script></body></html>
