@@ -1532,9 +1532,41 @@ async function confirmar(e){
     : [];
   const allNumbers=[...new Set(previousNumbers.concat(selected))].sort((a,b)=>a-b);
   const displayNumbers=allNumbers.map(n=>String(n).padStart(2,'0')).join(', ');
-  const calculatedTotal=allNumbers.length*Number(rifa.precio_numero||0);
+  const ticketPrice=Number(rifa.precio_numero||0);
+  const calculatedTotal=allNumbers.length*ticketPrice;
   const returnedTotal=Number(data?.total||0);
-  const actualTotal=(modoAgregar && calculatedTotal>0) ? calculatedTotal : (returnedTotal||calculatedTotal);
+  const returnedCount=Number(data?.numeros_count||0);
+
+  // Regla única: el total visible y el pago deben corresponder al mismo
+  // número de boletos. Si la respuesta del servidor no coincide, detenemos
+  // el flujo en vez de generar un pago incorrecto.
+  if(ticketPrice<=0 || !allNumbers.length){
+    alert('No se pudo calcular correctamente el total de la compra. Actualiza la página e inténtalo nuevamente.');
+    btn.disabled=false;
+    btn.textContent='Solicitar apartado';
+    await cargarRifa();
+    return;
+  }
+
+  if(returnedCount && returnedCount!==allNumbers.length){
+    alert('La reserva y la selección no coinciden. No se generará un pago para evitar cobrar una cantidad incorrecta. Actualiza la página y vuelve a intentarlo.');
+    btn.disabled=false;
+    btn.textContent='Solicitar apartado';
+    sel.clear();
+    await cargarRifa();
+    return;
+  }
+
+  if(returnedTotal && returnedTotal!==calculatedTotal){
+    alert('El total recibido del servidor no coincide con tus números. No se generará el pago para evitar un cobro incorrecto.');
+    btn.disabled=false;
+    btn.textContent='Solicitar apartado';
+    sel.clear();
+    await cargarRifa();
+    return;
+  }
+
+  const actualTotal=calculatedTotal;
   const displayTotal=actualTotal.toLocaleString('es-MX');
 
   document.getElementById('confirmName').textContent=displayName;
@@ -1577,6 +1609,18 @@ async function confirmar(e){
           total:String.fromCharCode(36)+displayTotal,
           name:displayName
         });
+        if(modoAgregar){
+          try{
+            const pagoActual=leerPagoPendienteUI();
+            if(pagoActual){
+              pagoActual.numbers=displayNumbers;
+              pagoActual.total=String.fromCharCode(36)+displayTotal;
+              pagoActual.timestamp=Date.now();
+              pagoPendienteMemoria=pagoActual;
+              sessionStorage.setItem(PAGO_SESSION_KEY,JSON.stringify(pagoActual));
+            }
+          }catch(_e){}
+        }
         if(recoverBtn)recoverBtn.style.display=guardado?'block':'none';
       }else{
         const codigo=String(paymentData.code||'').trim();
