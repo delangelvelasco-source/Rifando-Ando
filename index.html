@@ -930,7 +930,7 @@ let numerosCacheMemoria=new Map();
 async function cargarRifa(){
   const loadSeq=++cargarRifaSeq;
   const params=new URLSearchParams(window.location.search);
-  const rutaRifa=window.location.pathname.replace(/\\/+$/,'').split('/').pop().toLowerCase();
+  const rutaRifa=window.location.pathname.replace(/\/+$/,'').split('/').pop().toLowerCase();
   const gruposRifa={regular:'regular',especial:'especial',iphone:'iphone',express:'express'};
   const fallbackRutas={regular:'4b23f516-7973-4a04-bff6-9b9b5cb90f4d',especial:'60f9a81d-bdd6-4e28-b330-dc92cfe4d113',iphone:'9a9bca1f-3f22-4a1a-8813-70c7f5914f65',express:'af9945a6-fe0d-4f0d-a2e6-8d9e5254554b'};
   // Arrancamos las consultas inmediatamente. La consulta de IDs actualizados
