@@ -532,6 +532,51 @@ const whatsapp=document.getElementById('whatsapp');
 let rifa=null;
 let sel=new Set();
 let realtimeRifaId=null;
+let pagoPendienteMemoria=null;
+
+function leerPagoPendienteUI(){
+  if(pagoPendienteMemoria)return pagoPendienteMemoria;
+  for(const storage of [window.localStorage,window.sessionStorage]){
+    try{
+      const raw=storage.getItem('rifando_pago_pendiente');
+      if(raw){
+        const p=JSON.parse(raw);
+        if(p&&p.checkoutUrl&&p.timestamp){
+          pagoPendienteMemoria=p;
+          return p;
+        }
+      }
+    }catch(e){}
+  }
+  return null;
+}
+function eliminarPagoPendienteUI(){
+  pagoPendienteMemoria=null;
+  for(const storage of [window.localStorage,window.sessionStorage]){
+    try{storage.removeItem('rifando_pago_pendiente')}catch(e){}
+  }
+}
+function guardarPagoPendienteUI(info){
+  try{
+    if(!info||!info.checkoutUrl||!info.paymentId||!info.paymentToken)return false;
+    const p={
+      rifaId:info.rifaId,
+      pagoId:info.paymentId,
+      paymentToken:info.paymentToken,
+      checkoutUrl:info.checkoutUrl,
+      numbers:info.numbers,
+      total:info.total,
+      name:info.name,
+      timestamp:Date.now()
+    };
+    pagoPendienteMemoria=p;
+    let guardado=false;
+    for(const storage of [window.localStorage,window.sessionStorage]){
+      try{storage.setItem('rifando_pago_pendiente',JSON.stringify(p));guardado=true}catch(e){}
+    }
+    return guardado||!!pagoPendienteMemoria;
+  }catch(e){return false}
+}
 let confirmWhatsAppClicked=false;
 let solicitudPendiente=false;
 let realtimeChannel=null;let drawPublicChannel=null;let drawAnimationTimer=null;let lastDemoStartAt=0;let lastRealEventId=null;
@@ -1308,7 +1353,7 @@ async function reconciliarPagoDesdeRetorno(){
   ['mp_return','pago_id','payment_token'].forEach(k=>clean.searchParams.delete(k));
   window.history.replaceState(null,'',clean.href);
   if(resultado?.estado==='confirmado'){
-    try{localStorage.removeItem('rifando_pago_pendiente')}catch(e){}
+    try{eliminarPagoPendienteUI()}catch(e){}
 
     const banner=document.createElement('div');
     banner.textContent='✅ Pago confirmado. Tus números ya están vendidos.';
@@ -1327,13 +1372,13 @@ async function reconciliarPagoDesdeRetorno(){
 
 function restaurarPagoPendienteUI(){
   try{
-    const raw=localStorage.getItem('rifando_pago_pendiente');
+    const raw=leerPagoPendienteUI();
     if(!raw)return;
     const p=JSON.parse(raw);
     if(!p||!p.checkoutUrl||!p.timestamp)return;
     if(rifa&&p.rifaId&&String(p.rifaId)!==String(rifa.id))return;
     if(Date.now()-Number(p.timestamp)>30*60*1000){
-      localStorage.removeItem('rifando_pago_pendiente');
+      eliminarPagoPendienteUI();
       return;
     }
     document.getElementById('confirmName').textContent=p.name||'';
@@ -1358,39 +1403,21 @@ function restaurarPagoPendienteUI(){
   }catch(e){}
 }
 
-function guardarPagoPendienteUI(info){
-  try{
-    if(!info||!info.checkoutUrl||!info.paymentId||!info.paymentToken)return;
-    localStorage.setItem('rifando_pago_pendiente',JSON.stringify({
-      rifaId:info.rifaId,
-      pagoId:info.paymentId,
-      paymentToken:info.paymentToken,
-      checkoutUrl:info.checkoutUrl,
-      numbers:info.numbers,
-      total:info.total,
-      name:info.name,
-      timestamp:Date.now()
-    }));
-    const btn=document.getElementById('recoverPaymentBtn');
-    if(btn)btn.style.display='block';
-  }catch(e){}
-}
-
 function recuperarPagoPendiente(){
   try{
-    const raw=localStorage.getItem('rifando_pago_pendiente');
+    const raw=leerPagoPendienteUI();
     if(!raw){
       alert('No encontramos una compra pendiente en este dispositivo.');
       return;
     }
     const p=JSON.parse(raw);
     if(!p||!p.checkoutUrl||!p.timestamp){
-      localStorage.removeItem('rifando_pago_pendiente');
+      eliminarPagoPendienteUI();
       alert('La compra pendiente ya no está disponible.');
       return;
     }
     if(Date.now()-Number(p.timestamp)>30*60*1000){
-      localStorage.removeItem('rifando_pago_pendiente');
+      eliminarPagoPendienteUI();
       alert('La reserva de esta compra ya venció. Selecciona nuevamente los números disponibles.');
       cargarRifa().catch(()=>{});
       return;
@@ -1433,7 +1460,7 @@ async function confirmar(e){
   let pendingPayment=null;
   let modoAgregar=false;
   try{
-    const raw=localStorage.getItem('rifando_pago_pendiente');
+    const raw=leerPagoPendienteUI();
     pendingPayment=raw?JSON.parse(raw):null;
     modoAgregar=localStorage.getItem('rifando_modo_agregar')==='1' &&
       pendingPayment &&
@@ -1532,7 +1559,7 @@ async function confirmar(e){
         mpPayBtn.href=checkoutUrl;
         mpPayBtn.style.display='block';
         paymentMsg.textContent='Tu apartado queda reservado durante 30 minutos. Completa el pago para confirmar todos tus números.';
-        guardarPagoPendienteUI({
+        const guardado=guardarPagoPendienteUI({
           rifaId:rifa.id,
           pagoId:pagoId,
           paymentToken:paymentToken,
@@ -1541,7 +1568,7 @@ async function confirmar(e){
           total:String.fromCharCode(36)+displayTotal,
           name:displayName
         });
-        if(recoverBtn)recoverBtn.style.display='block';
+        if(recoverBtn)recoverBtn.style.display=guardado?'block':'none';
       }else{
         const codigo=String(paymentData.code||'').trim();
         const detalle=String(paymentData.detail||'').trim();
