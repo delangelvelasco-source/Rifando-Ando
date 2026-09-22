@@ -1226,150 +1226,6 @@ function restaurarPagoPendienteUI(){
     document.getElementById('confirmNumbers').textContent=p.numbers||'';
     document.getElementById('confirmTotal').textContent=p.total||'';
     const paymentBox=document.getElementById('paymentBox');
-    const mpPayBtn=document.getElementById('mpPayBtn');
-    const paymentMsg=document.getElementById('paymentMsg');
-    if(paymentBox&&mpPayBtn){
-      paymentBox.style.display='block';
-      mpPayBtn.href=p.checkoutUrl;
-      mpPayBtn.style.display='block';
-      if(paymentMsg)paymentMsg.textContent='Tu apartado sigue reservado. Completa el pago para confirmar tus números.';
-    }
-    formView.style.display='none';
-    confirmation.classList.add('show');
-    modal.classList.add('open');
-    document.getElementById('modalClose')?.classList.remove('locked-close');
-    document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
-  }catch(e){}
-}
-
-function restaurarSolicitudPendiente(){
-  try{
-    const pendientes=obtenerSolicitudesPendientes();
-    const pendientesRifa=pendientes.filter(p=>rifa&&p&&String(p.rifaId)===String(rifa.id));
-    if(!pendientesRifa.length)return;
-    const modoAgregar=localStorage.getItem('rifando_modo_agregar')==='1';
-    if(modoAgregar){
-      solicitudPendiente=false;
-      sel.clear();
-      update();
-      return;
-    }
-    const numerosPendientes=[...new Set(pendientesRifa.flatMap(p=>String(p.numbers||'').split(',').map(x=>parseInt(x.trim(),10)).filter(Number.isFinite)))].sort((a,b)=>a-b);
-    sel=new Set(numerosPendientes);
-    solicitudPendiente=true;
-    const ultimo=pendientesRifa[pendientesRifa.length-1];
-    const totalPendiente=pendientesRifa.reduce((sum,p)=>sum+Number(String(p.total||'').replace(/[^0-9.]/g,'')),0);
-    document.getElementById('confirmName').textContent=ultimo.name||'';
-    document.getElementById('confirmNumbers').textContent=numerosPendientes.map(n=>String(n).padStart(2,'0')).join(', ');
-    document.getElementById('confirmTotal').textContent='$'+totalPendiente.toLocaleString('es-MX');
-    bloquearNuevaSeleccion(true);
-    const waConfirm=document.getElementById('waConfirm');
-    waConfirm.href='https://wa.me/528123859824?text='+encodeURIComponent(construirMensajeSolicitudes(pendientesRifa));
-    confirmWhatsAppClicked=false;
-    waConfirm.onclick=()=>{
-      if(confirmWhatsAppClicked)return false;
-      confirmWhatsAppClicked=true;
-      localStorage.removeItem('rifando_pendiente_whatsapp');
-      localStorage.removeItem('rifando_modo_agregar');
-      solicitudPendiente=false;
-      sel.clear();
-      bloquearNuevaSeleccion(false);
-      update();
-      waConfirm.style.pointerEvents='none';
-      waConfirm.style.opacity='.65';
-      waConfirm.textContent='✅ Solicitud enviada por WhatsApp';
-      document.getElementById('modalClose')?.classList.remove('locked-close');
-      document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
-    };
-    formView.style.display='none';
-    confirmation.classList.add('show');
-    modal.classList.add('open');
-    document.getElementById('modalClose')?.classList.add('locked-close');
-    document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
-  }catch(e){}
-}
-function cerrarFormulario(){
-  if(confirmation.classList.contains('show')&&!confirmWhatsAppClicked)return;
-  modal.classList.remove('open');
-  confirmWhatsAppClicked=false;
-  document.getElementById('modalClose')?.classList.remove('locked-close');
-  document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
-}
-async function reconciliarPagoDesdeRetorno(){
-  const params=new URLSearchParams(window.location.search);
-  const pagoId=params.get('pago_id');
-  const paymentToken=params.get('payment_token');
-  if(!pagoId||!paymentToken)return;
-  const endpoint=SUPABASE_URL+'/functions/v1/mercado-pago';
-  let resultado=null;
-  for(let intento=1;intento<=5;intento++){
-    try{
-      const res=await fetch(endpoint,{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'status',payment_id:pagoId,payment_token:paymentToken})
-      });
-      const data=await res.json().catch(()=>({}));
-      if(res.ok){
-        resultado=data;
-        if(data.estado==='confirmado'||data.estado==='rechazado')break;
-      }
-    }catch(e){}
-    if(intento<5)await new Promise(r=>setTimeout(r,1500));
-  }
-  const clean=new URL(window.location.href);
-  ['mp_return','pago_id','payment_token'].forEach(k=>clean.searchParams.delete(k));
-  window.history.replaceState(null,'',clean.href);
-  if(resultado?.estado==='confirmado'){
-    try{localStorage.removeItem('rifando_pago_pendiente');localStorage.removeItem('rifando_pendiente_whatsapp')}catch(e){}
-    const banner=document.createElement('div');
-    banner.textContent='✅ Pago confirmado. Tus números ya están vendidos.';
-    banner.style.cssText='position:fixed;left:12px;right:12px;top:12px;z-index:9999;padding:14px 16px;border:1px solid #22c55e;border-radius:14px;background:#0b2413;color:#4ade80;font-weight:900;text-align:center;box-shadow:0 8px 25px #0008';
-    document.body.appendChild(banner);
-    setTimeout(()=>banner.remove(),5000);
-  }else if(resultado?.estado==='pendiente'){
-    const banner=document.createElement('div');
-    banner.textContent='🟡 El pago sigue en proceso. Mercado Pago lo confirmará automáticamente.';
-    banner.style.cssText='position:fixed;left:12px;right:12px;top:12px;z-index:9999;padding:14px 16px;border:1px solid #d9a936;border-radius:14px;background:#201d14;color:#f5d36a;font-weight:900;text-align:center;box-shadow:0 8px 25px #0008';
-    document.body.appendChild(banner);
-    setTimeout(()=>banner.remove(),5000);
-  }
-}
-
-async function confirmar(e){
-  e.preventDefault();
-  if(!rifa||!sel.size) return;
-  const btn=e.submitter||e.target.querySelector('button[type="submit"]');
-  const selected=Array.from(sel);
-  const name=nombre.value.trim();
-  const phone=whatsapp.value.trim();
-  const email='';
-  if(!name||!phone){
-    alert('Completa tu nombre y WhatsApp, compa.');
-    return;
-  }
-  btn.disabled=true;
-  btn.textContent='Apartando...';
-  const {data,error}=await db.rpc('apartar_numeros',{
-    p_rifa_id:rifa.id,
-    p_nombre:name,
-    p_whatsapp:phone,
-    p_correo:email,
-    p_numeros:selected
-  });
-  if(error){
-    alert('No se pudo apartar: '+error.message);
-    btn.disabled=false;
-    btn.textContent='Solicitar apartado';
-    await cargarRifa();
-    return;
-  }
-  const displayNumbers=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');
-  const displayTotal=Number(data?.total||selected.length*Number(rifa.precio_numero)).toLocaleString('es-MX');
-  document.getElementById('confirmName').textContent=name;
-  document.getElementById('confirmNumbers').textContent=displayNumbers;
-  document.getElementById('confirmTotal').textContent=String.fromCharCode(36)+displayTotal;
-  const paymentBox=document.getElementById('paymentBox');
   const mpPayBtn=document.getElementById('mpPayBtn');
   const paymentMsg=document.getElementById('paymentMsg');
   if(paymentBox){paymentBox.style.display='block'; paymentMsg.textContent='Generando enlace seguro de Mercado Pago…'; mpPayBtn.style.display='none';}
@@ -1394,7 +1250,21 @@ async function confirmar(e){
             paymentToken:paymentToken,
             checkoutUrl:paymentData.checkout_url,
             numbers:displayNumbers,
-            total:'$'+displayTotal,
+            total:'
+        const codigo=String(paymentData.code||'').trim();
+        const detalle=String(paymentData.detail||'').trim();
+        paymentMsg.textContent=paymentData.error||'No se pudo generar el pago en línea. Puedes continuar por WhatsApp.';
+        if(codigo){
+          paymentMsg.textContent+='\nCódigo: '+codigo+(detalle?' · '+detalle:'');
+        }
+      }
+    }else{
+      paymentMsg.textContent='Puedes continuar por WhatsApp para coordinar el pago.';
+    }
+  }catch(err){
+    paymentMsg.textContent='No se pudo conectar con Mercado Pago. Puedes continuar por WhatsApp.';
+  }
++displayTotal,
             name:name,
             timestamp:Date.now()
           }));
@@ -1407,6 +1277,12 @@ async function confirmar(e){
           paymentMsg.textContent+='\nCódigo: '+codigo+(detalle?' · '+detalle:'');
         }
       }
+    }else{
+      paymentMsg.textContent='Puedes continuar por WhatsApp para coordinar el pago.';
+    }
+  }catch(err){
+    paymentMsg.textContent='No se pudo conectar con Mercado Pago. Puedes continuar por WhatsApp.';
+  }
   let solicitudesPendientes=[];  try{
     const rawPendientes=localStorage.getItem('rifando_pendiente_whatsapp');
     const parsedPendientes=rawPendientes?JSON.parse(rawPendientes):null;
