@@ -498,6 +498,7 @@ body{overflow-x:hidden}
   <div style="font-weight:1000;color:#f5d36a;font-size:18px">💳 Pago en línea</div>
   <p id="paymentMsg" style="color:#aaa;margin:8px 0">Generando enlace seguro de Mercado Pago…</p>
   <a class="btn" id="mpPayBtn" href="#" target="_blank" rel="noopener" style="display:none;width:100%;margin-top:8px">💳 Pagar con Mercado Pago</a>
+  <button class="btn" id="recoverPaymentBtn" type="button" onclick="recuperarPagoPendiente()" style="display:none;width:100%;margin-top:8px;background:#171717;color:#f5d36a;border:1px solid #d9a936">🔄 Recuperar mi compra</button>
 </div>
 <a class="btn" id="waConfirm" href="#" target="_blank" rel="noopener" style="display:inline-block;margin:8px 4px">📲 Enviar solicitud por WhatsApp</a><br>
 <button class="btn" id="addMoreNumbersBtn" type="button" onclick="agregarMasNumeros()" style="margin:8px 4px;background:#171717;color:#f5d36a;border:1px solid #d9a936">➕ Agregar más números</button><br>
@@ -1290,6 +1291,8 @@ async function reconciliarPagoDesdeRetorno(){
   ['mp_return','pago_id','payment_token'].forEach(k=>clean.searchParams.delete(k));
   window.history.replaceState(null,'',clean.href);
   if(resultado?.estado==='confirmado'){
+    try{localStorage.removeItem('rifando_pago_pendiente')}catch(e){}
+
     const banner=document.createElement('div');
     banner.textContent='✅ Pago confirmado. Tus números ya están vendidos.';
     banner.style.cssText='position:fixed;left:12px;right:12px;top:12px;z-index:9999;padding:14px 16px;border:1px solid #22c55e;border-radius:14px;background:#0b2413;color:#4ade80;font-weight:900;text-align:center;box-shadow:0 8px 25px #0008';
@@ -1328,12 +1331,79 @@ function restaurarPagoPendienteUI(){
       mpPayBtn.href=p.checkoutUrl;
       mpPayBtn.style.display='block';
     }
+    const recoverBtn=document.getElementById('recoverPaymentBtn');
+    if(recoverBtn)recoverBtn.style.display='block';
     formView.style.display='none';
     confirmation.classList.add('show');
     modal.classList.add('open');
     document.getElementById('modalClose')?.classList.add('locked-close');
     document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
   }catch(e){}
+}
+
+function guardarPagoPendienteUI(info){
+  try{
+    if(!info||!info.checkoutUrl||!info.paymentId||!info.paymentToken)return;
+    localStorage.setItem('rifando_pago_pendiente',JSON.stringify({
+      rifaId:info.rifaId,
+      pagoId:info.paymentId,
+      paymentToken:info.paymentToken,
+      checkoutUrl:info.checkoutUrl,
+      numbers:info.numbers,
+      total:info.total,
+      name:info.name,
+      timestamp:Date.now()
+    }));
+    const btn=document.getElementById('recoverPaymentBtn');
+    if(btn)btn.style.display='block';
+  }catch(e){}
+}
+
+function recuperarPagoPendiente(){
+  try{
+    const raw=localStorage.getItem('rifando_pago_pendiente');
+    if(!raw){
+      alert('No encontramos una compra pendiente en este dispositivo.');
+      return;
+    }
+    const p=JSON.parse(raw);
+    if(!p||!p.checkoutUrl||!p.timestamp){
+      localStorage.removeItem('rifando_pago_pendiente');
+      alert('La compra pendiente ya no está disponible.');
+      return;
+    }
+    if(Date.now()-Number(p.timestamp)>30*60*1000){
+      localStorage.removeItem('rifando_pago_pendiente');
+      alert('La reserva de esta compra ya venció. Selecciona nuevamente los números disponibles.');
+      cargarRifa().catch(()=>{});
+      return;
+    }
+    if(rifa&&p.rifaId&&String(p.rifaId)!==String(rifa.id)){
+      alert('Esta compra pertenece a otro sorteo. Cambia al sorteo correspondiente para recuperarla.');
+      return;
+    }
+    document.getElementById('confirmName').textContent=p.name||'';
+    document.getElementById('confirmNumbers').textContent=p.numbers||'';
+    document.getElementById('confirmTotal').textContent=p.total||'';
+    const paymentBox=document.getElementById('paymentBox');
+    const paymentMsg=document.getElementById('paymentMsg');
+    const mpPayBtn=document.getElementById('mpPayBtn');
+    const recoverBtn=document.getElementById('recoverPaymentBtn');
+    if(paymentBox)paymentBox.style.display='block';
+    if(paymentMsg)paymentMsg.textContent='Tu apartado sigue reservado durante 30 minutos. Completa el pago para confirmar tus números.';
+    if(mpPayBtn){
+      mpPayBtn.href=p.checkoutUrl;
+      mpPayBtn.style.display='block';
+    }
+    if(recoverBtn)recoverBtn.style.display='block';
+    formView.style.display='none';
+    confirmation.classList.add('show');
+    modal.classList.add('open');
+    document.getElementById('modalClose')?.classList.add('locked-close');
+    document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
+  }catch(e){
+    alert('No se pudo recuperar la compra pendiente. Actualiza la página e inténtalo nuevamente.');
+  }
 }
 
 async function confirmar(e){
@@ -1387,6 +1457,15 @@ async function confirmar(e){
         mpPayBtn.href=paymentData.checkout_url;
         mpPayBtn.style.display='block';
         paymentMsg.textContent='Tu apartado queda reservado durante 30 minutos. Completa el pago para confirmar tus números.';
+        guardarPagoPendienteUI({
+          rifaId:rifa.id,
+          pagoId:paymentId,
+          paymentToken:paymentToken,
+          checkoutUrl:paymentData.checkout_url,
+          numbers:displayNumbers,
+          total:String.fromCharCode(36)+displayTotal,
+          name:name
+        });
       }else{
         const codigo=String(paymentData.code||'').trim();
         const detalle=String(paymentData.detail||'').trim();
