@@ -481,6 +481,7 @@ body{overflow-x:hidden}
       if(free)b.addEventListener('click',()=>{
         if(window.__raEarlySelected.has(n)){window.__raEarlySelected.delete(n);b.classList.remove('selected')}
         else{window.__raEarlySelected.add(n);b.classList.add('selected')}
+        if(typeof window.__raSyncEarlySelection==='function')window.__raSyncEarlySelection(window.__raEarlySelected);
         const count=document.getElementById('count'),total=document.getElementById('total');
         if(count)count.textContent=String(window.__raEarlySelected.size);
         if(total)total.textContent=(window.__raEarlySelected.size*15).toLocaleString('es-MX');
@@ -497,8 +498,7 @@ body{overflow-x:hidden}
     .then(pintar)
     .catch(()=>{});
   }
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',init,{once:true});
+  if(document.readyState==='loading'){    document.addEventListener('DOMContentLoaded',init,{once:true});
   }else{
     init();
   }
@@ -588,6 +588,15 @@ const whatsapp=document.getElementById('whatsapp');
 
 let rifa=null;
 let sel=new Set();
+window.__raSyncEarlySelection=function(earlySet){
+  sel=new Set(Array.from(earlySet||[]).map(Number).filter(Number.isFinite));
+  update();
+  document.querySelectorAll('#tickets .ticket.selected').forEach(b=>b.classList.remove('selected'));
+  sel.forEach(n=>{
+    const b=[...document.querySelectorAll('#tickets .ticket')].find(x=>Number(x.textContent)===n);
+    if(b)b.classList.add('selected');
+  });
+};
 let realtimeRifaId=null;
 let pagoPendienteMemoria=null;
 
@@ -997,8 +1006,7 @@ async function cargarRifa(){
   const params=new URLSearchParams(window.location.search);
   const rutaRifa=window.location.pathname.replace(/\/+$/,'').split('/').pop().toLowerCase();
   const gruposRifa={regular:'regular',especial:'especial',iphone:'iphone',express:'express'};
-  const fallbackRutas={regular:'4b23f516-7973-4a04-bff6-9b9b5cb90f4d',especial:'60f9a81d-bdd6-4e28-b330-dc92cfe4d113',iphone:'9a9bca1f-3f22-4a1a-8813-70c7f5914f65',express:'af9945a6-fe0d-4f0d-a2e6-8d9e5254554b'};
-  const mapaRutas={...fallbackRutas};
+  const fallbackRutas={regular:'4b23f516-7973-4a04-bff6-9b9b5cb90f4d',especial:'60f9a81d-bdd6-4e28-b330-dc92cfe4d113',iphone:'9a9bca1f-3f22-4a1a-8813-70c7f5914f65',express:'af9945a6-fe0d-4f0d-a2e6-8d9e5254554b'};  const mapaRutas={...fallbackRutas};
   const legacyGrupoPorId={
     '4b23f516-7973-4a04-bff6-9b9b5cb90f4d':'regular',
     '60f9a81d-bdd6-4e28-b330-dc92cfe4d113':'especial',
@@ -1497,8 +1505,7 @@ function restaurarSolicitudPendiente(){
 function cerrarFormulario(){
   if(confirmation.classList.contains('show')&&!confirmWhatsAppClicked)return;
   modal.classList.remove('open');
-  confirmWhatsAppClicked=false;
-  document.getElementById('modalClose')?.classList.remove('locked-close');
+  confirmWhatsAppClicked=false;  document.getElementById('modalClose')?.classList.remove('locked-close');
   document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
 }
 async function reconciliarPagoDesdeRetorno(){
