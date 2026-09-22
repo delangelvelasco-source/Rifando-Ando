@@ -1394,7 +1394,12 @@ async function confirmar(e){
             paymentToken:paymentToken,
             checkoutUrl:paymentData.checkout_url,
             numbers:displayNumbers,
-            total:'
+            total:'$'+displayTotal,
+            name:name,
+            timestamp:Date.now()
+          }));
+        }catch(e){}
+      }else{
         const codigo=String(paymentData.code||'').trim();
         const detalle=String(paymentData.detail||'').trim();
         paymentMsg.textContent=paymentData.error||'No se pudo generar el pago en línea. Puedes continuar por WhatsApp.';
@@ -1402,12 +1407,6 @@ async function confirmar(e){
           paymentMsg.textContent+='\nCódigo: '+codigo+(detalle?' · '+detalle:'');
         }
       }
-    }else{
-      paymentMsg.textContent='Puedes continuar por WhatsApp para coordinar el pago.';
-    }
-  }catch(err){
-    paymentMsg.textContent='No se pudo conectar con Mercado Pago. Puedes continuar por WhatsApp.';
-  }
   let solicitudesPendientes=[];  try{
     const rawPendientes=localStorage.getItem('rifando_pendiente_whatsapp');
     const parsedPendientes=rawPendientes?JSON.parse(rawPendientes):null;
