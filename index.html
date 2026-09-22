@@ -1525,7 +1525,9 @@ async function confirmar(e){
     : [];
   const allNumbers=[...new Set(previousNumbers.concat(selected))].sort((a,b)=>a-b);
   const displayNumbers=allNumbers.map(n=>String(n).padStart(2,'0')).join(', ');
-  const actualTotal=Number(data?.total||allNumbers.length*Number(rifa.precio_numero||0));
+  const calculatedTotal=allNumbers.length*Number(rifa.precio_numero||0);
+  const returnedTotal=Number(data?.total||0);
+  const actualTotal=(modoAgregar && calculatedTotal>0) ? calculatedTotal : (returnedTotal||calculatedTotal);
   const displayTotal=actualTotal.toLocaleString('es-MX');
 
   document.getElementById('confirmName').textContent=displayName;
@@ -1561,7 +1563,7 @@ async function confirmar(e){
         paymentMsg.textContent='Tu apartado queda reservado durante 30 minutos. Completa el pago para confirmar todos tus números.';
         const guardado=guardarPagoPendienteUI({
           rifaId:rifa.id,
-          pagoId:pagoId,
+          paymentId:pagoId,
           paymentToken:paymentToken,
           checkoutUrl:checkoutUrl,
           numbers:displayNumbers,
