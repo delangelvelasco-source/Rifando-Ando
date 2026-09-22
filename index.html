@@ -543,9 +543,23 @@ function update(){
   count.textContent=sel.size;
   total.textContent=rifa ? (sel.size*Number(rifa.precio_numero)).toLocaleString('es-MX') : '0';
 }
+function ocultarPagoPendienteUI(){
+  const paymentBox=document.getElementById('paymentBox');
+  const mpPayBtn=document.getElementById('mpPayBtn');
+  const recoverBtn=document.getElementById('recoverPaymentBtn');
+  const paymentMsg=document.getElementById('paymentMsg');
+  if(paymentBox)paymentBox.style.display='none';
+  if(mpPayBtn){
+    mpPayBtn.style.display='none';
+    mpPayBtn.removeAttribute('href');
+  }
+  if(recoverBtn)recoverBtn.style.display='none';
+  if(paymentMsg)paymentMsg.textContent='Generando enlace seguro de Mercado Pago…';
+}
 function resetConfirmation(){
   formView.style.display='';
   confirmation.classList.remove('show');
+  ocultarPagoPendienteUI();
 }
 function activarTiempoReal(){
   if(!rifa) return;
@@ -1165,6 +1179,9 @@ function abrirFormulario(){
     alert('Primero elige al menos un número, compa.');
     return;
   }
+  // Esta es una selección nueva: no arrastrar el bloque de pago/recuperación
+  // de una compra pendiente que se haya cerrado anteriormente.
+  ocultarPagoPendienteUI();
   formNumbers.textContent=nums().join(', ');
   actualizarWhatsAppAyuda();
   modal.classList.add('open');
