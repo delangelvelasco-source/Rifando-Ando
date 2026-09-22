@@ -930,22 +930,16 @@ let numerosCacheMemoria=new Map();
 async function cargarRifa(){
   const loadSeq=++cargarRifaSeq;
   const params=new URLSearchParams(window.location.search);
-  const rutaRifa=window.location.pathname.replace(/\/+$/,'').split('/').pop().toLowerCase();
+  const rutaRifa=window.location.pathname.replace(/\\/+$/,'').split('/').pop().toLowerCase();
   const gruposRifa={regular:'regular',especial:'especial',iphone:'iphone',express:'express'};
-  const fallbackRutas={regular:'4b23f516-7973-4a04-bff6-9b9b5cb90f4d',especial:'60f9a81d-bdd6-4e28-b330-dc92cfe4d113',iphone:'9a9bca1f-3f22-4a1a-8813-70c7f5914f65',express:'af9945a6-fe0d-4f53-a147-d8e332e39b59'};
-  const mapaRutas={...fallbackRutas};
-  let rifasActuales={};
-  // Esta consulta se hace en paralelo con la carga de la rifa principal.
-  // Así no agregamos un viaje de red extra antes de mostrar los números.
+  const fallbackRutas={regular:'4b23f516-7973-4a04-bff6-9b9b5cb90f4d',especial:'60f9a81d-bdd6-4e28-b330-dc92cfe4d113',iphone:'9a9bca1f-3f22-4a1a-8813-70c7f5914f65',express:'af9945a6-fe0d-4f0d-a2e6-8d9e5254554b'};
+  // Arrancamos las consultas inmediatamente. La consulta de IDs actualizados
+  // y la rifa/números pueden viajar en paralelo.
   const listaPromise=db.from('rifas')
     .select('id,grupo_rifa,estado,numero_sorteo,created_at')
     .in('grupo_rifa',Object.values(gruposRifa))
     .order('created_at',{ascending:false});
-  const listaRespuesta=await listaPromise;
-  const listaActuales=listaRespuesta.error?[]:(listaRespuesta.data||[]);
-  listaActuales.forEach(x=>{if(x.grupo_rifa&&!rifasActuales[x.grupo_rifa])rifasActuales[x.grupo_rifa]=x;});
-  Object.keys(mapaRutas).forEach(k=>{if(rifasActuales[k]?.id)mapaRutas[k]=rifasActuales[k].id;});
-  window.__rifasActuales=mapaRutas;
+
   const requestedParam=params.get('rifa')||window.__initialRifaId;
   const legacyGrupoPorId={
     '4b23f516-7973-4a04-bff6-9b9b5cb90f4d':'regular',
@@ -953,6 +947,42 @@ async function cargarRifa(){
     '9a9bca1f-3f22-4a1a-8813-70c7f5914f65':'iphone',
     'af9945a6-fe0d-4f53-a147-d8e332e39b59':'express'
   };
+  const rutaInicial=requestedParam?String(requestedParam):(fallbackRutas[rutaRifa]||fallbackRutas.regular);
+  const inicialGrupo=legacyGrupoPorId[rutaInicial]||rutaRifa;
+  const requestedInicial=fallbackRutas[inicialGrupo]||rutaInicial;
+
+  const datosBase={
+    '4b23f516-7973-4a1a-bff6-9b9b5cb90f4d':{nombre:'Sorteo Regular',precio:'$15.00 por número',boleto:'$15.00',numeros:'100',premio:'$1,000.00'},
+    '60f9a81d-bdd6-4e28-b330-dc92cfe4d113':{nombre:'Sorteo Especial',precio:'$100.00 por número',boleto:'$100.00',numeros:'100',premio:'$10,000.00'},
+    '9a9bca1f-3f22-4a1a-8813-70c7f5914f65':{nombre:'iPhone 18 Pro Max 256 GB',precio:'$180.00 por número',boleto:'$180.00',numeros:'250',premio:'$31,999.00'},
+    'af9945a6-fe0d-4f0d-a2e6-8d9e5254554b':{nombre:'Sorteo Express',precio:'$25.00 por número',boleto:'$25.00',numeros:'30',premio:'$500.00'}
+  };
+  const base=datosBase[requestedInicial];
+  if(base){
+    raffleName.textContent=base.nombre;
+    priceEl.textContent=base.precio;
+    ticketInfoPrice.textContent=base.boleto;
+    document.getElementById('ticketInfoCount').textContent=base.numeros;
+    meta.innerHTML='<span>0% ocupados</span><span>Cargando sorteo…</span>';
+    bar.style.width='0%';
+    document.getElementById('grandAmount')?.replaceChildren();
+  }
+
+  const consultaInicial=Promise.all([
+    db.from('rifas')
+      .select('id,nombre,premio,precio_numero,fecha_sorteo,estado,numero_sorteo,codigo_sorteo,metodo_sorteo,loteria_tipo,loteria_sorteo,loteria_resultado,loteria_numero_ganador,loteria_fuente,loteria_fecha,grupo_rifa')
+      .eq('id',requestedInicial).maybeSingle(),
+    cargarNumerosPublico(requestedInicial)
+  ]);
+
+  let rifasActuales={};
+  const listaRespuesta=await listaPromise;
+  const listaActuales=listaRespuesta.error?[]:(listaRespuesta.data||[]);
+  listaActuales.forEach(x=>{if(x.grupo_rifa&&!rifasActuales[x.grupo_rifa])rifasActuales[x.grupo_rifa]=x;});
+  const mapaRutas={...fallbackRutas};
+  Object.keys(mapaRutas).forEach(k=>{if(rifasActuales[k]?.id)mapaRutas[k]=rifasActuales[k].id;});
+  window.__rifasActuales=mapaRutas;
+
   let requestedRifa=requestedParam?String(requestedParam):(mapaRutas[rutaRifa]||mapaRutas.regular);
   const legacyGrupo=legacyGrupoPorId[requestedRifa];
   if(legacyGrupo&&mapaRutas[legacyGrupo]&&mapaRutas[legacyGrupo]!==requestedRifa){
@@ -961,6 +991,23 @@ async function cargarRifa(){
     cleanUrl.searchParams.set('rifa',requestedRifa);
     window.history.replaceState(null,'',cleanUrl.href);
   }
+
+  let respuestaRifa,respuestaNumeros;
+  if(String(requestedRifa)===String(requestedInicial)){
+    [respuestaRifa,respuestaNumeros]=await consultaInicial;
+  }else{
+    [respuestaRifa,respuestaNumeros]=await Promise.all([
+      db.from('rifas')
+        .select('id,nombre,premio,precio_numero,fecha_sorteo,estado,numero_sorteo,codigo_sorteo,metodo_sorteo,loteria_tipo,loteria_sorteo,loteria_resultado,loteria_numero_ganador,loteria_fuente,loteria_fecha,grupo_rifa')
+        .eq('id',requestedRifa).maybeSingle(),
+      cargarNumerosPublico(requestedRifa)
+    ]);
+  }
+  const r=respuestaRifa?.data||null;
+  const errorRe=respuestaRifa?.error||null;
+  const numerosIniciales=respuestaNumeros?.data||null;
+  const errorNumerosIniciales=respuestaNumeros?.error||null;
+  if(loadSeq!==cargarRifaSeq)return;
 
   // Al cambiar de rifa, cualquier número seleccionado pertenece a la rifa anterior
   // y no debe sobrevivir ni mezclarse con la nueva. Este control también cubre
