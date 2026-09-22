@@ -957,8 +957,26 @@ async function cargarRifa(){
     priceEl.textContent=base.precio;
     ticketInfoPrice.textContent=base.boleto;
     document.getElementById('ticketInfoCount').textContent=base.numeros;
-    meta.innerHTML='<span>0% ocupados</span><span>Cargando números…</span>';
+    meta.innerHTML='<span>0% ocupados</span><span>Sincronizando números…</span>';
     bar.style.width='0%';
+    // Pintamos inmediatamente la cuadrícula correcta para evitar el gran espacio vacío
+    // mientras llega la primera respuesta del servidor. Los botones permanecen bloqueados
+    // hasta que llegue el estado real de cada número.
+    const totalBase=Number(base.numeros)||0;
+    tickets.innerHTML='';
+    const frag=document.createDocumentFragment();
+    for(let i=0;i<totalBase;i++){
+      const b=document.createElement('button');
+      b.type='button';
+      b.className='ticket';
+      b.textContent=String(i).padStart(2,'0');
+      b.disabled=true;
+      b.setAttribute('aria-busy','true');
+      b.style.opacity='.45';
+      b.style.cursor='wait';
+      frag.appendChild(b);
+    }
+    tickets.appendChild(frag);
   }
 
   let cacheInicial=null;
@@ -978,6 +996,15 @@ async function cargarRifa(){
       b.className='ticket '+(free?'available':(x.estado==='apartado'?'pending':'sold'));
       b.textContent=String(x.numero).padStart(2,'0');
       b.disabled=!free;
+      if(free){
+        b.addEventListener('click',()=>{
+          if(solicitudPendiente)return;
+          const numero=Number(x.numero);
+          if(sel.has(numero)){sel.delete(numero);b.classList.remove('selected')}
+          else{sel.add(numero);b.classList.add('selected')}
+          update();
+        });
+      }
       tickets.appendChild(b);
     });
     document.getElementById('ticketInfoCount').textContent=String(cacheInicial.length);
