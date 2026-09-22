@@ -1409,72 +1409,127 @@ function recuperarPagoPendiente(){
 async function confirmar(e){
   e.preventDefault();
   if(!rifa||!sel.size) return;
+
   const btn=e.submitter||e.target.querySelector('button[type="submit"]');
-  const selected=Array.from(sel);
-  const name=nombre.value.trim();
+  const selected=Array.from(sel).sort((a,b)=>a-b);
+
+  let pendingPayment=null;
+  let modoAgregar=false;
+  try{
+    const raw=localStorage.getItem('rifando_pago_pendiente');
+    pendingPayment=raw?JSON.parse(raw):null;
+    modoAgregar=localStorage.getItem('rifando_modo_agregar')==='1' &&
+      pendingPayment &&
+      pendingPayment.pagoId &&
+      pendingPayment.paymentToken &&
+      pendingPayment.rifaId &&
+      String(pendingPayment.rifaId)===String(rifa.id);
+  }catch(e){ pendingPayment=null; modoAgregar=false; }
+
+  const nameInput=nombre.value.trim();
   const phone=whatsapp.value.trim();
+
+  // En "Agregar más números" reutilizamos la misma compra pendiente.
+  // Así el nuevo pago siempre corresponde al total acumulado y no solo a los números nuevos.
+  const name=modoAgregar?(pendingPayment.name||nameInput):nameInput;
   const email='';
-  if(!name||!phone){
+
+  if(!modoAgregar && (!name||!phone)){
     alert('Completa tu nombre y WhatsApp, compa.');
     return;
   }
+
   btn.disabled=true;
-  btn.textContent='Apartando...';
-  const {data,error}=await db.rpc('apartar_numeros',{
-    p_rifa_id:rifa.id,
-    p_nombre:name,
-    p_whatsapp:phone,
-    p_correo:email,
-    p_numeros:selected
-  });
+  btn.textContent=modoAgregar?'Actualizando compra...':'Apartando...';
+
+  let data=null;
+  let error=null;
+
+  if(modoAgregar){
+    const respuesta=await db.rpc('agregar_numeros_a_pago_pendiente',{
+      p_pago_id:pendingPayment.pagoId,
+      p_payment_token:pendingPayment.paymentToken,
+      p_numeros:selected
+    });
+    data=respuesta.data;
+    error=respuesta.error;
+  }else{
+    const respuesta=await db.rpc('apartar_numeros',{
+      p_rifa_id:rifa.id,
+      p_nombre:name,
+      p_whatsapp:phone,
+      p_correo:email,
+      p_numeros:selected
+    });
+    data=respuesta.data;
+    error=respuesta.error;
+  }
+
   if(error){
-    alert('No se pudo apartar: '+error.message);
+    alert('No se pudo actualizar la compra: '+error.message);
     btn.disabled=false;
     btn.textContent='Solicitar apartado';
     await cargarRifa();
     return;
   }
-  const displayNumbers=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');
-  const displayTotal=Number(data?.total||selected.length*Number(rifa.precio_numero)).toLocaleString('es-MX');
-  document.getElementById('confirmName').textContent=name;
+
+  const pagoId=String(data?.pago_id||'');
+  const paymentToken=String(data?.payment_token||'');
+  const displayName=name||'';
+  const previousNumbers=modoAgregar
+    ? String(pendingPayment.numbers||'').split(',').map(x=>parseInt(x.trim(),10)).filter(Number.isFinite)
+    : [];
+  const allNumbers=[...new Set(previousNumbers.concat(selected))].sort((a,b)=>a-b);
+  const displayNumbers=allNumbers.map(n=>String(n).padStart(2,'0')).join(', ');
+  const actualTotal=Number(data?.total||allNumbers.length*Number(rifa.precio_numero||0));
+  const displayTotal=actualTotal.toLocaleString('es-MX');
+
+  document.getElementById('confirmName').textContent=displayName;
   document.getElementById('confirmNumbers').textContent=displayNumbers;
   document.getElementById('confirmTotal').textContent=String.fromCharCode(36)+displayTotal;
+
   const paymentBox=document.getElementById('paymentBox');
   const mpPayBtn=document.getElementById('mpPayBtn');
   const paymentMsg=document.getElementById('paymentMsg');
-  if(paymentBox){paymentBox.style.display='block'; paymentMsg.textContent='Generando enlace seguro de Mercado Pago…'; mpPayBtn.style.display='none';}
+  const recoverBtn=document.getElementById('recoverPaymentBtn');
+
+  if(paymentBox){
+    paymentBox.style.display='block';
+    paymentMsg.textContent='Generando enlace seguro de Mercado Pago…';
+    mpPayBtn.style.display='none';
+    if(recoverBtn)recoverBtn.style.display='none';
+  }
+
+  let checkoutUrl='';
   try{
-    const paymentToken=String(data?.payment_token||'');
-    const paymentId=String(data?.pago_id||'');
-    if(paymentToken&&paymentId){
+    if(pagoId&&paymentToken){
       const paymentResponse=await fetch(SUPABASE_URL+'/functions/v1/mercado-pago',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({payment_id:paymentId,payment_token:paymentToken})
+        body:JSON.stringify({payment_id:pagoId,payment_token:paymentToken})
       });
       const paymentData=await paymentResponse.json().catch(()=>({}));
+
       if(paymentResponse.ok&&paymentData.checkout_url){
-        mpPayBtn.href=paymentData.checkout_url;
+        checkoutUrl=paymentData.checkout_url;
+        mpPayBtn.href=checkoutUrl;
         mpPayBtn.style.display='block';
-        paymentMsg.textContent='Tu apartado queda reservado durante 30 minutos. Completa el pago para confirmar tus números.';
+        paymentMsg.textContent='Tu apartado queda reservado durante 30 minutos. Completa el pago para confirmar todos tus números.';
         guardarPagoPendienteUI({
           rifaId:rifa.id,
-          pagoId:paymentId,
+          pagoId:pagoId,
           paymentToken:paymentToken,
-          checkoutUrl:paymentData.checkout_url,
+          checkoutUrl:checkoutUrl,
           numbers:displayNumbers,
           total:String.fromCharCode(36)+displayTotal,
-          name:name
+          name:displayName
         });
-        const recoverBtn=document.getElementById('recoverPaymentBtn');
         if(recoverBtn)recoverBtn.style.display='block';
       }else{
         const codigo=String(paymentData.code||'').trim();
         const detalle=String(paymentData.detail||'').trim();
         paymentMsg.textContent=paymentData.error||'No se pudo generar el pago en línea. Puedes continuar por WhatsApp.';
-        if(codigo){
-          paymentMsg.textContent+='\nCódigo: '+codigo+(detalle?' · '+detalle:'');
-        }
+        if(codigo)paymentMsg.textContent+='\\nCódigo: '+codigo+(detalle?' · '+detalle:'');
       }
     }else{
       paymentMsg.textContent='Puedes continuar por WhatsApp para coordinar el pago.';
@@ -1482,35 +1537,42 @@ async function confirmar(e){
   }catch(err){
     paymentMsg.textContent='No se pudo conectar con Mercado Pago. Puedes continuar por WhatsApp.';
   }
-  let solicitudesPendientes=[];  try{
+
+  let solicitudesPendientes=[];
+  try{
     const rawPendientes=localStorage.getItem('rifando_pendiente_whatsapp');
     const parsedPendientes=rawPendientes?JSON.parse(rawPendientes):null;
     solicitudesPendientes=Array.isArray(parsedPendientes)?parsedPendientes:(parsedPendientes?[parsedPendientes]:[]);
   }catch(e){solicitudesPendientes=[]}
-  solicitudesPendientes=solicitudesPendientes.filter(p=>p&&p.timestamp&&Date.now()-Number(p.timestamp)<=30*60*1000&&String(p.rifaId)===String(rifa.id));
 
-  // Una sola solicitud general por rifa: "Agregar más números" acumula todo en el mismo apartado.
+  solicitudesPendientes=solicitudesPendientes.filter(p=>
+    p&&p.timestamp&&Date.now()-Number(p.timestamp)<=30*60*1000&&String(p.rifaId)===String(rifa.id)
+  );
+
   const numerosAcumulados=[...new Set(
     solicitudesPendientes
       .flatMap(p=>String(p.numbers||'').split(',').map(x=>parseInt(x.trim(),10)).filter(Number.isFinite))
-      .concat(selected)
+      .concat(allNumbers)
   )].sort((a,b)=>a-b);
-  const totalAcumulado=numerosAcumulados.length*Number(rifa.precio_numero||0);
+
   const solicitudGeneral={
     rifaId:rifa.id,
     numbers:numerosAcumulados.map(n=>String(n).padStart(2,'0')).join(', '),
-    name:name,
-    total:'$'+Number(totalAcumulado).toLocaleString('es-MX'),
+    name:displayName,
+    total:'$'+actualTotal.toLocaleString('es-MX'),
     timestamp:Date.now()
   };
+
   solicitudesPendientes=[solicitudGeneral];
-  document.getElementById('confirmName').textContent=name;
+  document.getElementById('confirmName').textContent=displayName;
   document.getElementById('confirmNumbers').textContent=solicitudGeneral.numbers;
   document.getElementById('confirmTotal').textContent=solicitudGeneral.total;
+
   try{
     localStorage.setItem('rifando_pendiente_whatsapp',JSON.stringify(solicitudesPendientes));
     localStorage.removeItem('rifando_modo_agregar');
   }catch(e){}
+
   const message=construirMensajeSolicitudes(solicitudesPendientes);
   const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
   const waConfirm=document.getElementById('waConfirm');
@@ -1518,6 +1580,7 @@ async function confirmar(e){
   confirmWhatsAppClicked=false;
   document.getElementById('modalClose')?.classList.add('locked-close');
   document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
+
   waConfirm.onclick=()=>{
     if(confirmWhatsAppClicked)return false;
     confirmWhatsAppClicked=true;
@@ -1539,12 +1602,15 @@ async function confirmar(e){
     document.getElementById('modalClose')?.classList.remove('locked-close');
     document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
 
-    try{localStorage.removeItem('rifando_pendiente_whatsapp');localStorage.removeItem('rifando_modo_agregar')}catch(e){}
+    try{
+      localStorage.removeItem('rifando_pendiente_whatsapp');
+      localStorage.removeItem('rifando_modo_agregar');
+    }catch(e){}
     confirmWhatsAppClicked=false;
 
-    // Refrescar los estados reales sin recargar la página.
     setTimeout(()=>cargarRifa().catch(()=>{}),100);
   };
+
   formView.style.display='none';
   confirmation.classList.add('show');
   sel.clear();
@@ -1552,7 +1618,6 @@ async function confirmar(e){
   btn.textContent='Solicitar apartado';
   await cargarRifa();
 }
-
 // Navegación entre rifas: los enlaces usan navegación nativa para evitar que un fallo
 // de JavaScript impida cambiar de sorteo. Al cargar la nueva rifa, cargarRifa()
 // marca automáticamente el sorteo activo en verde.
