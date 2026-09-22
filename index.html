@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080808">
-<link rel="manifest" href="manifest.json"><meta name="version" content="2026-09-22-1730">
+<link rel="manifest" href="manifest.json"><meta name="version" content="2026-09-22-1745">
 <title>Rifando Ando | Rifas en línea y sorteos</title>
 <meta name="description" content="Rifas en línea entre compas. Elige tus números, participa en nuestros sorteos y conoce las reglas para participar.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -516,7 +516,7 @@ if(!window.supabase || typeof window.supabase.createClient!=='function'){
   document.write('<script src="https://unpkg.com/@supabase/supabase-js@2"><\\/script>');
 }
 </script>
-<script src="config.js?v=20260922-1730"></script>
+<script src="config.js?v=20260922-1745"></script>
 <script>
 'use strict';
 const db=(window.supabase&&typeof window.supabase.createClient==='function')
@@ -919,32 +919,31 @@ async function refrescarNumerosPublico(rifaId){
 async function cargarNumerosPublico(rifaId){
   const cache=numerosCacheMemoria.get(String(rifaId));
   if(cache && Date.now()-cache.at<15000) return {data:cache.data,error:null};
-  if(!db) return {data:null,error:new Error('Supabase SDK no disponible')};
 
-  let ultimoError=null;
-  for(let intento=1;intento<=2;intento++){
-    const controller=new AbortController();
-    const timer=setTimeout(()=>controller.abort(),6000);
-    try{
-      const respuesta=await db.from('numeros')
-        .select('numero,estado,apartado_hasta')
-        .eq('rifa_id',rifaId)
-        .order('numero')
-        .abortSignal(controller.signal);
-      clearTimeout(timer);
-      if(!respuesta.error){
-        const data=Array.isArray(respuesta.data)?respuesta.data:[];
-        numerosCacheMemoria.set(String(rifaId),{data,at:Date.now()});
-        return {data,error:null};
-      }
-      ultimoError=respuesta.error;
-    }catch(e){
-      clearTimeout(timer);
-      ultimoError=e;
-    }
-    if(intento<2) await new Promise(resolve=>setTimeout(resolve,250));
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),5000);
+  try{
+    const url=SUPABASE_URL+'/rest/v1/numeros?select=numero,estado,apartado_hasta&rifa_id=eq.'+encodeURIComponent(rifaId)+'&order=numero.asc';
+    const res=await fetch(url,{
+      method:'GET',
+      headers:{
+        'apikey':SUPABASE_KEY,
+        'Authorization':'Bearer '+SUPABASE_KEY,
+        'Accept':'application/json'
+      },
+      cache:'no-store',
+      signal:controller.signal
+    });
+    clearTimeout(timer);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    if(!Array.isArray(data)) throw new Error('Respuesta de números inválida');
+    numerosCacheMemoria.set(String(rifaId),{data,at:Date.now()});
+    return {data,error:null};
+  }catch(e){
+    clearTimeout(timer);
+    return {data:null,error:e};
   }
-  return {data:null,error:ultimoError||new Error('Tiempo de espera agotado al cargar números')};
 }
 
 let cargarRifaSeq=0;
@@ -1032,14 +1031,26 @@ async function cargarRifa(){
     document.getElementById('ticketInfoCount').textContent=String(cacheInicial.length);
   }
 
-  if(!db){
-    tickets.innerHTML='<div style="grid-column:1/-1;padding:22px;text-align:center;border:1px solid #3a2d0d;border-radius:16px;background:#111"><b style="color:#d9a936">No se pudo conectar con el sistema de números.</b><p style="color:#aaa;margin:8px 0 0">Recarga la página para intentar de nuevo.</p></div>';
-    return;
-  }
-
-  const datosPromise=db.from('rifas')
-    .select('id,nombre,premio,precio_numero,fecha_sorteo,estado,numero_sorteo,codigo_sorteo,metodo_sorteo,loteria_tipo,loteria_sorteo,loteria_resultado,loteria_numero_ganador,loteria_fuente,loteria_fecha,grupo_rifa')
-    .eq('id',requestedRifa).maybeSingle();
+  const datosPromise=(async()=>{
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),5000);
+    try{
+      const campos='id,nombre,premio,precio_numero,fecha_sorteo,estado,numero_sorteo,codigo_sorteo,metodo_sorteo,loteria_tipo,loteria_sorteo,loteria_resultado,loteria_numero_ganador,loteria_fuente,loteria_fecha,grupo_rifa';
+      const url=SUPABASE_URL+'/rest/v1/rifas?select='+encodeURIComponent(campos)+'&id=eq.'+encodeURIComponent(requestedRifa)+'&limit=1';
+      const res=await fetch(url,{
+        headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Accept':'application/json'},
+        cache:'no-store',
+        signal:controller.signal
+      });
+      clearTimeout(timer);
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data=await res.json();
+      return {data:Array.isArray(data)&&data.length?data[0]:null,error:null};
+    }catch(e){
+      clearTimeout(timer);
+      return {data:null,error:e};
+    }
+  })();
   const numerosPromise=cargarNumerosPublico(requestedRifa);
 
   // La información de la rifa no debe esperar a la parrilla de números.
