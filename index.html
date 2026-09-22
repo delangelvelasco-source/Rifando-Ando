@@ -1316,7 +1316,12 @@ async function confirmar(e){
         mpPayBtn.style.display='block';
         paymentMsg.textContent='Tu apartado queda reservado durante 30 minutos. Completa el pago para confirmar tus números.';
       }else{
+        const codigo=String(paymentData.code||'').trim();
+        const detalle=String(paymentData.detail||'').trim();
         paymentMsg.textContent=paymentData.error||'No se pudo generar el pago en línea. Puedes continuar por WhatsApp.';
+        if(codigo){
+          paymentMsg.textContent+='\nCódigo: '+codigo+(detalle?' · '+detalle:'');
+        }
       }
     }else{
       paymentMsg.textContent='Puedes continuar por WhatsApp para coordinar el pago.';
