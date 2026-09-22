@@ -499,6 +499,9 @@ body{overflow-x:hidden}
   <p id="paymentMsg" style="color:#aaa;margin:8px 0">Generando enlace seguro de Mercado Pago…</p>
   <a class="btn" id="mpPayBtn" href="#" target="_blank" rel="noopener" style="display:none;width:100%;margin-top:8px">💳 Pagar con Mercado Pago</a>
   <button class="btn" id="recoverPaymentBtn" type="button" onclick="recuperarPagoPendiente()" style="display:none;width:100%;margin-top:8px;background:#171717;color:#f5d36a;border:1px solid #d9a936">🔄 Recuperar mi compra</button>
+  <div id="purchaseHelpNote" style="margin-top:12px;padding:10px 12px;border:1px solid #3f351b;border-radius:10px;background:#171717;color:#bdbdbd;font-size:13px;line-height:1.4;text-align:center">
+    ⚠️ <b style="color:#f5d36a">Importante:</b> si ya tienes una compra pendiente, usa <b>Recuperar mi compra</b> para continuarla. Para añadir números, usa <b>Agregar más números</b>. No abras otra pestaña para continuar la misma compra.
+  </div>
 </div>
 <a class="btn" id="waConfirm" href="#" target="_blank" rel="noopener" style="display:inline-block;margin:8px 4px">📲 Enviar solicitud por WhatsApp</a><br>
 <button class="btn" id="addMoreNumbersBtn" type="button" onclick="agregarMasNumeros()" style="margin:8px 4px;background:#171717;color:#f5d36a;border:1px solid #d9a936">➕ Agregar más números</button><br>
@@ -1262,7 +1265,11 @@ function construirMensajeSolicitudes(lista){
 }
 function agregarMasNumeros(){
   const pendientes=obtenerSolicitudesPendientes().filter(p=>!rifa||String(p.rifaId)===String(rifa.id));
-  if(!pendientes.length)return;
+  const pago=leerPagoPendienteUI();
+  if(!pendientes.length||!pago||!pago.pagoId||!pago.paymentToken){
+    alert('Primero debes tener una compra pendiente activa. Si ya comenzaste una compra, usa “Recuperar mi compra” desde esta misma pestaña.');
+    return;
+  }
   try{sessionStorage.setItem(AGREGAR_SESSION_KEY,'1')}catch(e){}  solicitudPendiente=false;
   sel.clear();
   update();
@@ -1407,10 +1414,10 @@ function recuperarPagoPendiente(){
   try{
     const raw=leerPagoPendienteUI();
     if(!raw){
-      alert('No encontramos una compra pendiente en este dispositivo.');
+      alert('No encontramos una compra pendiente en esta pestaña. Continúa la compra desde la pestaña donde la comenzaste.');
       return;
     }
-    const p=JSON.parse(raw);
+    const p=typeof raw==='string'?JSON.parse(raw):raw;
     if(!p||!p.checkoutUrl||!p.timestamp){
       eliminarPagoPendienteUI();
       alert('La compra pendiente ya no está disponible.');
@@ -1461,7 +1468,7 @@ async function confirmar(e){
   let modoAgregar=false;
   try{
     const raw=leerPagoPendienteUI();
-    pendingPayment=raw?JSON.parse(raw):null;
+    pendingPayment=raw?(typeof raw==='string'?JSON.parse(raw):raw):null;
     modoAgregar=sessionStorage.getItem(AGREGAR_SESSION_KEY)==='1' &&
       pendingPayment &&
       pendingPayment.pagoId &&
