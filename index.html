@@ -1296,8 +1296,35 @@ async function confirmar(e){
   const displayTotal=Number(data?.total||selected.length*Number(rifa.precio_numero)).toLocaleString('es-MX');
   document.getElementById('confirmName').textContent=name;
   document.getElementById('confirmNumbers').textContent=displayNumbers;
-  document.getElementById('confirmTotal').textContent='
+  document.getElementById('confirmTotal').textContent=String.fromCharCode(36)+displayTotal;
+  const paymentBox=document.getElementById('paymentBox');
+  const mpPayBtn=document.getElementById('mpPayBtn');
+  const paymentMsg=document.getElementById('paymentMsg');
+  if(paymentBox){paymentBox.style.display='block'; paymentMsg.textContent='Generando enlace seguro de Mercado Pago…'; mpPayBtn.style.display='none';}
   try{
+    const paymentToken=String(data?.payment_token||'');
+    const paymentId=String(data?.pago_id||'');
+    if(paymentToken&&paymentId){
+      const paymentResponse=await fetch(SUPABASE_URL+'/functions/v1/mercado-pago',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({payment_id:paymentId,payment_token:paymentToken})
+      });
+      const paymentData=await paymentResponse.json().catch(()=>({}));
+      if(paymentResponse.ok&&paymentData.checkout_url){
+        mpPayBtn.href=paymentData.checkout_url;
+        mpPayBtn.style.display='block';
+        paymentMsg.textContent='Tu apartado queda reservado durante 30 minutos. Completa el pago para confirmar tus números.';
+      }else{
+        paymentMsg.textContent=paymentData.error||'No se pudo generar el pago en línea. Puedes continuar por WhatsApp.';
+      }
+    }else{
+      paymentMsg.textContent='Puedes continuar por WhatsApp para coordinar el pago.';
+    }
+  }catch(err){
+    paymentMsg.textContent='No se pudo conectar con Mercado Pago. Puedes continuar por WhatsApp.';
+  }
+  let solicitudesPendientes=[];  try{
     const rawPendientes=localStorage.getItem('rifando_pendiente_whatsapp');
     const parsedPendientes=rawPendientes?JSON.parse(rawPendientes):null;
     solicitudesPendientes=Array.isArray(parsedPendientes)?parsedPendientes:(parsedPendientes?[parsedPendientes]:[]);
