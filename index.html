@@ -1466,8 +1466,6 @@ async function confirmar(e){
     document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
 
     try{localStorage.removeItem('rifando_pendiente_whatsapp');localStorage.removeItem('rifando_modo_agregar')}catch(e){}
-    // Conservamos el enlace de Mercado Pago para que el cliente pueda pagar
-    // después de enviar la solicitud por WhatsApp.
     confirmWhatsAppClicked=false;
 
     // Refrescar los estados reales sin recargar la página.
