@@ -458,7 +458,45 @@ body{overflow-x:hidden}
 
 <section class="section" id="numeros">
 <h2>Elige tus números</h2><div class="legend"><span><i class="lg-green"></i>Disponible</span><span><i class="lg-yellow"></i>Seleccionado</span><span><i class="lg-orange"></i>En proceso de compra</span><span><i class="lg-gray"></i>Vendido</span></div>
-<div class="tickets-zone" id="ticketsZone"><div class="tickets" id="tickets"><p style="color:#aaa">Cargando números...</p></div><div id="ventasCerradasOverlay" class="ventas-cerradas-overlay" aria-hidden="true"><div class="ventas-cerradas-card"><div class="ventas-lock">🔒</div><h3>VENTAS CERRADAS</h3><p id="ventasCerradasText">El sistema está en mantenimiento.</p><small id="ventasCerradasThanks">Gracias por tu comprensión.</small></div></div></div>
+<script>
+/* Carga de emergencia de la parrilla: no depende del SDK de Supabase ni de config.js. */
+(function(){
+  const RIFA_ID='4b23f516-7973-4a04-bff6-9b9b5cb90f4d';
+  const API='https://iaviafijfdqinehcfebr.supabase.co';
+  const KEY='sb_publishable_OOyCaQno11jdZhXkmZvd3w_Wl6PjmES';
+  const box=document.getElementById('tickets');
+  if(!box)return;
+  function pintar(data){
+    if(!Array.isArray(data)||!data.length)return;
+    const frag=document.createDocumentFragment();
+    data.forEach(x=>{
+      const n=Number(x.numero);
+      const free=x.estado==='disponible'||(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)<=new Date());
+      const b=document.createElement('button');
+      b.type='button';
+      b.className='ticket '+(free?'available':(x.estado==='apartado'?'pending':'sold'));
+      b.textContent=String(n).padStart(2,'0');
+      b.disabled=!free;
+      if(free)b.addEventListener('click',()=>{
+        if(window.__raEarlySelected.has(n)){window.__raEarlySelected.delete(n);b.classList.remove('selected')}
+        else{window.__raEarlySelected.add(n);b.classList.add('selected')}
+        const count=document.getElementById('count'),total=document.getElementById('total');
+        if(count)count.textContent=String(window.__raEarlySelected.size);
+        if(total)total.textContent=(window.__raEarlySelected.size*15).toLocaleString('es-MX');
+      });
+      frag.appendChild(b);
+    });
+    box.replaceChildren(frag);
+    const c=document.getElementById('ticketInfoCount'); if(c)c.textContent=String(data.length);
+  }
+  window.__raEarlySelected=new Set();
+  fetch(API+'/rest/v1/numeros?select=numero,estado,apartado_hasta&rifa_id=eq.'+encodeURIComponent(RIFA_ID)+'&order=numero.asc',{
+    headers:{apikey:KEY,Authorization:'Bearer '+KEY,Accept:'application/json'},cache:'no-store'
+  }).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()})
+    .then(pintar)
+    .catch(()=>{});
+})();
+</script><div class="tickets-zone" id="ticketsZone"><div class="tickets" id="tickets"><p style="color:#aaa">Cargando números...</p></div><div id="ventasCerradasOverlay" class="ventas-cerradas-overlay" aria-hidden="true"><div class="ventas-cerradas-card"><div class="ventas-lock">🔒</div><h3>VENTAS CERRADAS</h3><p id="ventasCerradasText">El sistema está en mantenimiento.</p><small id="ventasCerradasThanks">Gracias por tu comprensión.</small></div></div></div>
 <div class="summary">
 <div>Números: <b class="gold" id="count">0</b> · Total: <b class="gold">$<span id="total">0</span></b></div>
 <button class="btn" onclick="abrirFormulario()">Continuar</button>
