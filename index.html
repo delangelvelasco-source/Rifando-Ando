@@ -942,6 +942,7 @@ async function cargarRifa(){
   };
 
   const requestedParam=params.get('rifa')||window.__initialRifaId;
+  const mapaRutas={...fallbackRutas};
   let requestedRifa=requestedParam?String(requestedParam):(fallbackRutas[rutaRifa]||fallbackRutas.regular);
   const legacyGrupo=legacyGrupoPorId[requestedRifa];
   if(legacyGrupo)requestedRifa=fallbackRutas[legacyGrupo];
