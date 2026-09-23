@@ -1206,6 +1206,138 @@ function construirMensajeSolicitudes(lista){
   const pago=lista?.[lista.length-1]?.paymentUrl||'';
   return '🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado:\n\n🎫 '+rifaNombre+'\n👤 Nombre: '+nombre+'\n🔢 Números: '+displayNumbers+'\n💰 Total: '+money+total.toLocaleString('es-MX')+(pago?'\n\n💳 Link para realizar el pago:\n'+pago:'')+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
 }
+function cerrarFormulario(){
+  if(confirmation.classList.contains('show')&&!confirmWhatsAppClicked)return;
+  modal.classList.remove('open');
+  confirmWhatsAppClicked=false;
+  document.getElementById('modalClose')?.classList.remove('locked-close');
+  document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
+}
+async function confirmar(e){
+  e.preventDefault();
+  if(!rifa||!sel.size) return;
+  const btn=e.submitter||e.target.querySelector('button[type="submit"]');
+  const selected=Array.from(sel);
+  const name=nombre.value.trim();
+  const phone=whatsapp.value.trim();
+  const email='';
+  if(!name||!phone){
+    alert('Completa tu nombre y WhatsApp, compa.');
+    return;
+  }
+  btn.disabled=true;
+  btn.textContent='Apartando...';
+  const {data,error}=await db.rpc('apartar_numeros',{
+    p_rifa_id:rifa.id,
+    p_nombre:name,
+    p_whatsapp:phone,
+    p_correo:email,
+    p_numeros:selected
+  });
+  if(error){
+    alert('No se pudo apartar: '+error.message);
+    btn.disabled=false;
+    btn.textContent='Solicitar apartado';
+    await cargarRifa();
+    return;
+  }
+  const displayNumbers=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');
+  const displayTotal=Number(data?.total||selected.length*Number(rifa.precio_numero)).toLocaleString('es-MX');
+  document.getElementById('confirmName').textContent=name;
+  document.getElementById('confirmNumbers').textContent=displayNumbers;
+  document.getElementById('confirmTotal').textContent=String.fromCharCode(36)+displayTotal;
+  const paymentBox=document.getElementById('paymentBox');
+  const mpPayBtn=document.getElementById('mpPayBtn');
+  const paymentMsg=document.getElementById('paymentMsg');
+  let paymentUrl='';
+  if(paymentBox){paymentBox.style.display='block'; paymentMsg.textContent='Generando enlace seguro de Mercado Pago…'; mpPayBtn.style.display='none';}
+  try{
+    const paymentToken=String(data?.payment_token||'');
+    const paymentId=String(data?.pago_id||'');
+    if(paymentToken&&paymentId){
+      const paymentResponse=await fetch(SUPABASE_URL+'/functions/v1/mercado-pago',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({payment_id:paymentId,payment_token:paymentToken})
+      });
+      const paymentData=await paymentResponse.json().catch(()=>({}));
+      if(paymentResponse.ok&&paymentData.checkout_url){
+        paymentUrl=String(paymentData.checkout_url);
+        mpPayBtn.href=paymentUrl;
+        mpPayBtn.style.display='block';
+        paymentMsg.textContent='Tu apartado queda reservado durante 30 minutos. Completa el pago para confirmar tus números.';
+      }else{
+        paymentMsg.textContent=paymentData.error||'No se pudo generar el pago en línea. Puedes continuar por WhatsApp.';
+      }
+    }else{
+      paymentMsg.textContent='Puedes continuar por WhatsApp para coordinar el pago.';
+    }
+  }catch(err){
+    paymentMsg.textContent='No se pudo conectar con Mercado Pago. Puedes continuar por WhatsApp.';
+  }
+  let solicitudesPendientes=[];  try{
+    const rawPendientes=localStorage.getItem('rifando_pendiente_whatsapp');
+    const parsedPendientes=rawPendientes?JSON.parse(rawPendientes):null;
+    solicitudesPendientes=Array.isArray(parsedPendientes)?parsedPendientes:(parsedPendientes?[parsedPendientes]:[]);
+  }catch(e){solicitudesPendientes=[]}
+  const numerosReales=[...new Set(
+    (Array.isArray(data?.numeros)?data.numeros:selected)
+      .map(n=>parseInt(n,10)).filter(Number.isFinite)
+  )].sort((a,b)=>a-b);
+  const totalReal=Number(data?.total||numerosReales.length*Number(rifa.precio_numero||0));
+  const solicitudGeneral={
+    rifaId:rifa.id,
+    numbers:numerosReales.map(n=>String(n).padStart(2,'0')).join(', '),
+    name:name,
+    total:'$'+totalReal.toLocaleString('es-MX'),
+    paymentUrl:paymentUrl,
+    timestamp:Date.now()
+  };
+  solicitudesPendientes=[solicitudGeneral];
+  document.getElementById('confirmName').textContent=name;
+  document.getElementById('confirmNumbers').textContent=solicitudGeneral.numbers;
+  document.getElementById('confirmTotal').textContent=solicitudGeneral.total;
+  try{
+    localStorage.setItem('rifando_pendiente_whatsapp',JSON.stringify(solicitudesPendientes));
+
+  }catch(e){}
+  const message=construirMensajeSolicitudes(solicitudesPendientes);
+  const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
+  const waConfirm=document.getElementById('waConfirm');
+  waConfirm.href=waLink;
+  confirmWhatsAppClicked=false;
+  document.getElementById('modalClose')?.classList.add('locked-close');
+  document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
+  waConfirm.onclick=()=>{
+    if(confirmWhatsAppClicked)return false;
+    confirmWhatsAppClicked=true;
+    solicitudPendiente=false;
+    sel.clear();
+    update();
+    bloquearNuevaSeleccion(false);
+    modal.classList.remove('open');
+    confirmation.classList.remove('show');
+    formView.style.display='';
+    nombre.value='';
+    whatsapp.value='';
+    waConfirm.style.pointerEvents='';
+    waConfirm.style.opacity='';
+    waConfirm.textContent='📲 Enviar solicitud por WhatsApp';
+    document.getElementById('modalClose')?.classList.remove('locked-close');
+    document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
+    try{localStorage.removeItem('rifando_pendiente_whatsapp');localStorage.removeItem('rifando_modo_agregar')}catch(e){}
+    confirmWhatsAppClicked=false;
+    setTimeout(()=>cargarRifa().catch(()=>{}),100);
+  };
+  formView.style.display='none';
+  confirmation.classList.add('show');
+  sel.clear();
+  btn.disabled=false;
+  btn.textContent='Solicitar apartado';
+  await cargarRifa();
+}
+
+
 async function manejarRetornoMercadoPago(){
   const params=new URLSearchParams(window.location.search);
   const retorno=params.get('mp_return');
