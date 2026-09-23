@@ -1427,6 +1427,8 @@ function detenerActualizacionesEnSegundoPlano(){
   if(loteriaTimer){clearInterval(loteriaTimer);loteriaTimer=null}
   if(ganadorTimer){clearInterval(ganadorTimer);ganadorTimer=null}
 }
+iniciarPagina();
+
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='visible'){
     ejecutarActualizacionesEnSegundoPlano();
