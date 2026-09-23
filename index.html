@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080808">
-<link rel="manifest" href="manifest.json"><meta name="version" content="2026-09-23-1337">
+<link rel="manifest" href="manifest.json"><meta name="version" content="2026-09-23-1400-fast-switch">
 <title>Rifando Ando | Rifas en línea y sorteos</title>
 <meta name="description" content="Rifas en línea entre compas. Elige tus números, participa en nuestros sorteos y conoce las reglas para participar.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -864,7 +864,10 @@ async function refrescarNumerosPublico(rifaId){
   if(solicitudPendiente)bloquearNuevaSeleccion(true);
 }
 
-async function cargarNumerosPublico(rifaId){
+async function cargarNumerosPublico(rifaId,forzar=false){
+  const cache=window.__numerosRifaCache=window.__numerosRifaCache||{};
+  const key=String(rifaId);
+  if(!forzar && Array.isArray(cache[key]))return {data:cache[key],error:null,fromCache:true};
   let ultimoError=null;
 
   // 1) En Cloudflare Pages usamos el endpoint same-origin.
@@ -889,7 +892,7 @@ async function cargarNumerosPublico(rifaId){
       });
       if(rr.ok){
         const data=await rr.json();
-        if(Array.isArray(data))return {data,error:null};
+        if(Array.isArray(data)){cache[key]=data;return {data,error:null};}
       }
       ultimoError=new Error('HTTP '+rr.status);
     }catch(e){
@@ -912,7 +915,7 @@ async function cargarNumerosPublico(rifaId){
     });
     if(rr.ok){
       const data=await rr.json();
-      if(Array.isArray(data))return {data,error:null};
+      if(Array.isArray(data)){cache[key]=data;return {data,error:null};}
     }
     ultimoError=new Error('HTTP '+rr.status);
   }catch(e){
@@ -931,9 +934,10 @@ async function cargarRifa(){
   const gruposRifa={regular:'regular',especial:'especial',iphone:'iphone',express:'express'};
   const fallbackRutas={regular:'4b23f516-7973-4a04-bff6-9b9b5cb90f4d',especial:'60f9a81d-bdd6-4e28-b330-dc92cfe4d113',iphone:'9a9bca1f-3f22-4a1a-8813-70c7f5914f65',express:'af9945a6-fe0d-4f53-a147-d8e332e39b59'};
   const mapaRutas={...fallbackRutas};
-  let rifasActuales={};
+  let rifasActuales=window.__rifasActualesMapa?{...window.__rifasActualesMapa}:{};
   let listaActuales=null;
-  for(let intento=1;intento<=3;intento++){
+  const necesitaActualizarMapa=!window.__rifasMapaCargado;
+  if(necesitaActualizarMapa)for(let intento=1;intento<=3;intento++){
     try{
       const grupos=Object.values(gruposRifa).map(x=>encodeURIComponent(x)).join(',');
       const url=SUPABASE_URL+'/rest/v1/rifas?select=id,grupo_rifa,estado,numero_sorteo,created_at&grupo_rifa=in.('+grupos+')&order=created_at.desc';
@@ -949,6 +953,8 @@ async function cargarRifa(){
   (listaActuales||[]).forEach(x=>{if(x.grupo_rifa&&!rifasActuales[x.grupo_rifa])rifasActuales[x.grupo_rifa]=x;});
   Object.keys(mapaRutas).forEach(k=>{if(rifasActuales[k]?.id)mapaRutas[k]=rifasActuales[k].id;});
   window.__rifasActuales=mapaRutas;
+  window.__rifasActualesMapa=rifasActuales;
+  window.__rifasMapaCargado=true;
   const requestedParam=params.get('rifa')||window.__initialRifaId;
   const legacyGrupoPorId={
     '4b23f516-7973-4a04-bff6-9b9b5cb90f4d':'regular',
@@ -995,20 +1001,29 @@ async function cargarRifa(){
   // mostrar "sorteo realizado" o "ventas abiertas" con datos anteriores.
   let r=null,errorRe=null;
   let respuesta=null;
-  for(let intento=1;intento<=3;intento++){
-    try{
-      const url=SUPABASE_URL+'/rest/v1/rifas?select=*&id=eq.'+encodeURIComponent(requestedRifa)+'&limit=1';
-      const controller=new AbortController();
-      const timer=setTimeout(()=>controller.abort(),5000);
-      const rr=await fetch(url,{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,Accept:'application/json'},cache:'no-store',signal:controller.signal});
-      clearTimeout(timer);
-      const arr=rr.ok?await rr.json():[];
-      respuesta={data:Array.isArray(arr)&&arr[0]?arr[0]:null,error:rr.ok?null:new Error('HTTP '+rr.status)};
-    }catch(e){respuesta={data:null,error:e}}
-    if(!respuesta.error && respuesta.data)break;
-    if(intento<3)await new Promise(resolve=>setTimeout(resolve,400*intento));
+  const cachedRifa=window.__rifaDetalleCache?.[String(requestedRifa)];
+  if(cachedRifa){
+    respuesta={data:cachedRifa,error:null};
+  }else{
+    for(let intento=1;intento<=2;intento++){
+      try{
+        const url=SUPABASE_URL+'/rest/v1/rifas?select=*&id=eq.'+encodeURIComponent(requestedRifa)+'&limit=1';
+        const controller=new AbortController();
+        const timer=setTimeout(()=>controller.abort(),3500);
+        const rr=await fetch(url,{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,Accept:'application/json'},cache:'no-store',signal:controller.signal});
+        clearTimeout(timer);
+        const arr=rr.ok?await rr.json():[];
+        respuesta={data:Array.isArray(arr)&&arr[0]?arr[0]:null,error:rr.ok?null:new Error('HTTP '+rr.status)};
+      }catch(e){respuesta={data:null,error:e}}
+      if(!respuesta.error && respuesta.data)break;
+      if(intento<2)await new Promise(resolve=>setTimeout(resolve,200));
+    }
   }
   r=respuesta?.data||null; errorRe=respuesta?.error||null;
+  if(r){
+    window.__rifaDetalleCache=window.__rifaDetalleCache||{};
+    window.__rifaDetalleCache[String(r.id)]=r;
+  }
   if(loadSeq!==cargarRifaSeq)return;
   // Los botones públicos siempre deben apuntar al ID vigente de cada bloque.
   Object.entries(mapaRutas).forEach(([grupo,id])=>{
@@ -1016,7 +1031,7 @@ async function cargarRifa(){
     document.querySelectorAll('.raffle-link[data-grupo="'+grupo+'"]').forEach(a=>{
       a.dataset.rifa=id;
       a.href='?rifa='+encodeURIComponent(id);
-      a.onclick=ev=>{ev.preventDefault();window.location.assign('?rifa='+encodeURIComponent(id));};
+      a.onclick=ev=>{ev.preventDefault();cambiarRifaRapido(id).catch(()=>{});};
     });
   });
   window.__ordenRifasActuales=Object.values(mapaRutas).filter(Boolean);
@@ -1399,6 +1414,22 @@ async function confirmar(e){
   await cargarRifa();
 }
 
+// Cambio rápido entre sorteos: conserva la página viva y evita una recarga completa.
+async function cambiarRifaRapido(id){
+  const next=String(id||'');
+  if(!next)return;
+  const actual=String(rifa?.id||new URLSearchParams(window.location.search).get('rifa')||'');
+  if(next===actual)return;
+  const url=new URL(window.location.href);
+  url.searchParams.set('rifa',next);
+  url.hash='';
+  history.pushState({rifa:next},'',url.href);
+  document.querySelectorAll('.modal.open,.draw-public.open').forEach(x=>x.classList.remove('open'));
+  document.querySelectorAll('.raffle-link[data-rifa]').forEach(a=>a.classList.toggle('loading',String(a.dataset.rifa)===next));
+  await cargarRifa();
+  document.querySelectorAll('.raffle-link[data-rifa]').forEach(a=>a.classList.remove('loading'));
+}
+
 // Navegación entre rifas: los enlaces usan navegación nativa para evitar que un fallo
 // de JavaScript impida cambiar de sorteo. Al cargar la nueva rifa, cargarRifa()
 // marca automáticamente el sorteo activo en verde.
@@ -1408,7 +1439,7 @@ document.querySelectorAll('.raffle-link[data-rifa]').forEach(link=>{
     link.classList.add('loading');
   });
 });
-window.addEventListener('popstate',()=>cargarRifa());
+window.addEventListener('popstate',()=>cargarRifa().catch(()=>{}));
 
 const topRaffles=document.getElementById('topRaffles');
 const ordenRifas=window.__ordenRifasActuales?.length
@@ -1422,12 +1453,7 @@ topRaffles?.addEventListener('click',e=>{
   const orden=window.__ordenRifasActuales?.length?window.__ordenRifasActuales:ordenRifas;
   const indice=orden.indexOf(actual);
   const siguiente=orden[(indice+1+orden.length)%orden.length];
-  // Usamos el mismo parámetro ?rifa= que ya utiliza el menú de sorteos.
-  // Así funciona igual en GitHub Pages, Cloudflare Pages y en cualquier navegador.
-  const url=new URL(window.location.href);
-  url.searchParams.set('rifa',siguiente);
-  url.hash='';
-  window.location.href=url.href;
+  cambiarRifaRapido(siguiente).catch(()=>{});
 });
 document.getElementById('topContinue')?.addEventListener('click',e=>{
   e.preventDefault();
@@ -1443,6 +1469,11 @@ modal.addEventListener('click',e=>{
 });
 cargarRifa().then(()=>{
   actualizarBotonRecuperar();
+  // Precalentar los números de los otros sorteos para que el primer cambio sea inmediato.
+  setTimeout(()=>{
+    const ids=Object.values(window.__rifasActuales||{}).filter(Boolean);
+    Promise.all(ids.map(id=>cargarNumerosPublico(id,false))).catch(()=>{});
+  },900);
 }).catch(()=>{
   raffleName.textContent='No se pudo cargar el sorteo';
   priceEl.textContent='Intenta actualizar la página';
