@@ -500,7 +500,6 @@ body{overflow-x:hidden}
   <a class="btn" id="mpPayBtn" href="#" target="_blank" rel="noopener" style="display:none;width:100%;margin-top:8px">💳 Pagar con Mercado Pago</a>
 </div>
 <a class="btn" id="waConfirm" href="#" target="_blank" rel="noopener" style="display:inline-block;margin:8px 4px">📲 Enviar solicitud por WhatsApp</a><br>
-<button class="btn" id="addMoreNumbersBtn" type="button" onclick="agregarMasNumeros()" style="margin:8px 4px;background:#171717;color:#f5d36a;border:1px solid #d9a936">➕ Agregar más números</button><br>
 <button class="btn" id="confirmCloseBtn" onclick="cerrarFormulario()" style="margin:8px 4px" title="Primero envía la solicitud por WhatsApp">Cerrar</button>
 </div>
 </div>
@@ -1197,20 +1196,6 @@ function construirMensajeSolicitudes(lista){
   const money=String.fromCharCode(36);
   return '🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado:\n\n🎫 '+rifaNombre+'\n👤 Nombre: '+nombre+'\n🔢 Números: '+displayNumbers+'\n💰 Total: '+money+total.toLocaleString('es-MX')+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
 }
-function agregarMasNumeros(){
-  const pendientes=obtenerSolicitudesPendientes().filter(p=>!rifa||String(p.rifaId)===String(rifa.id));
-  if(!pendientes.length)return;
-  try{localStorage.setItem('rifando_modo_agregar','1')}catch(e){}  solicitudPendiente=false;
-  sel.clear();
-  update();
-  modal.classList.remove('open');
-  confirmation.classList.remove('show');
-  formView.style.display='';
-  document.getElementById('modalClose')?.classList.remove('locked-close');
-  document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
-  document.getElementById('addMoreNumbersBtn')?.classList.remove('locked-close');
-  cargarRifa().catch(()=>{});
-}
 async function manejarRetornoMercadoPago(){
   const params=new URLSearchParams(window.location.search);
   const retorno=params.get('mp_return');
@@ -1230,8 +1215,7 @@ async function manejarRetornoMercadoPago(){
     if(retorno==='success' && response.ok && estado==='confirmado'){
       try{
         localStorage.removeItem('rifando_pendiente_whatsapp');
-        localStorage.removeItem('rifando_modo_agregar');
-      }catch(e){}
+          }catch(e){}
       solicitudPendiente=false;
       sel.clear();
       confirmation.classList.remove('show');
@@ -1266,17 +1250,6 @@ function restaurarSolicitudPendiente(){
     const pendientes=obtenerSolicitudesPendientes();
     const pendientesRifa=pendientes.filter(p=>rifa&&p&&String(p.rifaId)===String(rifa.id));
     if(!pendientesRifa.length)return;
-    const modoAgregar=localStorage.getItem('rifando_modo_agregar')==='1';
-    if(modoAgregar){
-      // El modo "Agregar más números" solo es válido para la siguiente
-      // selección. Si la página fue recargada antes de confirmar, se cancela
-      // para evitar que una reserva vieja se mezcle con una selección nueva.
-      try{localStorage.removeItem('rifando_modo_agregar')}catch(e){}
-      solicitudPendiente=false;
-      sel.clear();
-      update();
-      return;
-    }
     const numerosPendientes=[...new Set(pendientesRifa.flatMap(p=>String(p.numbers||'').split(',').map(x=>parseInt(x.trim(),10)).filter(Number.isFinite)))].sort((a,b)=>a-b);
     sel=new Set(numerosPendientes);
     solicitudPendiente=true;
@@ -1326,7 +1299,6 @@ async function confirmar(e){
   const name=nombre.value.trim();
   const phone=whatsapp.value.trim();
   const email='';
-  const modoAgregar=localStorage.getItem('rifando_modo_agregar')==='1';
   if(!name||!phone){
     alert('Completa tu nombre y WhatsApp, compa.');
     return;
@@ -1338,8 +1310,7 @@ async function confirmar(e){
     p_nombre:name,
     p_whatsapp:phone,
     p_correo:email,
-    p_numeros:selected,
-    p_consolidar:modoAgregar
+    p_numeros:selected
   });
   if(error){
     alert('No se pudo apartar: '+error.message);
@@ -1429,7 +1400,7 @@ async function confirmar(e){
     document.getElementById('modalClose')?.classList.remove('locked-close');
     document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
 
-    try{localStorage.removeItem('rifando_pendiente_whatsapp');localStorage.removeItem('rifando_modo_agregar')}catch(e){}
+    try{localStorage.removeItem('rifando_pendiente_whatsapp')}catch(e){}
     confirmWhatsAppClicked=false;
 
     setTimeout(()=>cargarRifa().catch(()=>{}),100);
