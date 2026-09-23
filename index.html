@@ -1398,7 +1398,6 @@ modal.addEventListener('click',e=>{
   if(e.target===modal) cerrarFormulario();
 });
 cargarRifa().then(()=>{
-  restaurarSolicitudPendiente();
 }).catch(()=>{
   raffleName.textContent='No se pudo cargar el sorteo';
   priceEl.textContent='Intenta actualizar la página';
