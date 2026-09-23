@@ -1,6 +1,10 @@
 const SUPABASE_URL = 'https://iaviafijfdqinehcfebr.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_OOyCaQno11jdZhXkmZvd3w_Wl6PjmES';
 
+export async function onRequestOptions() {
+  return new Response(null, { status: 204, headers: { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET, OPTIONS', 'access-control-allow-headers': 'Accept, Content-Type', 'access-control-max-age': '86400' } });
+}
+
 export async function onRequestGet({ request }) {
   const incoming = new URL(request.url);
   const rifaId = incoming.searchParams.get('rifa_id');
@@ -32,7 +36,10 @@ export async function onRequestGet({ request }) {
       status: response.status,
       headers: {
         'content-type': response.headers.get('content-type') || 'application/json; charset=utf-8',
-        'cache-control': 'no-store, max-age=0'
+        'cache-control': 'no-store, max-age=0',
+        'access-control-allow-origin': '*',
+        'access-control-allow-methods': 'GET, OPTIONS',
+        'access-control-allow-headers': 'Accept, Content-Type'
       }
     });
   } catch (error) {
