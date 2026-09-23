@@ -497,8 +497,7 @@ body{overflow-x:hidden}
     const selected=window.__raEarlySelected instanceof Set ? Array.from(window.__raEarlySelected).map(Number).filter(Number.isFinite) : [];
     if(!selected.length){
       alert('Primero elige al menos un número, compa.');
-      return false;    }
-    const modal=document.getElementById('modal');
+      return false;    }    const modal=document.getElementById('modal');
     const formView=document.getElementById('formView');
     const confirmation=document.getElementById('confirmation');
     const formNumbers=document.getElementById('formNumbers');
@@ -663,6 +662,23 @@ let realtimeChannel=null;let drawPublicChannel=null;let drawAnimationTimer=null;
 
 function nums(){
   return Array.from(sel).sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0'));
+}
+async function rpcPublico(nombre,params){
+  const url=SUPABASE_URL+'/rest/v1/rpc/'+encodeURIComponent(nombre);
+  const res=await fetch(url,{
+    method:'POST',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Accept':'application/json'},
+    cache:'no-store',
+    body:JSON.stringify(params)
+  });
+  const text=await res.text();
+  let data=null;
+  try{data=text?JSON.parse(text):null}catch(_e){}
+  if(!res.ok){
+    const msg=data?.message||data?.hint||data?.details||('HTTP '+res.status);
+    throw new Error(String(msg));
+  }
+  return data;
 }
 function update(){
   count.textContent=sel.size;
@@ -997,8 +1013,7 @@ async function cargarNumerosPublico(rifaId){
         'apikey':SUPABASE_KEY,
         'Authorization':'Bearer '+SUPABASE_KEY,
         'Accept':'application/json'      },
-      cache:'no-store',
-      signal:controller.signal
+      cache:'no-store',      signal:controller.signal
     });
     clearTimeout(timer);
     if(!res.ok) throw new Error('HTTP '+res.status);
@@ -1497,8 +1512,7 @@ function restaurarSolicitudPendiente(){
     document.getElementById('confirmNumbers').textContent=numerosPendientes.map(n=>String(n).padStart(2,'0')).join(', ');
     document.getElementById('confirmTotal').textContent='    bloquearNuevaSeleccion(true);
     const waConfirm=document.getElementById('waConfirm');
-    waConfirm.href='https://wa.me/528123859824?text='+encodeURIComponent(construirMensajeSolicitudes(pendientesRifa));
-    confirmWhatsAppClicked=false;
+    waConfirm.href='https://wa.me/528123859824?text='+encodeURIComponent(construirMensajeSolicitudes(pendientesRifa));    confirmWhatsAppClicked=false;
     waConfirm.onclick=()=>{
       if(confirmWhatsAppClicked)return false;
       confirmWhatsAppClicked=true;
@@ -1687,23 +1701,23 @@ async function confirmar(e){
   let error=null;
 
   if(modoAgregar){
-    const respuesta=await db.rpc('agregar_numeros_a_pago_pendiente',{
-      p_pago_id:pendingPayment.pagoId,
-      p_payment_token:pendingPayment.paymentToken,
-      p_numeros:selected
-    });
-    data=respuesta.data;
-    error=respuesta.error;
+    try{
+      data=await rpcPublico('agregar_numeros_a_pago_pendiente',{
+        p_pago_id:pendingPayment.pagoId,
+        p_payment_token:pendingPayment.paymentToken,
+        p_numeros:selected
+      });
+    }catch(err){error=err;}
   }else{
-    const respuesta=await db.rpc('apartar_numeros',{
-      p_rifa_id:rifa.id,
-      p_nombre:name,
-      p_whatsapp:phone,
-      p_correo:email,
-      p_numeros:selected
-    });
-    data=respuesta.data;
-    error=respuesta.error;
+    try{
+      data=await rpcPublico('apartar_numeros',{
+        p_rifa_id:rifa.id,
+        p_nombre:name,
+        p_whatsapp:phone,
+        p_correo:email,
+        p_numeros:selected
+      });
+    }catch(err){error=err;}
   }
 
   if(error){
