@@ -952,6 +952,7 @@ async function cargarRifa(){
     return;
   }
   rifa=r;
+  await refrescarNumerosPublico(r.id);
   activarTiempoReal();
   document.querySelectorAll('.raffle-link[data-rifa]').forEach(a=>a.classList.remove('active'));
   const activeRaffleLink=document.querySelector('.raffle-link[data-rifa="'+CSS.escape(String(r.id))+'"]');
