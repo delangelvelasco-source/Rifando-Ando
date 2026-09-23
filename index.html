@@ -1227,7 +1227,7 @@ async function manejarRetornoMercadoPago(){
     const data=await response.json().catch(()=>({}));
     const estado=String(data?.estado||'').toLowerCase();
 
-    if(retorno==='success' && response.ok && (estado==='confirmado'||data?.ok===true)){
+    if(retorno==='success' && response.ok && estado==='confirmado'){
       try{
         localStorage.removeItem('rifando_pendiente_whatsapp');
         localStorage.removeItem('rifando_modo_agregar');
