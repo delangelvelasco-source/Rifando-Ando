@@ -497,8 +497,7 @@ body{overflow-x:hidden}
     const selected=window.__raEarlySelected instanceof Set ? Array.from(window.__raEarlySelected).map(Number).filter(Number.isFinite) : [];
     if(!selected.length){
       alert('Primero elige al menos un número, compa.');
-      return false;    }    const modal=document.getElementById('modal');    const formView=document.getElementById('formView');
-    const confirmation=document.getElementById('confirmation');
+      return false;    }    const modal=document.getElementById('modal');    const formView=document.getElementById('formView');    const confirmation=document.getElementById('confirmation');
     const formNumbers=document.getElementById('formNumbers');
     if(formNumbers)formNumbers.textContent=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');
     if(formView)formView.style.display='';
@@ -535,7 +534,7 @@ body{overflow-x:hidden}
 <div id="formView">
 <h2>Confirma tus números 🎟️</h2>
 <div class="notice">Tu selección será una <b>solicitud de apartado</b>.</div>
-<form onsubmit="confirmar(event)">
+<form id="purchaseForm" onsubmit="event.preventDefault(); confirmar(event); return false;">
 <div class="field"><label>👤 Nombre y primer apellido</label><input id="nombre" required maxlength="60" placeholder="Ejemplo: Juan Pérez" autocomplete="name"></div>
 <div class="field"><label>📱 Número de WhatsApp</label><input id="whatsapp" required type="tel" maxlength="20" placeholder="Ejemplo: 812 123 4567" autocomplete="tel" inputmode="tel"></div>
 <p>Tu selección: <span class="numbers" id="formNumbers"></span></p>
@@ -997,8 +996,7 @@ async function refrescarNumerosPublico(rifaId){
   actualizarWhatsAppAyuda();
   if(solicitudPendiente)bloquearNuevaSeleccion(true);
 }
-async function cargarNumerosPublico(rifaId){
-  const cache=numerosCacheMemoria.get(String(rifaId));
+async function cargarNumerosPublico(rifaId){  const cache=numerosCacheMemoria.get(String(rifaId));
   if(cache && Date.now()-cache.at<15000) return {data:cache.data,error:null};
 
   const controller=new AbortController();
@@ -1497,8 +1495,7 @@ function restaurarSolicitudPendiente(){
     if(modoAgregar){
       solicitudPendiente=false;      sel.clear();
       update();
-      return;
-    }
+      return;    }
     const numerosPendientes=[...new Set(pendientesRifa.flatMap(p=>String(p.numbers||'').split(',').map(x=>parseInt(x.trim(),10)).filter(Number.isFinite)))].sort((a,b)=>a-b);
     sel=new Set(numerosPendientes);
     solicitudPendiente=true;
@@ -1915,7 +1912,8 @@ async function confirmar(e){
   sel.clear();
   btn.disabled=false;
   btn.textContent='Solicitar apartado';
-  await cargarRifa();
+  // No recargamos la rifa aquí: hacerlo inmediatamente después de enviar
+  // podía devolver el scroll al inicio y hacer parecer que el formulario se perdió.
 }
 // Navegación entre rifas: los enlaces usan navegación nativa para evitar que un fallo
 // de JavaScript impida cambiar de sorteo. Al cargar la nueva rifa, cargarRifa()
