@@ -957,12 +957,35 @@ async function cargarRifa(){
   let r=null,errorRe=null;
   let respuesta=null;
   for(let intento=1;intento<=3;intento++){
-    respuesta=await db.from('rifas').select('*').eq('id',requestedRifa).maybeSingle();
-    if(!respuesta.error && respuesta.data)break;
-    if(intento<3)await new Promise(resolve=>setTimeout(resolve,500*intento));
+    try{
+      const consulta=db.from('rifas').select('*').eq('id',requestedRifa).maybeSingle();
+      const timeout=new Promise(resolve=>setTimeout(()=>resolve({data:null,error:{message:'timeout_rifa'}}),7000));
+      respuesta=await Promise.race([consulta,timeout]);
+    }catch(e){respuesta={data:null,error:e}}
+    if(!respuesta?.error && respuesta?.data)break;
+    errorRe=respuesta?.error||null;
+    if(intento<3)await new Promise(resolve=>setTimeout(resolve,400*intento));
   }
   r=respuesta?.data||null; errorRe=respuesta?.error||null;
   if(loadSeq!==cargarRifaSeq)return;
+
+  // Si Supabase no responde a la consulta de la ficha de la rifa, no dejar
+  // la cuadrícula bloqueada indefinidamente: usamos los datos públicos conocidos
+  // del sorteo solicitado y seguimos directamente a cargar los números.
+  if(!r && datosBase[requestedRifa]){
+    const b=datosBase[requestedRifa];
+    const precioBase=Number(String(b.boleto).replace(/[^0-9.]/g,''));
+    r={
+      id:requestedRifa,
+      nombre:b.nombre,
+      precio_numero:Number.isFinite(precioBase)?precioBase:0,
+      premio:b.premio,
+      estado:'activa',
+      metodo_sorteo:'interno',
+      codigo_sorteo:requestedRifa==='4b23f516-7973-4a04-bff6-9b9b5cb90f4d'?'RA-0002':null
+    };
+    errorRe=null;
+  }
   // Los botones públicos siempre deben apuntar al ID vigente de cada bloque.
   Object.entries(mapaRutas).forEach(([grupo,id])=>{
     if(!id)return;
