@@ -1587,9 +1587,11 @@ function restaurarSolicitudPendiente(){
   }catch(e){}
 }
 function cerrarFormulario(){
-  if(confirmation.classList.contains('show')&&!confirmWhatsAppClicked)return;
   modal.classList.remove('open');
-  confirmWhatsAppClicked=false;  document.getElementById('modalClose')?.classList.remove('locked-close');
+  confirmation.classList.remove('show');
+  if(typeof formView!=='undefined'&&formView) formView.style.display='';
+  confirmWhatsAppClicked=false;
+  document.getElementById('modalClose')?.classList.remove('locked-close');
   document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
 }
 async function reconciliarPagoDesdeRetorno(){
