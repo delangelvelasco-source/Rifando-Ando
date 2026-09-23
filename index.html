@@ -1211,6 +1211,56 @@ function agregarMasNumeros(){
   document.getElementById('addMoreNumbersBtn')?.classList.remove('locked-close');
   cargarRifa().catch(()=>{});
 }
+async function manejarRetornoMercadoPago(){
+  const params=new URLSearchParams(window.location.search);
+  const retorno=params.get('mp_return');
+  const paymentId=params.get('pago_id');
+  const paymentToken=params.get('payment_token');
+  if(!retorno||!paymentId||!paymentToken)return false;
+
+  try{
+    const response=await fetch(SUPABASE_URL+'/functions/v1/mercado-pago',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'status',payment_id:paymentId,payment_token:paymentToken})
+    });
+    const data=await response.json().catch(()=>({}));
+    const estado=String(data?.estado||'').toLowerCase();
+
+    if(retorno==='success' && response.ok && (estado==='confirmado'||data?.ok===true)){
+      try{
+        localStorage.removeItem('rifando_pendiente_whatsapp');
+        localStorage.removeItem('rifando_modo_agregar');
+      }catch(e){}
+      solicitudPendiente=false;
+      sel.clear();
+      confirmation.classList.remove('show');
+      formView.style.display='';
+      modal.classList.remove('open');
+      bloquearNuevaSeleccion(false);
+      await cargarRifa();
+      alert('✅ Pago procesado. Tu participación quedó registrada.');
+      return true;
+    }
+
+    if(retorno==='failure'){
+      alert('⚠️ El pago no fue confirmado. Puedes volver a intentarlo mientras tu apartado siga vigente.');
+      return true;
+    }
+
+    if(retorno==='pending'){
+      alert('⏳ El pago quedó pendiente. Aún no se ha confirmado tu participación.');
+      return true;
+    }
+  }catch(e){
+    if(retorno==='success'){
+      alert('⚠️ Regresaste de Mercado Pago, pero todavía no pudimos confirmar el pago. Actualiza en unos segundos para verificarlo.');
+      return true;
+    }
+  }
+  return true;
+}
+
 function restaurarSolicitudPendiente(){
   try{
     const pendientes=obtenerSolicitudesPendientes();
@@ -1437,8 +1487,9 @@ document.getElementById('shareRaffle')?.addEventListener('click',compartirRifa);
 modal.addEventListener('click',e=>{
   if(e.target===modal) cerrarFormulario();
 });
-cargarRifa().then(()=>{
-  restaurarSolicitudPendiente();
+cargarRifa().then(async()=>{
+  const retornoMercadoPago=await manejarRetornoMercadoPago();
+  if(!retornoMercadoPago) restaurarSolicitudPendiente();
 }).catch(()=>{
   raffleName.textContent='No se pudo cargar el sorteo';
   priceEl.textContent='Intenta actualizar la página';
