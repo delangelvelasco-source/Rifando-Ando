@@ -845,13 +845,17 @@ async function refrescarNumerosPublico(rifaId){
 async function cargarNumerosPublico(rifaId){
   let ultimoError=null;
   for(let intento=1;intento<=3;intento++){
-    const {data,error}=await db.from('numeros')
-      .select('numero,estado,apartado_hasta')
-      .eq('rifa_id',rifaId)
-      .order('numero');
-    if(!error) return {data,error:null};
-    ultimoError=error;
-    if(intento<3) await new Promise(resolve=>setTimeout(resolve,500*intento));
+    try{
+      const p=db.from('numeros')
+        .select('numero,estado,apartado_hasta')
+        .eq('rifa_id',rifaId)
+        .order('numero');
+      const timeout=new Promise(resolve=>setTimeout(()=>resolve({data:null,error:{message:'timeout'}}),7000));
+      const respuesta=await Promise.race([p,timeout]);
+      if(!respuesta.error) return {data:respuesta.data||[],error:null};
+      ultimoError=respuesta.error;
+    }catch(e){ultimoError=e}
+    if(intento<3)await new Promise(resolve=>setTimeout(resolve,400));
   }
   return {data:null,error:ultimoError};
 }
@@ -867,9 +871,13 @@ async function cargarRifa(){
   let rifasActuales={};
   let listaActuales=null;
   for(let intento=1;intento<=3;intento++){
-    const respuesta=await db.from('rifas').select('id,grupo_rifa,estado,numero_sorteo,created_at').in('grupo_rifa',Object.values(gruposRifa)).order('created_at',{ascending:false});
-    if(!respuesta.error){listaActuales=respuesta.data||[];break}
-    if(intento<3)await new Promise(resolve=>setTimeout(resolve,500*intento));
+    try{
+      const p=db.from('rifas').select('id,grupo_rifa,estado,numero_sorteo,created_at').in('grupo_rifa',Object.values(gruposRifa)).order('created_at',{ascending:false});
+      const timeout=new Promise(resolve=>setTimeout(()=>resolve({data:null,error:{message:'timeout'}}),7000));
+      const respuesta=await Promise.race([p,timeout]);
+      if(!respuesta.error){listaActuales=respuesta.data||[];break}
+    }catch(e){}
+    if(intento<3)await new Promise(resolve=>setTimeout(resolve,400));
   }
   (listaActuales||[]).forEach(x=>{if(x.grupo_rifa&&!rifasActuales[x.grupo_rifa])rifasActuales[x.grupo_rifa]=x;});
   Object.keys(mapaRutas).forEach(k=>{if(rifasActuales[k]?.id)mapaRutas[k]=rifasActuales[k].id;});
