@@ -459,101 +459,108 @@ body{overflow-x:hidden}
 <section class="section" id="numeros">
 <h2>Elige tus números</h2><div class="legend"><span><i class="lg-green"></i>Disponible</span><span><i class="lg-yellow"></i>Seleccionado</span><span><i class="lg-orange"></i>En proceso de compra</span><span><i class="lg-gray"></i>Vendido</span></div>
 <script>
-/* Carga de emergencia de la parrilla: no depende del SDK de Supabase ni de config.js. */
 (function(){
-  function init(){
   const RIFA_ID='4b23f516-7973-4a04-bff6-9b9b5cb90f4d';
   const API='https://iaviafijfdqinehcfebr.supabase.co';
   const KEY='sb_publishable_OOyCaQno11jdZhXkmZvd3w_Wl6PjmES';
-  const box=document.getElementById('tickets');
-  if(!box)return;
-  function pintar(data){
-    if(!Array.isArray(data)||!data.length)return;
-    const frag=document.createDocumentFragment();
-    data.forEach(x=>{
-      const n=Number(x.numero);
-      const free=x.estado==='disponible'||(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)<=new Date());
-      const b=document.createElement('button');
-      b.type='button';
-      b.className='ticket '+(free?'available':(x.estado==='apartado'?'pending':'sold'));
-      b.textContent=String(n).padStart(2,'0');
-      b.disabled=!free;
-      if(free)b.addEventListener('click',()=>{
-        if(window.__raEarlySelected.has(n)){window.__raEarlySelected.delete(n);b.classList.remove('selected')}
-        else{window.__raEarlySelected.add(n);b.classList.add('selected')}
-        if(typeof window.__raSyncEarlySelection==='function')window.__raSyncEarlySelection(window.__raEarlySelected);
-        const count=document.getElementById('count'),total=document.getElementById('total');
-        if(count)count.textContent=String(window.__raEarlySelected.size);
-        if(total)total.textContent=(window.__raEarlySelected.size*15).toLocaleString('es-MX');
-      });
-      frag.appendChild(b);
-    });
-    box.replaceChildren(frag);
-    const c=document.getElementById('ticketInfoCount'); if(c)c.textContent=String(data.length);
+  window.__raEarlySelected=window.__raEarlySelected||new Set();
+
+  function syncUI(){
+    const nums=Array.from(window.__raEarlySelected).map(Number).sort((a,b)=>a-b);
+    const c=document.getElementById('count'),t=document.getElementById('total'),f=document.getElementById('formNumbers');
+    if(c)c.textContent=String(nums.length);
+    if(t)t.textContent=(nums.length*15).toLocaleString('es-MX');
+    if(f)f.textContent=nums.map(n=>String(n).padStart(2,'0')).join(', ');
   }
-  window.__raEarlySelected=new Set();
+
+  window.__raOpenFormEmergency=function(ev){
+    ev?.preventDefault();ev?.stopPropagation();
+    const nums=Array.from(window.__raEarlySelected).map(Number).sort((a,b)=>a-b);
+    if(!nums.length){alert('Primero elige al menos un número.');return false;}
+    const modal=document.getElementById('modal');
+    const form=document.getElementById('formView');
+    const confirmation=document.getElementById('confirmation');
+    const fn=document.getElementById('formNumbers');
+    if(fn)fn.textContent=nums.map(n=>String(n).padStart(2,'0')).join(', ');
+    if(form)form.style.display='';
+    if(confirmation)confirmation.classList.remove('show');
+    if(modal){modal.classList.add('open');modal.style.zIndex='2000';}
+    return false;
+  };
+
   window.__raSubmitApartado=async function(btn){
-    const selected=Array.from(window.__raEarlySelected||[]).map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
+    const nums=Array.from(window.__raEarlySelected).map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
     const name=(document.getElementById('nombre')?.value||'').trim();
     const phone=(document.getElementById('whatsapp')?.value||'').trim();
-    if(!selected.length){alert('Primero elige al menos un número.');return false;}
-    if(!name||!phone){
-      document.getElementById('purchaseForm')?.reportValidity?.();
-      return false;
-    }
+    if(!nums.length){alert('Primero elige al menos un número.');return false;}
+    if(!name||!phone){document.getElementById('purchaseForm')?.reportValidity?.();return false;}
     if(btn){btn.disabled=true;btn.textContent='Procesando apartado…';}
-    const RIFA_ID='4b23f516-7973-4a04-bff6-9b9b5cb90f4d';
-    const API='https://iaviafijfdqinehcfebr.supabase.co';
-    const KEY='sb_publishable_OOyCaQno11jdZhXkmZvd3w_Wl6PjmES';
     try{
       const res=await fetch(API+'/rest/v1/rpc/apartar_numeros',{
         method:'POST',
         headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json',Accept:'application/json'},
         cache:'no-store',
-        body:JSON.stringify({p_rifa_id:RIFA_ID,p_nombre:name,p_whatsapp:phone,p_correo:'',p_numeros:selected})
+        body:JSON.stringify({p_rifa_id:RIFA_ID,p_nombre:name,p_whatsapp:phone,p_correo:'',p_numeros:nums})
       });
       const raw=await res.text();
       let data=null;try{data=raw?JSON.parse(raw):null}catch(_e){}
       if(!res.ok)throw new Error(data?.message||data?.hint||data?.details||('HTTP '+res.status));
       if(Array.isArray(data))data=data[0]||null;
       if(!data?.pago_id||!data?.payment_token)throw new Error('La reserva se creó sin datos de pago.');
-      const total=selected.length*15;
+      const numbers=nums.map(n=>String(n).padStart(2,'0')).join(', ');
+      const total=nums.length*15;
       let checkout='';
       try{
-        const pr=await fetch(API+'/functions/v1/mercado-pago',{
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({payment_id:String(data.pago_id),payment_token:String(data.payment_token)})
-        });
+        const pr=await fetch(API+'/functions/v1/mercado-pago',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({payment_id:String(data.pago_id),payment_token:String(data.payment_token)})});
         const pd=await pr.json().catch(()=>({}));
         if(pr.ok&&pd.checkout_url)checkout=pd.checkout_url;
       }catch(_e){}
-      const nums=selected.map(n=>String(n).padStart(2,'0')).join(', ');
-      const modal=document.getElementById('modal');
-      const formView=document.getElementById('formView');
-      const confirmation=document.getElementById('confirmation');
-      document.getElementById('confirmName').textContent=name;
-      document.getElementById('confirmNumbers').textContent=nums;
-      document.getElementById('confirmTotal').textContent='  window.__raOpenFormEmergency=function(ev){
-    if(ev){ev.preventDefault();ev.stopPropagation();}
-    const selected=window.__raEarlySelected instanceof Set ? Array.from(window.__raEarlySelected).map(Number).filter(Number.isFinite) : [];
-    if(!selected.length){
-      alert('Primero elige al menos un número, compa.');
-      return false;    }    const modal=document.getElementById('modal');    const formView=document.getElementById('formView');    const confirmation=document.getElementById('confirmation');    const formNumbers=document.getElementById('formNumbers');    if(formNumbers)formNumbers.textContent=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');    if(formView)formView.style.display='';
-    if(confirmation)confirmation.classList.remove('show');
-    if(modal){modal.classList.add('open');modal.style.zIndex='2000';}
+      const cn=document.getElementById('confirmName'),cnum=document.getElementById('confirmNumbers'),ct=document.getElementById('confirmTotal');
+      if(cn)cn.textContent=name;if(cnum)cnum.textContent=numbers;if(ct)ct.textContent='$'+total.toLocaleString('es-MX');
+      const box=document.getElementById('paymentBox'),msg=document.getElementById('paymentMsg'),mp=document.getElementById('mpPayBtn'),wa=document.getElementById('waConfirm');
+      if(box)box.style.display='block';
+      if(msg)msg.textContent=checkout?'Tu apartado queda reservado durante 30 minutos. Completa el pago.':'Apartado creado. Continúa por WhatsApp para coordinar el pago.';
+      if(mp){mp.style.display=checkout?'block':'none';if(checkout)mp.href=checkout;}
+      if(wa){wa.href='https://wa.me/528123859824?text='+encodeURIComponent('Hola, quiero confirmar mi apartado en Rifando Ando. Nombre: '+name+' | Números: '+numbers+' | Total: $'+total);wa.style.display='inline-block';}
+      document.getElementById('formView').style.display='none';
+      document.getElementById('confirmation').classList.add('show');
+      document.getElementById('modal').classList.add('open');
+      if(btn){btn.disabled=false;btn.textContent='Solicitar apartado';}
+    }catch(err){
+      console.error('apartado',err);
+      alert('No se pudo crear el apartado.\n\n'+String(err?.message||err||'Error desconocido'));
+      if(btn){btn.disabled=false;btn.textContent='Solicitar apartado';}
+    }
     return false;
   };
-  fetch(API+'/rest/v1/numeros?select=numero,estado,apartado_hasta&rifa_id=eq.'+encodeURIComponent(RIFA_ID)+'&order=numero.asc',{
-    headers:{apikey:KEY,Authorization:'Bearer '+KEY,Accept:'application/json'},cache:'no-store'
-  }).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()})
-    .then(pintar)
-    .catch(()=>{});
-  }  if(document.readyState==='loading'){    document.addEventListener('DOMContentLoaded',init,{once:true});  }else{
-    init();
+
+  function paint(data){
+    const box=document.getElementById('tickets');
+    if(!box||!Array.isArray(data)||!data.length)return;
+    const frag=document.createDocumentFragment();
+    data.forEach(x=>{
+      const n=Number(x.numero);
+      const free=x.estado==='disponible'||(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)<=new Date());
+      const b=document.createElement('button');
+      b.type='button';b.className='ticket '+(free?'available':(x.estado==='apartado'?'pending':'sold'));b.textContent=String(n).padStart(2,'0');b.disabled=!free;
+      if(free)b.onclick=()=>{
+        if(window.__raEarlySelected.has(n)){window.__raEarlySelected.delete(n);b.classList.remove('selected')}
+        else{window.__raEarlySelected.add(n);b.classList.add('selected')}
+        syncUI();
+      };
+      frag.appendChild(b);
+    });
+    box.replaceChildren(frag);syncUI();
+    const info=document.getElementById('ticketInfoCount');if(info)info.textContent=String(data.length);
   }
+  function init(){
+    const box=document.getElementById('tickets');if(!box)return;
+    fetch(API+'/rest/v1/numeros?select=numero,estado,apartado_hasta&rifa_id=eq.'+encodeURIComponent(RIFA_ID)+'&order=numero.asc',{headers:{apikey:KEY,Authorization:'Bearer '+KEY,Accept:'application/json'},cache:'no-store'})
+      .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(paint).catch(console.error);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
-</script><div class="tickets-zone" id="ticketsZone"><div class="tickets" id="tickets"><p style="color:#aaa">Cargando números...</p></div><div id="ventasCerradasOverlay" class="ventas-cerradas-overlay" aria-hidden="true"><div class="ventas-cerradas-card"><div class="ventas-lock">🔒</div><h3>VENTAS CERRADAS</h3><p id="ventasCerradasText">El sistema está en mantenimiento.</p><small id="ventasCerradasThanks">Gracias por tu comprensión.</small></div></div></div>
+</script></script><div class="tickets-zone" id="ticketsZone"><div class="tickets" id="tickets"><p style="color:#aaa">Cargando números...</p></div><div id="ventasCerradasOverlay" class="ventas-cerradas-overlay" aria-hidden="true"><div class="ventas-cerradas-card"><div class="ventas-lock">🔒</div><h3>VENTAS CERRADAS</h3><p id="ventasCerradasText">El sistema está en mantenimiento.</p><small id="ventasCerradasThanks">Gracias por tu comprensión.</small></div></div></div>
 <div class="summary"><div>Números: <b class="gold" id="count">0</b> · Total: <b class="gold">$<span id="total">0</span></b></div>
 <button class="btn" id="summaryContinue" type="button" onclick="if(window.__raOpenFormEmergency){window.__raOpenFormEmergency(event)}else{abrirFormulario()}">Continuar</button>
 </div>
