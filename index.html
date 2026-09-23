@@ -497,8 +497,7 @@ body{overflow-x:hidden}
     const selected=window.__raEarlySelected instanceof Set ? Array.from(window.__raEarlySelected).map(Number).filter(Number.isFinite) : [];
     if(!selected.length){
       alert('Primero elige al menos un número, compa.');
-      return false;    }    const modal=document.getElementById('modal');
-    const formView=document.getElementById('formView');
+      return false;    }    const modal=document.getElementById('modal');    const formView=document.getElementById('formView');
     const confirmation=document.getElementById('confirmation');
     const formNumbers=document.getElementById('formNumbers');
     if(formNumbers)formNumbers.textContent=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');
@@ -998,7 +997,6 @@ async function refrescarNumerosPublico(rifaId){
   actualizarWhatsAppAyuda();
   if(solicitudPendiente)bloquearNuevaSeleccion(true);
 }
-
 async function cargarNumerosPublico(rifaId){
   const cache=numerosCacheMemoria.get(String(rifaId));
   if(cache && Date.now()-cache.at<15000) return {data:cache.data,error:null};
@@ -1497,8 +1495,7 @@ function restaurarSolicitudPendiente(){
     if(!pendientesRifa.length)return;
     const modoAgregar=sessionStorage.getItem(AGREGAR_SESSION_KEY)==='1';
     if(modoAgregar){
-      solicitudPendiente=false;
-      sel.clear();
+      solicitudPendiente=false;      sel.clear();
       update();
       return;
     }
@@ -1707,6 +1704,7 @@ async function confirmar(e){
         p_payment_token:pendingPayment.paymentToken,
         p_numeros:selected
       });
+      if(Array.isArray(data))data=data[0]||null;
     }catch(err){error=err;}
   }else{
     try{
@@ -1717,14 +1715,19 @@ async function confirmar(e){
         p_correo:email,
         p_numeros:selected
       });
+      if(Array.isArray(data))data=data[0]||null;
     }catch(err){error=err;}
   }
 
   if(error){
-    alert('No se pudo actualizar la compra: '+error.message);
+    const detalle=String(error?.message||error||'Error desconocido');
+    alert('No se pudo crear el apartado.\n\n'+detalle);
+    const paymentBox=document.getElementById('paymentBox');
+    const paymentMsg=document.getElementById('paymentMsg');
+    if(paymentBox)paymentBox.style.display='block';
+    if(paymentMsg)paymentMsg.textContent='No se creó ningún apartado. Corrige los datos o inténtalo nuevamente.';
     btn.disabled=false;
     btn.textContent='Solicitar apartado';
-    await cargarRifa();
     return;
   }
 
@@ -1745,19 +1748,16 @@ async function confirmar(e){
   // número de boletos. Si la respuesta del servidor no coincide, detenemos
   // el flujo en vez de generar un pago incorrecto.
   if(ticketPrice<=0 || !allNumbers.length){
-    alert('No se pudo calcular correctamente el total de la compra. Actualiza la página e inténtalo nuevamente.');
+    alert('No se pudo calcular correctamente el total de la compra.');
     btn.disabled=false;
     btn.textContent='Solicitar apartado';
-    await cargarRifa();
     return;
   }
 
   if(returnedCount && returnedCount!==allNumbers.length){
-    alert('La reserva y la selección no coinciden. No se generará un pago para evitar cobrar una cantidad incorrecta. Actualiza la página y vuelve a intentarlo.');
+    alert('La reserva y la selección no coinciden. No se generará el pago para evitar un cobro incorrecto.');
     btn.disabled=false;
     btn.textContent='Solicitar apartado';
-    sel.clear();
-    await cargarRifa();
     return;
   }
 
@@ -1765,8 +1765,6 @@ async function confirmar(e){
     alert('El total recibido del servidor no coincide con tus números. No se generará el pago para evitar un cobro incorrecto.');
     btn.disabled=false;
     btn.textContent='Solicitar apartado';
-    sel.clear();
-    await cargarRifa();
     return;
   }
 
@@ -1998,14 +1996,3 @@ function iniciarActualizacionesEnSegundoPlano(){
 }
 function detenerActualizacionesEnSegundoPlano(){
   if(segundoPlanoTimer){clearInterval(segundoPlanoTimer);segundoPlanoTimer=null}
-  if(loteriaTimer){clearInterval(loteriaTimer);loteriaTimer=null}
-  if(ganadorTimer){clearInterval(ganadorTimer);ganadorTimer=null}
-}
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible'){
-    ejecutarActualizacionesEnSegundoPlano();
-    iniciarActualizacionesEnSegundoPlano();
-  }else{
-    detenerActualizacionesEnSegundoPlano();
-  }
-});
