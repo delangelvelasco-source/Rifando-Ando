@@ -1268,6 +1268,10 @@ function restaurarSolicitudPendiente(){
     if(!pendientesRifa.length)return;
     const modoAgregar=localStorage.getItem('rifando_modo_agregar')==='1';
     if(modoAgregar){
+      // El modo "Agregar más números" solo es válido para la siguiente
+      // selección. Si la página fue recargada antes de confirmar, se cancela
+      // para evitar que una reserva vieja se mezcle con una selección nueva.
+      try{localStorage.removeItem('rifando_modo_agregar')}catch(e){}
       solicitudPendiente=false;
       sel.clear();
       update();
