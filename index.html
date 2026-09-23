@@ -1386,6 +1386,18 @@ async function manejarRetornoMercadoPago(){
   return true;
 }
 
+async function iniciarPagina(){
+  try{
+    await cargarRifa();
+    await manejarRetornoMercadoPago();
+  }catch(error){
+    console.error('Rifando Ando: error inicial',error);
+    if(tickets){
+      tickets.innerHTML='<div style="grid-column:1/-1;padding:22px;text-align:center;border:1px solid #3a2d0d;border-radius:16px;background:#111"><b style="color:#d9a936">No se pudieron cargar los números.</b><p style="color:#aaa;margin:8px 0 0">Estamos intentando reconectar con el servidor. Actualiza la página en unos segundos.</p></div>';
+    }
+  }
+}
+
 function ejecutarActualizacionesEnSegundoPlano(){
   if(document.visibilityState!=='visible')return;
   revisarPruebaPersistente().catch(()=>{});
