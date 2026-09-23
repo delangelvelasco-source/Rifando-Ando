@@ -1229,13 +1229,10 @@ async function manejarRetornoMercadoPago(){
     }
 
     if(retorno==='failure'){
-      // No mostrar mensaje emergente: el apartado sigue vigente y el cliente
-      // puede volver a abrir el enlace de pago desde WhatsApp.
       return true;
     }
 
     if(retorno==='pending'){
-      // No bloquear ni mostrar alertas; el pago puede confirmarse posteriormente.
       return true;
     }
   }catch(e){
