@@ -497,8 +497,7 @@ body{overflow-x:hidden}
     const selected=window.__raEarlySelected instanceof Set ? Array.from(window.__raEarlySelected).map(Number).filter(Number.isFinite) : [];
     if(!selected.length){
       alert('Primero elige al menos un número, compa.');
-      return false;    }    const modal=document.getElementById('modal');    const formView=document.getElementById('formView');    const confirmation=document.getElementById('confirmation');
-    const formNumbers=document.getElementById('formNumbers');
+      return false;    }    const modal=document.getElementById('modal');    const formView=document.getElementById('formView');    const confirmation=document.getElementById('confirmation');    const formNumbers=document.getElementById('formNumbers');
     if(formNumbers)formNumbers.textContent=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');
     if(formView)formView.style.display='';
     if(confirmation)confirmation.classList.remove('show');
@@ -538,7 +537,7 @@ body{overflow-x:hidden}
 <div class="field"><label>👤 Nombre y primer apellido</label><input id="nombre" required maxlength="60" placeholder="Ejemplo: Juan Pérez" autocomplete="name"></div>
 <div class="field"><label>📱 Número de WhatsApp</label><input id="whatsapp" required type="tel" maxlength="20" placeholder="Ejemplo: 812 123 4567" autocomplete="tel" inputmode="tel"></div>
 <p>Tu selección: <span class="numbers" id="formNumbers"></span></p>
-<button class="btn" type="submit" style="width:100%">Solicitar apartado</button>
+<button class="btn" id="submitApartado" type="button" style="width:100%" onclick="event.preventDefault();event.stopPropagation();const f=this.form;if(!f.reportValidity())return false;confirmar({preventDefault:function(){},submitter:this,target:f});return false;">Solicitar apartado</button>
 </form>
 </div>
 
@@ -998,7 +997,6 @@ async function refrescarNumerosPublico(rifaId){
 }
 async function cargarNumerosPublico(rifaId){  const cache=numerosCacheMemoria.get(String(rifaId));
   if(cache && Date.now()-cache.at<15000) return {data:cache.data,error:null};
-
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),5000);
   try{
@@ -1497,8 +1495,7 @@ function restaurarSolicitudPendiente(){
       update();
       return;    }
     const numerosPendientes=[...new Set(pendientesRifa.flatMap(p=>String(p.numbers||'').split(',').map(x=>parseInt(x.trim(),10)).filter(Number.isFinite)))].sort((a,b)=>a-b);
-    sel=new Set(numerosPendientes);
-    solicitudPendiente=true;
+    sel=new Set(numerosPendientes);    solicitudPendiente=true;
     const ultimo=pendientesRifa[pendientesRifa.length-1];
     const precioActual=Number(rifa?.precio_numero||0);
     const totalPendiente=precioActual>0 ? numerosPendientes.length*precioActual : 0;
