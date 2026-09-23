@@ -842,7 +842,7 @@ async function refrescarNumerosPublico(rifaId){
   if(solicitudPendiente)bloquearNuevaSeleccion(true);
 }
 
-async async function cargarNumerosPublico(rifaId){
+async function cargarNumerosPublico(rifaId){
   let ultimoError=null;
   for(let intento=1;intento<=3;intento++){
     try{
