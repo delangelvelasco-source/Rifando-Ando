@@ -1216,7 +1216,7 @@ async function manejarRetornoMercadoPago(){
     if(retorno==='success' && response.ok && estado==='confirmado'){
       try{
         localStorage.removeItem('rifando_pendiente_whatsapp');
-        localStorage.removeItem('rifando_modo_agregar');
+
       }catch(e){}
       solicitudPendiente=false;
       sel.clear();
@@ -1266,7 +1266,7 @@ function restaurarSolicitudPendiente(){
       if(confirmWhatsAppClicked)return false;
       confirmWhatsAppClicked=true;
       localStorage.removeItem('rifando_pendiente_whatsapp');
-      localStorage.removeItem('rifando_modo_agregar');
+
       solicitudPendiente=false;
       sel.clear();
       bloquearNuevaSeleccion(false);
@@ -1358,20 +1358,18 @@ async function confirmar(e){
     const parsedPendientes=rawPendientes?JSON.parse(rawPendientes):null;
     solicitudesPendientes=Array.isArray(parsedPendientes)?parsedPendientes:(parsedPendientes?[parsedPendientes]:[]);
   }catch(e){solicitudesPendientes=[]}
-  solicitudesPendientes=solicitudesPendientes.filter(p=>p&&p.timestamp&&Date.now()-Number(p.timestamp)<=30*60*1000&&String(p.rifaId)===String(rifa.id));
-
-  // Una sola solicitud general por rifa: "Agregar más números" acumula todo en el mismo apartado.
-  const numerosAcumulados=[...new Set(
-    solicitudesPendientes
-      .flatMap(p=>String(p.numbers||'').split(',').map(x=>parseInt(x.trim(),10)).filter(Number.isFinite))
-      .concat(selected)
+  const numerosReales=[...new Set(
+    (Array.isArray(data?.numeros)?data.numeros:selected)
+      .map(n=>parseInt(n,10)).filter(Number.isFinite)
   )].sort((a,b)=>a-b);
-  const totalAcumulado=numerosAcumulados.length*Number(rifa.precio_numero||0);
+  const totalReal=Number(data?.total||numerosReales.length*Number(rifa.precio_numero||0));
   const solicitudGeneral={
     rifaId:rifa.id,
-    numbers:numerosAcumulados.map(n=>String(n).padStart(2,'0')).join(', '),
+    numbers:numerosReales.map(n=>String(n).padStart(2,'0')).join(', '),
     name:name,
-    total:'
+    total:'$'+totalReal.toLocaleString('es-MX'),
+    paymentUrl:paymentUrl,
+    timestamp:Date.now()
   };
   solicitudesPendientes=[solicitudGeneral];
   document.getElementById('confirmName').textContent=name;
@@ -1379,7 +1377,7 @@ async function confirmar(e){
   document.getElementById('confirmTotal').textContent=solicitudGeneral.total;
   try{
     localStorage.setItem('rifando_pendiente_whatsapp',JSON.stringify(solicitudesPendientes));
-    localStorage.removeItem('rifando_modo_agregar');
+
   }catch(e){}
   const message=construirMensajeSolicitudes(solicitudesPendientes);
   const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
@@ -1391,28 +1389,22 @@ async function confirmar(e){
   waConfirm.onclick=()=>{
     if(confirmWhatsAppClicked)return false;
     confirmWhatsAppClicked=true;
-
     solicitudPendiente=false;
     sel.clear();
     update();
     bloquearNuevaSeleccion(false);
-
     modal.classList.remove('open');
     confirmation.classList.remove('show');
     formView.style.display='';
     nombre.value='';
     whatsapp.value='';
-
     waConfirm.style.pointerEvents='';
     waConfirm.style.opacity='';
     waConfirm.textContent='📲 Enviar solicitud por WhatsApp';
     document.getElementById('modalClose')?.classList.remove('locked-close');
     document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
-
     try{localStorage.removeItem('rifando_pendiente_whatsapp');localStorage.removeItem('rifando_modo_agregar')}catch(e){}
     confirmWhatsAppClicked=false;
-
-    // Refrescar los estados reales sin recargar la página.
     setTimeout(()=>cargarRifa().catch(()=>{}),100);
   };
   formView.style.display='none';
@@ -1525,7 +1517,7 @@ iniciarActualizacionesEnSegundoPlano();
   document.getElementById('confirmTotal').textContent=solicitudGeneral.total;
   try{
     localStorage.setItem('rifando_pendiente_whatsapp',JSON.stringify(solicitudesPendientes));
-    localStorage.removeItem('rifando_modo_agregar');
+
   }catch(e){}
   const message=construirMensajeSolicitudes(solicitudesPendientes);
   const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
