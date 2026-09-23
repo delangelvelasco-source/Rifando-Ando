@@ -1459,7 +1459,13 @@ modal.addEventListener('click',e=>{
 });
 cargarRifa().then(async()=>{
   const retornoMercadoPago=await manejarRetornoMercadoPago();
-  if(!retornoMercadoPago) restaurarSolicitudPendiente();
+  if(!retornoMercadoPago){
+    try{localStorage.removeItem('rifando_pendiente_whatsapp');}catch(e){}
+    solicitudPendiente=false;
+    sel.clear();
+    update();
+    bloquearNuevaSeleccion(false);
+  }
 }).catch(()=>{
   raffleName.textContent='No se pudo cargar el sorteo';
   priceEl.textContent='Intenta actualizar la página';
