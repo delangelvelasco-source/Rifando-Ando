@@ -852,31 +852,42 @@ async function refrescarNumerosPublico(rifaId){
 }
 
 async function cargarNumerosPublico(rifaId){
-  // Carga principal mediante el cliente Supabase. Es más estable que construir
-  // manualmente la URL REST y evita que la cuadrícula quede indefinidamente en
-  // "Cargando números..." si una petición directa falla.
+  const control=new AbortController();
+  const timer=setTimeout(()=>control.abort(),5000);
   try{
-    const consulta=db.from('numeros')
-      .select('numero,estado,apartado_hasta')
-      .eq('rifa_id',rifaId)
-      .order('numero',{ascending:true})
-      .limit(500);
-    const timeout=new Promise(resolve=>setTimeout(()=>resolve({data:null,error:new Error('TIMEOUT')}),5000));
-    const resultado=await Promise.race([consulta,timeout]);
-    if(resultado?.data && Array.isArray(resultado.data))return {data:resultado.data,error:null};
-    if(resultado?.error)console.warn('Rifando Ando: carga Supabase de números',resultado.error);
-  }catch(e){
-    console.warn('Rifando Ando: cliente Supabase no pudo cargar números',e);
+    // En Cloudflare usamos un endpoint same-origin. Esto evita el preflight/CORS
+    // de Safari/iPhone contra Supabase y elimina el bloqueo que dejaba la cuadrícula
+    // permanentemente en "Cargando números...".
+    const proxyUrl=new URL('/api/numeros',window.location.origin);
+    proxyUrl.searchParams.set('rifa_id',rifaId);
+    const rr=await fetch(proxyUrl.toString(),{
+      method:'GET',
+      cache:'no-store',
+      headers:{Accept:'application/json'},
+      signal:control.signal
+    });
+    if(rr.ok){
+      const data=await rr.json();
+      if(Array.isArray(data))return {data,error:null};
+    }
+    throw new Error('Proxy HTTP '+rr.status);
+  }catch(proxyError){
+    console.warn('Rifando Ando: proxy de números no disponible',proxyError);
+  }finally{
+    clearTimeout(timer);
   }
 
-  // Respaldo directo: una sola reintento rápido para no dejar la pantalla
-  // bloqueada durante decenas de segundos.
+  // Respaldo para GitHub Pages u otro hosting sin Functions.
+  const directControl=new AbortController();
+  const directTimer=setTimeout(()=>directControl.abort(),5000);
   try{
-    const url=SUPABASE_URL+'/rest/v1/numeros?select=numero%2Cestado%2Capartado_hasta&rifa_id=eq.'+encodeURIComponent(rifaId)+'&order=numero.asc';
-    const controller=new AbortController();
-    const timer=setTimeout(()=>controller.abort(),5000);
-    const rr=await fetch(url,{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,Accept:'application/json'},cache:'no-store',signal:controller.signal});
-    clearTimeout(timer);
+    const url=SUPABASE_URL+'/rest/v1/numeros?select=numero%2Cestado%2Capartado_hasta&rifa_id=eq.'+encodeURIComponent(rifaId)+'&order=numero.asc&limit=500';
+    const rr=await fetch(url,{
+      method:'GET',
+      headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,Accept:'application/json'},
+      cache:'no-store',
+      signal:directControl.signal
+    });
     if(rr.ok){
       const data=await rr.json();
       if(Array.isArray(data))return {data,error:null};
@@ -884,6 +895,8 @@ async function cargarNumerosPublico(rifaId){
     return {data:null,error:new Error('HTTP '+rr.status)};
   }catch(e){
     return {data:null,error:e};
+  }finally{
+    clearTimeout(directTimer);
   }
 }
 
