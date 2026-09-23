@@ -844,7 +844,35 @@ async async function refrescarNumerosPublico(rifaId){
 
 async function cargarNumerosPublico(rifaId){
   let ultimoError=null;
+  const controllerTimeout=7000;
   for(let intento=1;intento<=3;intento++){
+    try{
+      const qs=new URLSearchParams({
+        select:'numero,estado,apartado_hasta',
+        rifa_id:'eq.'+String(rifaId),
+        order:'numero.asc'
+      });
+      const controller=new AbortController();
+      const timer=setTimeout(()=>controller.abort(),controllerTimeout);
+      const respuesta=await fetch(SUPABASE_URL+'/rest/v1/numeros?'+qs.toString(),{
+        method:'GET',
+        headers:{
+          apikey:SUPABASE_KEY,
+          Authorization:'Bearer '+SUPABASE_KEY,
+          Accept:'application/json'
+        },
+        cache:'no-store',
+        signal:controller.signal
+      });
+      clearTimeout(timer);
+      if(respuesta.ok){
+        const data=await respuesta.json();
+        if(Array.isArray(data))return {data,error:null};
+      }else{
+        const detalle=await respuesta.text().catch(()=> '');
+        ultimoError=new Error('HTTP '+respuesta.status+(detalle?' '+detalle.slice(0,180):''));
+      }
+    }catch(e){ultimoError=e}
     try{
       const p=db.from('numeros')
         .select('numero,estado,apartado_hasta')
@@ -855,9 +883,9 @@ async function cargarNumerosPublico(rifaId){
       if(!respuesta.error) return {data:respuesta.data||[],error:null};
       ultimoError=respuesta.error;
     }catch(e){ultimoError=e}
-    if(intento<3)await new Promise(resolve=>setTimeout(resolve,400));
+    if(intento<3)await new Promise(resolve=>setTimeout(resolve,400*intento));
   }
-  return {data:null,error:ultimoError};
+  return {data:null,error:ultimoError||new Error('No se pudieron cargar los números')};
 }
 
 let cargarRifaSeq=0;
