@@ -1216,7 +1216,8 @@ async function manejarRetornoMercadoPago(){
     if(retorno==='success' && response.ok && estado==='confirmado'){
       try{
         localStorage.removeItem('rifando_pendiente_whatsapp');
-          }catch(e){}
+        localStorage.removeItem('rifando_modo_agregar');
+      }catch(e){}
       solicitudPendiente=false;
       sel.clear();
       confirmation.classList.remove('show');
@@ -1352,19 +1353,27 @@ async function confirmar(e){
   }catch(err){
     paymentMsg.textContent='No se pudo conectar con Mercado Pago. Puedes continuar por WhatsApp.';
   }
-  // La respuesta del RPC es la fuente única de verdad: números y total
-  // deben coincidir exactamente con la reserva/pago creado en la base de datos.
-  const numerosReales=Array.isArray(data?.numeros)
-    ? [...new Set(data.numeros.map(n=>parseInt(n,10)).filter(Number.isFinite))].sort((a,b)=>a-b)
-    : selected.slice().sort((a,b)=>a-b);
-  const totalReal=Number(data?.total||numerosReales.length*Number(rifa.precio_numero||0));
+  let solicitudesPendientes=[];  try{
+    const rawPendientes=localStorage.getItem('rifando_pendiente_whatsapp');
+    const parsedPendientes=rawPendientes?JSON.parse(rawPendientes):null;
+    solicitudesPendientes=Array.isArray(parsedPendientes)?parsedPendientes:(parsedPendientes?[parsedPendientes]:[]);
+  }catch(e){solicitudesPendientes=[]}
+  solicitudesPendientes=solicitudesPendientes.filter(p=>p&&p.timestamp&&Date.now()-Number(p.timestamp)<=30*60*1000&&String(p.rifaId)===String(rifa.id));
+
+  // Una sola solicitud general por rifa: "Agregar más números" acumula todo en el mismo apartado.
+  const numerosAcumulados=[...new Set(
+    solicitudesPendientes
+      .flatMap(p=>String(p.numbers||'').split(',').map(x=>parseInt(x.trim(),10)).filter(Number.isFinite))
+      .concat(selected)
+  )].sort((a,b)=>a-b);
+  const totalAcumulado=numerosAcumulados.length*Number(rifa.precio_numero||0);
   const solicitudGeneral={
     rifaId:rifa.id,
-    numbers:numerosReales.map(n=>String(n).padStart(2,'0')).join(', '),
+    numbers:numerosAcumulados.map(n=>String(n).padStart(2,'0')).join(', '),
     name:name,
     total:'
   };
-  const solicitudesPendientes=[solicitudGeneral];
+  solicitudesPendientes=[solicitudGeneral];
   document.getElementById('confirmName').textContent=name;
   document.getElementById('confirmNumbers').textContent=solicitudGeneral.numbers;
   document.getElementById('confirmTotal').textContent=solicitudGeneral.total;
@@ -1400,9 +1409,10 @@ async function confirmar(e){
     document.getElementById('modalClose')?.classList.remove('locked-close');
     document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
 
-    try{localStorage.removeItem('rifando_pendiente_whatsapp')}catch(e){}
+    try{localStorage.removeItem('rifando_pendiente_whatsapp');localStorage.removeItem('rifando_modo_agregar')}catch(e){}
     confirmWhatsAppClicked=false;
 
+    // Refrescar los estados reales sin recargar la página.
     setTimeout(()=>cargarRifa().catch(()=>{}),100);
   };
   formView.style.display='none';
@@ -1505,11 +1515,11 @@ iniciarActualizacionesEnSegundoPlano();
 </script>
 </body>
 </html>
-+totalReal.toLocaleString('es-MX'),
++Number(totalAcumulado).toLocaleString('es-MX'),
     paymentUrl:paymentUrl,
     timestamp:Date.now()
   };
-  const solicitudesPendientes=[solicitudGeneral];
+  solicitudesPendientes=[solicitudGeneral];
   document.getElementById('confirmName').textContent=name;
   document.getElementById('confirmNumbers').textContent=solicitudGeneral.numbers;
   document.getElementById('confirmTotal').textContent=solicitudGeneral.total;
@@ -1545,9 +1555,10 @@ iniciarActualizacionesEnSegundoPlano();
     document.getElementById('modalClose')?.classList.remove('locked-close');
     document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
 
-    try{localStorage.removeItem('rifando_pendiente_whatsapp')}catch(e){}
+    try{localStorage.removeItem('rifando_pendiente_whatsapp');localStorage.removeItem('rifando_modo_agregar')}catch(e){}
     confirmWhatsAppClicked=false;
 
+    // Refrescar los estados reales sin recargar la página.
     setTimeout(()=>cargarRifa().catch(()=>{}),100);
   };
   formView.style.display='none';
