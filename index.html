@@ -494,11 +494,6 @@ body{overflow-x:hidden}
 <p>Tus números:</p>
 <div class="numbers" id="confirmNumbers"></div>
 <p>Total: <b class="gold" id="confirmTotal"></b></p>
-<div id="paymentBox" style="margin:14px 0;padding:14px;border:1px solid #6d5215;border-radius:14px;background:#111;display:none">
-  <div style="font-weight:1000;color:#f5d36a;font-size:18px">💳 Pago en línea</div>
-  <p id="paymentMsg" style="color:#aaa;margin:8px 0">Generando enlace seguro de Mercado Pago…</p>
-  <a class="btn" id="mpPayBtn" href="#" target="_blank" rel="noopener" style="display:none;width:100%;margin-top:8px">💳 Pagar con Mercado Pago</a>
-</div>
 <a class="btn" id="waConfirm" href="#" target="_blank" rel="noopener" style="display:inline-block;margin:8px 4px">📲 Enviar solicitud por WhatsApp</a><br>
 <button class="btn" id="confirmCloseBtn" onclick="cerrarFormulario()" style="margin:8px 4px" title="Primero envía la solicitud por WhatsApp">Cerrar</button>
 </div>
@@ -1257,33 +1252,6 @@ async function confirmar(e){
   document.getElementById('confirmName').textContent=name;
   document.getElementById('confirmNumbers').textContent=displayNumbers;
   document.getElementById('confirmTotal').textContent=String.fromCharCode(36)+displayTotal;
-  const paymentBox=document.getElementById('paymentBox');
-  const mpPayBtn=document.getElementById('mpPayBtn');
-  const paymentMsg=document.getElementById('paymentMsg');
-  if(paymentBox){paymentBox.style.display='block'; paymentMsg.textContent='Generando enlace seguro de Mercado Pago…'; mpPayBtn.style.display='none';}
-  try{
-    const paymentToken=String(data?.payment_token||'');
-    const paymentId=String(data?.pago_id||'');
-    if(paymentToken&&paymentId){
-      const paymentResponse=await fetch(SUPABASE_URL+'/functions/v1/mercado-pago',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({payment_id:paymentId,payment_token:paymentToken})
-      });
-      const paymentData=await paymentResponse.json().catch(()=>({}));
-      if(paymentResponse.ok&&paymentData.checkout_url){
-        mpPayBtn.href=paymentData.checkout_url;
-        mpPayBtn.style.display='block';
-        paymentMsg.textContent='Tu apartado queda reservado durante 30 minutos. Completa el pago para confirmar tus números.';
-      }else{
-        paymentMsg.textContent=paymentData.error||'No se pudo generar el pago en línea. Puedes continuar por WhatsApp.';
-      }
-    }else{
-      paymentMsg.textContent='Puedes continuar por WhatsApp para coordinar el pago.';
-    }
-  }catch(err){
-    paymentMsg.textContent='No se pudo conectar con Mercado Pago. Puedes continuar por WhatsApp.';
-  }
   let solicitudesPendientes=[];  try{
     const rawPendientes=localStorage.getItem('rifando_pendiente_whatsapp');
     const parsedPendientes=rawPendientes?JSON.parse(rawPendientes):null;
