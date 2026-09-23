@@ -327,7 +327,7 @@ body{overflow-x:hidden}
 <a class="btn" href="#numeros">Elegir números</a>
 <a class="btn" href="#ultimo-ganador">🏆 Último ganador</a>
 <a class="btn" id="topRaffles" href="#rifas" style="position:relative;z-index:1001;pointer-events:auto">🎟️ Cambiar sorteo</a>
-<a class="btn" id="topContinue" href="#numeros" onclick="return window.__raOpenFormEmergency ? window.__raOpenFormEmergency(event) : true;">Continuar</a>
+<button class="btn" id="topContinue" type="button" onclick="if(window.__raOpenFormEmergency){window.__raOpenFormEmergency(event)}">Continuar</button>
 </div>
 </div>
 </header>
@@ -497,8 +497,7 @@ body{overflow-x:hidden}
     const selected=window.__raEarlySelected instanceof Set ? Array.from(window.__raEarlySelected).map(Number).filter(Number.isFinite) : [];
     if(!selected.length){
       alert('Primero elige al menos un número, compa.');
-      return false;
-    }
+      return false;    }
     const modal=document.getElementById('modal');
     const formView=document.getElementById('formView');
     const confirmation=document.getElementById('confirmation');
@@ -520,7 +519,7 @@ body{overflow-x:hidden}
 })();
 </script><div class="tickets-zone" id="ticketsZone"><div class="tickets" id="tickets"><p style="color:#aaa">Cargando números...</p></div><div id="ventasCerradasOverlay" class="ventas-cerradas-overlay" aria-hidden="true"><div class="ventas-cerradas-card"><div class="ventas-lock">🔒</div><h3>VENTAS CERRADAS</h3><p id="ventasCerradasText">El sistema está en mantenimiento.</p><small id="ventasCerradasThanks">Gracias por tu comprensión.</small></div></div></div>
 <div class="summary"><div>Números: <b class="gold" id="count">0</b> · Total: <b class="gold">$<span id="total">0</span></b></div>
-<button class="btn" onclick="abrirFormulario()">Continuar</button>
+<button class="btn" id="summaryContinue" type="button" onclick="if(window.__raOpenFormEmergency){window.__raOpenFormEmergency(event)}else{abrirFormulario()}">Continuar</button>
 </div>
 </section>
 
@@ -997,8 +996,7 @@ async function cargarNumerosPublico(rifaId){
       headers:{
         'apikey':SUPABASE_KEY,
         'Authorization':'Bearer '+SUPABASE_KEY,
-        'Accept':'application/json'
-      },
+        'Accept':'application/json'      },
       cache:'no-store',
       signal:controller.signal
     });
@@ -1497,8 +1495,7 @@ function restaurarSolicitudPendiente(){
     const totalPendiente=precioActual>0 ? numerosPendientes.length*precioActual : 0;
     document.getElementById('confirmName').textContent=ultimo.name||'';
     document.getElementById('confirmNumbers').textContent=numerosPendientes.map(n=>String(n).padStart(2,'0')).join(', ');
-    document.getElementById('confirmTotal').textContent='
-    bloquearNuevaSeleccion(true);
+    document.getElementById('confirmTotal').textContent='    bloquearNuevaSeleccion(true);
     const waConfirm=document.getElementById('waConfirm');
     waConfirm.href='https://wa.me/528123859824?text='+encodeURIComponent(construirMensajeSolicitudes(pendientesRifa));
     confirmWhatsAppClicked=false;
@@ -1998,7 +1995,3 @@ document.addEventListener('visibilitychange',()=>{
     detenerActualizacionesEnSegundoPlano();
   }
 });
-iniciarActualizacionesEnSegundoPlano();
-</script>
-</body>
-</html>
