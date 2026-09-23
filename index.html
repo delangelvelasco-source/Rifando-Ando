@@ -843,18 +843,23 @@ async function refrescarNumerosPublico(rifaId){
   if(solicitudPendiente)bloquearNuevaSeleccion(true);
 }
 
-async function cargarNumerosPublico(rifaId){
+async async function cargarNumerosPublico(rifaId){
   let ultimoError=null;
   for(let intento=1;intento<=3;intento++){
-    const {data,error}=await db.from('numeros')
-      .select('numero,estado,apartado_hasta')
-      .eq('rifa_id',rifaId)
-      .order('numero');
-    if(!error) return {data,error:null};
-    ultimoError=error;
-    if(intento<3) await new Promise(resolve=>setTimeout(resolve,500*intento));
+    try{
+      const url=SUPABASE_URL+'/rest/v1/numeros?select=numero,estado,apartado_hasta&rifa_id=eq.'+encodeURIComponent(rifaId)+'&order=numero.asc';
+      const controller=new AbortController();
+      const timer=setTimeout(()=>controller.abort(),7000);
+      const rr=await fetch(url,{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,Accept:'application/json'},cache:'no-store',signal:controller.signal});
+      clearTimeout(timer);
+      if(rr.ok){
+        const data=await rr.json();
+        if(Array.isArray(data))return {data,error:null};
+      }else ultimoError=new Error('HTTP '+rr.status);
+    }catch(e){ultimoError=e}
+    if(intento<3)await new Promise(resolve=>setTimeout(resolve,400*intento));
   }
-  return {data:null,error:ultimoError};
+  return {data:null,error:ultimoError||new Error('No se pudieron cargar los números')};
 }
 
 let cargarRifaSeq=0;
@@ -922,9 +927,17 @@ async function cargarRifa(){
   let r=null,errorRe=null;
   let respuesta=null;
   for(let intento=1;intento<=3;intento++){
-    respuesta=await db.from('rifas').select('*').eq('id',requestedRifa).maybeSingle();
+    try{
+      const url=SUPABASE_URL+'/rest/v1/rifas?select=*&id=eq.'+encodeURIComponent(requestedRifa)+'&limit=1';
+      const controller=new AbortController();
+      const timer=setTimeout(()=>controller.abort(),5000);
+      const rr=await fetch(url,{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,Accept:'application/json'},cache:'no-store',signal:controller.signal});
+      clearTimeout(timer);
+      const arr=rr.ok?await rr.json():[];
+      respuesta={data:Array.isArray(arr)&&arr[0]?arr[0]:null,error:rr.ok?null:new Error('HTTP '+rr.status)};
+    }catch(e){respuesta={data:null,error:e}}
     if(!respuesta.error && respuesta.data)break;
-    if(intento<3)await new Promise(resolve=>setTimeout(resolve,500*intento));
+    if(intento<3)await new Promise(resolve=>setTimeout(resolve,400*intento));
   }
   r=respuesta?.data||null; errorRe=respuesta?.error||null;
   if(loadSeq!==cargarRifaSeq)return;
