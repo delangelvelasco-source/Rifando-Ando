@@ -1498,6 +1498,7 @@ function obtenerSolicitudesPendientes(){
 }
 function construirMensajeSolicitudes(lista){
   const rifaNombre=obtenerNombrePublicoRifa(rifa);
+  const rifaId=String(rifa?.id||'');
   const numeros=[...new Set((lista||[]).flatMap(p=>String(p?.numbers||'').split(',').map(x=>parseInt(x.trim(),10)).filter(Number.isFinite)))].sort((a,b)=>a-b);
   // El total se calcula SIEMPRE con los números únicos actuales y el precio real del sorteo.
   // No usamos p.total porque puede pertenecer a una selección anterior o a una sesión vieja.
@@ -1506,7 +1507,7 @@ function construirMensajeSolicitudes(lista){
   const nombre=lista?.[lista.length-1]?.name||'';
   const displayNumbers=numeros.map(n=>String(n).padStart(2,'0')).join(', ');
   const money=String.fromCharCode(36);
-  return '🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado:\n\n🎫 '+rifaNombre+'\n👤 Nombre: '+nombre+'\n🔢 Números: '+displayNumbers+'\n💰 Total: '+money+total.toLocaleString('es-MX')+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
+  return '🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado:\n\n🎫 '+rifaNombre+'\n🆔 ID de la rifa: '+rifaId+'\n👤 Nombre: '+nombre+'\n🔢 Números: '+displayNumbers+'\n💰 Total: '+money+total.toLocaleString('es-MX')+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
 }
 function agregarMasNumeros(){
   // Para agregar números solo necesitamos la compra/pago pendiente de ESTA pestaña.
