@@ -1322,6 +1322,7 @@ async function confirmar(e){
   const name=nombre.value.trim();
   const phone=whatsapp.value.trim();
   const email='';
+  const modoAgregar=localStorage.getItem('rifando_modo_agregar')==='1';
   if(!name||!phone){
     alert('Completa tu nombre y WhatsApp, compa.');
     return;
@@ -1333,7 +1334,8 @@ async function confirmar(e){
     p_nombre:name,
     p_whatsapp:phone,
     p_correo:email,
-    p_numeros:selected
+    p_numeros:selected,
+    p_consolidar:modoAgregar
   });
   if(error){
     alert('No se pudo apartar: '+error.message);
