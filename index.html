@@ -852,22 +852,39 @@ async function refrescarNumerosPublico(rifaId){
 }
 
 async function cargarNumerosPublico(rifaId){
-  let ultimoError=null;
-  for(let intento=1;intento<=3;intento++){
-    try{
-      const url=SUPABASE_URL+'/rest/v1/numeros?select=numero,estado,apartado_hasta&rifa_id=eq.'+encodeURIComponent(rifaId)+'&order=numero.asc';
-      const controller=new AbortController();
-      const timer=setTimeout(()=>controller.abort(),7000);
-      const rr=await fetch(url,{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,Accept:'application/json'},cache:'no-store',signal:controller.signal});
-      clearTimeout(timer);
-      if(rr.ok){
-        const data=await rr.json();
-        if(Array.isArray(data))return {data,error:null};
-      }else ultimoError=new Error('HTTP '+rr.status);
-    }catch(e){ultimoError=e}
-    if(intento<3)await new Promise(resolve=>setTimeout(resolve,400*intento));
+  // Carga principal mediante el cliente Supabase. Es más estable que construir
+  // manualmente la URL REST y evita que la cuadrícula quede indefinidamente en
+  // "Cargando números..." si una petición directa falla.
+  try{
+    const consulta=db.from('numeros')
+      .select('numero,estado,apartado_hasta')
+      .eq('rifa_id',rifaId)
+      .order('numero',{ascending:true})
+      .limit(500);
+    const timeout=new Promise(resolve=>setTimeout(()=>resolve({data:null,error:new Error('TIMEOUT')}),5000));
+    const resultado=await Promise.race([consulta,timeout]);
+    if(resultado?.data && Array.isArray(resultado.data))return {data:resultado.data,error:null};
+    if(resultado?.error)console.warn('Rifando Ando: carga Supabase de números',resultado.error);
+  }catch(e){
+    console.warn('Rifando Ando: cliente Supabase no pudo cargar números',e);
   }
-  return {data:null,error:ultimoError||new Error('No se pudieron cargar los números')};
+
+  // Respaldo directo: una sola reintento rápido para no dejar la pantalla
+  // bloqueada durante decenas de segundos.
+  try{
+    const url=SUPABASE_URL+'/rest/v1/numeros?select=numero%2Cestado%2Capartado_hasta&rifa_id=eq.'+encodeURIComponent(rifaId)+'&order=numero.asc';
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),5000);
+    const rr=await fetch(url,{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,Accept:'application/json'},cache:'no-store',signal:controller.signal});
+    clearTimeout(timer);
+    if(rr.ok){
+      const data=await rr.json();
+      if(Array.isArray(data))return {data,error:null};
+    }
+    return {data:null,error:new Error('HTTP '+rr.status)};
+  }catch(e){
+    return {data:null,error:e};
+  }
 }
 
 let cargarRifaSeq=0;
