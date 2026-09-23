@@ -1946,6 +1946,7 @@ async function cargarRifa(){
         if(sel.has(x.numero)){sel.delete(x.numero);b.classList.remove('selected')}
         else{sel.add(x.numero);b.classList.add('selected')}
         update();
+        guardarBorradorCompra();
       });
     }else b.disabled=true;
     tickets.appendChild(b);
