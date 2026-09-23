@@ -799,7 +799,7 @@ async function contarVendidosPublico(rifaId){
   return error ? 0 : Number(count||0);
 }
 
-async function refrescarNumerosPublico(rifaId){
+async async function refrescarNumerosPublico(rifaId){
   if(!rifa || String(rifa.id)!==String(rifaId))return;  const {data:n,error}=await cargarNumerosPublico(rifaId);
   if(!rifa || String(rifa.id)!==String(rifaId))return;
   if(error)return;
