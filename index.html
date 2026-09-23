@@ -5072,3 +5072,20 @@ function iniciarActualizacionesEnSegundoPlano(){
   if(segundoPlanoTimer)clearInterval(segundoPlanoTimer);
   if(loteriaTimer)clearInterval(loteriaTimer);
   if(ganadorTimer)clearInterval(ganadorTimer);
+<script>
+/* Cierre robusto después de enviar la solicitud por WhatsApp. */
+document.addEventListener('click',function(e){
+  const wa=e.target&&e.target.closest ? e.target.closest('#waConfirm') : null;
+  if(!wa)return;
+  setTimeout(function(){
+    try{
+      document.getElementById('modal')?.classList.remove('open');
+      document.getElementById('confirmation')?.classList.remove('show');
+      const formView=document.getElementById('formView');
+      if(formView)formView.style.display='';
+      document.getElementById('modalClose')?.classList.remove('locked-close');
+      document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
+    }catch(_e){}
+  },300);
+},true);
+</script>
