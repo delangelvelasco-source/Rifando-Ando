@@ -873,9 +873,17 @@ async function cargarRifa(){
   let rifasActuales={};
   let listaActuales=null;
   for(let intento=1;intento<=3;intento++){
-    const respuesta=await db.from('rifas').select('id,grupo_rifa,estado,numero_sorteo,created_at').in('grupo_rifa',Object.values(gruposRifa)).order('created_at',{ascending:false});
-    if(!respuesta.error){listaActuales=respuesta.data||[];break}
-    if(intento<3)await new Promise(resolve=>setTimeout(resolve,500*intento));
+    try{
+      const grupos=Object.values(gruposRifa).map(x=>encodeURIComponent(x)).join(',');
+      const url=SUPABASE_URL+'/rest/v1/rifas?select=id,grupo_rifa,estado,numero_sorteo,created_at&grupo_rifa=in.('+grupos+')&order=created_at.desc';
+      const controller=new AbortController();
+      const timer=setTimeout(()=>controller.abort(),5000);
+      const rr=await fetch(url,{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,Accept:'application/json'},cache:'no-store',signal:controller.signal});
+      clearTimeout(timer);
+      const data=rr.ok?await rr.json():null;
+      if(rr.ok&&Array.isArray(data)){listaActuales=data;break}
+    }catch(e){}
+    if(intento<3)await new Promise(resolve=>setTimeout(resolve,400*intento));
   }
   (listaActuales||[]).forEach(x=>{if(x.grupo_rifa&&!rifasActuales[x.grupo_rifa])rifasActuales[x.grupo_rifa]=x;});
   Object.keys(mapaRutas).forEach(k=>{if(rifasActuales[k]?.id)mapaRutas[k]=rifasActuales[k].id;});
