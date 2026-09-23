@@ -852,32 +852,41 @@ async function refrescarNumerosPublico(rifaId){
 }
 
 async function cargarNumerosPublico(rifaId){
-  const control=new AbortController();
-  const timer=setTimeout(()=>control.abort(),5000);
-  try{
-    // En Cloudflare usamos un endpoint same-origin. Esto evita el preflight/CORS
-    // de Safari/iPhone contra Supabase y elimina el bloqueo que dejaba la cuadrícula
-    // permanentemente en "Cargando números...".
-    const proxyUrl=new URL('/api/numeros',window.location.origin);
-    proxyUrl.searchParams.set('rifa_id',rifaId);
-    const rr=await fetch(proxyUrl.toString(),{
-      method:'GET',
-      cache:'no-store',
-      headers:{Accept:'application/json'},
-      signal:control.signal
-    });
-    if(rr.ok){
-      const data=await rr.json();
-      if(Array.isArray(data))return {data,error:null};
+  let ultimoError=null;
+
+  // 1) En Cloudflare Pages usamos el endpoint same-origin.
+  // 2) En GitHub Pages usamos el mismo endpoint de Cloudflare con CORS.
+  // Así Safari/iPhone nunca necesita consultar Supabase directamente.
+  const endpoints=[
+    new URL('/api/numeros',window.location.origin),
+    new URL('https://rifando-ando-mx.pages.dev/api/numeros')
+  ];
+  endpoints[0].searchParams.set('rifa_id',rifaId);
+  endpoints[1].searchParams.set('rifa_id',rifaId);
+
+  for(const endpoint of endpoints){
+    const control=new AbortController();
+    const timer=setTimeout(()=>control.abort(),5000);
+    try{
+      const rr=await fetch(endpoint.toString(),{
+        method:'GET',
+        cache:'no-store',
+        headers:{Accept:'application/json'},
+        signal:control.signal
+      });
+      if(rr.ok){
+        const data=await rr.json();
+        if(Array.isArray(data))return {data,error:null};
+      }
+      ultimoError=new Error('HTTP '+rr.status);
+    }catch(e){
+      ultimoError=e;
+    }finally{
+      clearTimeout(timer);
     }
-    throw new Error('Proxy HTTP '+rr.status);
-  }catch(proxyError){
-    console.warn('Rifando Ando: proxy de números no disponible',proxyError);
-  }finally{
-    clearTimeout(timer);
   }
 
-  // Respaldo para GitHub Pages u otro hosting sin Functions.
+  // Último respaldo para otros hostings.
   const directControl=new AbortController();
   const directTimer=setTimeout(()=>directControl.abort(),5000);
   try{
@@ -892,12 +901,13 @@ async function cargarNumerosPublico(rifaId){
       const data=await rr.json();
       if(Array.isArray(data))return {data,error:null};
     }
-    return {data:null,error:new Error('HTTP '+rr.status)};
+    ultimoError=new Error('HTTP '+rr.status);
   }catch(e){
-    return {data:null,error:e};
+    ultimoError=e;
   }finally{
     clearTimeout(directTimer);
   }
+  return {data:null,error:ultimoError||new Error('No se pudieron cargar los números')};
 }
 
 let cargarRifaSeq=0;
