@@ -497,8 +497,7 @@ body{overflow-x:hidden}
     const selected=window.__raEarlySelected instanceof Set ? Array.from(window.__raEarlySelected).map(Number).filter(Number.isFinite) : [];
     if(!selected.length){
       alert('Primero elige al menos un número, compa.');
-      return false;    }    const modal=document.getElementById('modal');    const formView=document.getElementById('formView');    const confirmation=document.getElementById('confirmation');    const formNumbers=document.getElementById('formNumbers');
-    if(formNumbers)formNumbers.textContent=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');
+      return false;    }    const modal=document.getElementById('modal');    const formView=document.getElementById('formView');    const confirmation=document.getElementById('confirmation');    const formNumbers=document.getElementById('formNumbers');    if(formNumbers)formNumbers.textContent=selected.sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join(', ');
     if(formView)formView.style.display='';
     if(confirmation)confirmation.classList.remove('show');
     if(modal){modal.classList.add('open');modal.style.zIndex='2000';}
@@ -537,7 +536,7 @@ body{overflow-x:hidden}
 <div class="field"><label>👤 Nombre y primer apellido</label><input id="nombre" required maxlength="60" placeholder="Ejemplo: Juan Pérez" autocomplete="name"></div>
 <div class="field"><label>📱 Número de WhatsApp</label><input id="whatsapp" required type="tel" maxlength="20" placeholder="Ejemplo: 812 123 4567" autocomplete="tel" inputmode="tel"></div>
 <p>Tu selección: <span class="numbers" id="formNumbers"></span></p>
-<button class="btn" id="submitApartado" type="button" style="width:100%" onclick="event.preventDefault();event.stopPropagation();const f=this.form;if(!f.reportValidity())return false;confirmar({preventDefault:function(){},submitter:this,target:f});return false;">Solicitar apartado</button>
+<button class="btn" id="submitApartado" type="button" style="width:100%" onclick="return window.__raSubmitApartado(this);">Solicitar apartado</button>
 </form>
 </div>
 
@@ -997,8 +996,7 @@ async function refrescarNumerosPublico(rifaId){
 }
 async function cargarNumerosPublico(rifaId){  const cache=numerosCacheMemoria.get(String(rifaId));
   if(cache && Date.now()-cache.at<15000) return {data:cache.data,error:null};
-  const controller=new AbortController();
-  const timer=setTimeout(()=>controller.abort(),5000);
+  const controller=new AbortController();  const timer=setTimeout(()=>controller.abort(),5000);
   try{
     const url=SUPABASE_URL+'/rest/v1/numeros?select=numero,estado,apartado_hasta&rifa_id=eq.'+encodeURIComponent(rifaId)+'&order=numero.asc';
     const res=await fetch(url,{
@@ -1388,6 +1386,28 @@ function actualizarWhatsAppAyuda(){
     : 'Hola Rifando Ando 👋, necesito ayuda o soporte con mi participación.';
   link.href='https://wa.me/528123859824?text='+encodeURIComponent(message);
 }
+window.__raSubmitApartado=async function(btn){
+  try{
+    const form=btn?.form||document.getElementById('purchaseForm');
+    if(!form){alert('No se encontró el formulario de compra.');return false;}
+    if(typeof form.reportValidity==='function'&&!form.reportValidity())return false;
+    btn.disabled=true;
+    const oldText=btn.textContent;
+    btn.textContent='Procesando apartado…';
+    await confirmar({
+      preventDefault:function(){},
+      submitter:btn,
+      target:form
+    });
+    return false;
+  }catch(err){
+    console.error('Error en apartado:',err);
+    alert('No se pudo procesar el apartado.\n\n'+String(err?.message||err||'Error desconocido'));
+    btn.disabled=false;
+    btn.textContent='Solicitar apartado';
+    return false;
+  }
+};
 function sincronizarSeleccionEmergencia(){
   try{
     const early=window.__raEarlySelected;
@@ -1497,8 +1517,7 @@ function restaurarSolicitudPendiente(){
     const numerosPendientes=[...new Set(pendientesRifa.flatMap(p=>String(p.numbers||'').split(',').map(x=>parseInt(x.trim(),10)).filter(Number.isFinite)))].sort((a,b)=>a-b);
     sel=new Set(numerosPendientes);    solicitudPendiente=true;
     const ultimo=pendientesRifa[pendientesRifa.length-1];
-    const precioActual=Number(rifa?.precio_numero||0);
-    const totalPendiente=precioActual>0 ? numerosPendientes.length*precioActual : 0;
+    const precioActual=Number(rifa?.precio_numero||0);    const totalPendiente=precioActual>0 ? numerosPendientes.length*precioActual : 0;
     document.getElementById('confirmName').textContent=ultimo.name||'';
     document.getElementById('confirmNumbers').textContent=numerosPendientes.map(n=>String(n).padStart(2,'0')).join(', ');
     document.getElementById('confirmTotal').textContent='    bloquearNuevaSeleccion(true);
