@@ -140,7 +140,7 @@
 <div id="winnerBox" class="box hidden" style="margin-top:18px;border-color:#d9a936;text-align:center"><div style="font-size:52px">🏆</div><h2>GANADOR DEL SORTEO</h2><div id="winnerNumber" style="font-size:64px;font-weight:1000;color:#d9a936">--</div><h3 id="winnerName" style="font-size:28px;margin:8px 0"></h3><p id="winnerDate" class="muted"></p><a id="winnerWhatsApp" class="btn" href="#" target="_blank" rel="noopener" style="display:none;margin-top:10px">📲 Felicitar por WhatsApp</a></div></div>
 <div id="loteriaModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarLoteria()" style="float:right">×</button><h2>🇲🇽 Sorteo con Lotería Nacional</h2><p class="muted">Regla: se toman las <b>2 últimas cifras</b> del resultado oficial del Tris y ese número 00–99 determina al ganador. Deben estar vendidos los 100 números.</p><div class="field"><label>Tipo de sorteo</label><select id="lotTipo"><option>Tris Clásico</option><option>Tris de las Siete</option><option>Tris Extra</option><option>Tris de las Tres</option><option>Tris Medio Día</option></select></div><div class="field"><label>Número de sorteo</label><input id="lotSorteo" inputmode="numeric" placeholder="36657"></div><div class="field"><label>Resultado oficial de 5 dígitos</label><input id="lotResultado" inputmode="numeric" maxlength="5" placeholder="01518"></div><div class="field"><label>Fecha del sorteo</label><input id="lotFecha" type="datetime-local"></div><div class="field"><label>Fuente oficial</label><input id="lotFuente" value="https://www.loterianacional.gob.mx/Tris/resultados"></div><button class="btn" onclick="confirmarSorteoLoteria()" style="width:100%">🏆 Registrar ganador</button><p id="lotMsg"></p></div></div><div id="drawModal" class="modal"><div class="modalbox" style="width:min(900px,100%);text-align:center"><div style="font-size:44px">🎲</div><h2>SELECCIÓN DEL SORTEO</h2><p id="drawStatus" class="muted">Preparando participantes...</p><div id="drawNumber" style="font-size:86px;font-weight:1000;color:#d9a936;line-height:1">--</div><div id="drawGrid" class="grid" style="margin-top:22px;max-height:280px;overflow:auto"></div><div id="drawWinner" class="hidden" style="margin-top:20px"><div style="font-size:24px">🏆 NÚMERO GANADOR</div><div id="drawWinnerNumber" style="font-size:72px;font-weight:1000;color:#d9a936">--</div><div id="drawWinnerName" style="font-size:26px"></div></div></div></div><div id="payModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarPago()" style="float:right">×</button><h2>Registrar pago</h2><p id="payPerson"></p><div class="field"><label>Monto recibido</label><input id="payAmount" type="number" min="0.01" step="0.01"></div><div class="field"><label>Método</label><select id="payMethod"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Otro</option></select></div><button class="btn" onclick="guardarPago()">Confirmar pago</button><p id="payMsg"></p></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://unpkg.com/@supabase/supabase-js@2"></script><script src="config.js"></script><script>
-let db=null, $=id=>document.getElementById(id), rifa=null,nGlobal=[],payParticipant=null,realtimeChannel=null,currentAdmin=null;
+let db=null, $=id=>document.getElementById(id), rifa=null,nGlobal=[],payParticipant=null,realtimeChannel=null,currentAdmin=null,cargaAdminEnCurso=false,cargaAdminPendiente=false,cargaAdminTimer=null;
 async function initDb(){
   if(db) return true;
   if(!window.supabase){$('msg').textContent='⚠️ No se pudo cargar el sistema de acceso. Revisa tu conexión a internet y recarga la página.';return false}
@@ -429,10 +429,12 @@ function enviarDatosPagoWhatsApp(telefono){
 function activarTiempoReal(){
   if(!rifa) return;
   if(realtimeChannel) realtimeChannel.unsubscribe();
+  if(realtimeChannel){db.removeChannel(realtimeChannel).catch(()=>{});realtimeChannel=null;}
   realtimeChannel=db.channel('admin-rifa-'+rifa.id)
-    .on('postgres_changes',{event:'*',schema:'public',table:'numeros',filter:'rifa_id=eq.'+rifa.id},()=>cargar())
-    .on('postgres_changes',{event:'*',schema:'public',table:'pagos',filter:'rifa_id=eq.'+rifa.id},()=>cargar())
-        .subscribe((status)=>{ $('status').textContent=nombreRifaAdmin(rifa)+' · Sorteo #'+(rifa.numero_sorteo||1)+' · '+String(rifa.codigo_sorteo||'RA-????')+' · '+(status==='SUBSCRIBED'?'🟢 Tiempo real activo':'Conectando tiempo real...'); });
+    .on('postgres_changes',{event:'*',schema:'public',table:'numeros',filter:'rifa_id=eq.'+rifa.id},()=>programarCargaAdmin())
+    .on('postgres_changes',{event:'*',schema:'public',table:'pagos',filter:'rifa_id=eq.'+rifa.id},()=>programarCargaAdmin())
+    .on('postgres_changes',{event:'*',schema:'public',table:'participantes'},()=>programarCargaAdmin())
+    .subscribe((status)=>{ $('status').textContent=nombreRifaAdmin(rifa)+' · Sorteo #'+(rifa.numero_sorteo||1)+' · '+String(rifa.codigo_sorteo||'RA-????')+' · '+(status==='SUBSCRIBED'?'🟢 Tiempo real activo':'Conectando tiempo real...'); });
 }
 function toggleParticipantes(){const body=$('participantsBody'),head=$('participantsToggle');const open=body.classList.toggle('open');head.classList.toggle('open',open);$('participantsIcon').textContent=open?'▲':'▼'}
 async function cargarHistorialRifas(){const {data,error}=await db.from('rifas').select('id,nombre,numero_sorteo,codigo_sorteo,estado,created_at,fecha_sorteo').order('created_at',{ascending:false});const sel=$('historyRaffle');if(!sel)return;if(error){sel.innerHTML='<option value="">No se pudieron cargar los sorteos</option>';if($('historySummary')){$('historySummary').textContent='';$('historySummary').style.display='none'}if($('historyParticipants')){$('historyParticipants').innerHTML='';$('historyParticipants').style.display='none'}return}sel.innerHTML='<option value="">Selecciona un sorteo...</option>'+(data||[]).map(x=>'<option value="'+x.id+'">'+esc(x.codigo_sorteo||('Sorteo #'+(x.numero_sorteo||'')))+' · '+esc(nombreRifaAdmin(x))+' · '+esc(x.estado)+'</option>').join('');if($('historySummary')){$('historySummary').textContent='';$('historySummary').style.display='none'}if($('historyParticipants')){$('historyParticipants').innerHTML='';$('historyParticipants').style.display='none'}}
@@ -479,7 +481,18 @@ async function cargarSelectorRifas(){
     return '<a class="raffle-nav-btn'+active+'" href="?rifa='+encodeURIComponent(x.id)+'">'+esc(nombreRifaAdmin(x))+' · '+esc(x.codigo_sorteo||'')+estado+'</a>';
   }).join('');
 }
-async function cargar(){const params=new URLSearchParams(window.location.search);const requestedRifa=params.get('rifa');const query=db.from('rifas').select('*').order('created_at',{ascending:false});const {data:list,error:re}=await query;if(re||!list?.length){$('status').textContent='No se pudo cargar la rifa.';return}const r=list.find(x=>x.id===requestedRifa)||list[0];if(re||!r){$('status').textContent='No se pudo cargar la rifa.';return}rifa=r;await cargarSelectorRifas();await mostrarGanador();await cargarListaGanadores();await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});const {data:n,error:ne}=await db.from('numeros').select('id,numero,estado,apartado_hasta,participante_id,vendido_at').eq('rifa_id',r.id).order('numero');if(ne){$('status').textContent='No se pudieron cargar los números.';return}nGlobal=n||[];
+function programarCargaAdmin(){
+  if(cargaAdminTimer)clearTimeout(cargaAdminTimer);
+  cargaAdminTimer=setTimeout(()=>{cargaAdminTimer=null;cargar().catch(e=>console.error('Actualización automática del administrador:',e));},350);
+}
+async function cargar(){
+  if(cargaAdminEnCurso){cargaAdminPendiente=true;return;}
+  cargaAdminEnCurso=true;
+  try{await cargarBase();}
+  catch(e){console.error('Error al actualizar el administrador:',e);const st=$('status');if(st)st.textContent+=' · Error al actualizar; conservando los datos visibles.';}
+  finally{cargaAdminEnCurso=false;if(cargaAdminPendiente){cargaAdminPendiente=false;programarCargaAdmin();}}
+}
+async function cargarBase(){const params=new URLSearchParams(window.location.search);const requestedRifa=params.get('rifa');const query=db.from('rifas').select('*').order('created_at',{ascending:false});const {data:list,error:re}=await query;if(re||!list?.length){$('status').textContent='No se pudo cargar la rifa.';return}const r=list.find(x=>x.id===requestedRifa)||list[0];if(re||!r){$('status').textContent='No se pudo cargar la rifa.';return}rifa=r;await cargarSelectorRifas();await mostrarGanador();await cargarListaGanadores();await db.rpc('liberar_apartados_expirados',{p_rifa_id:r.id});const {data:n,error:ne}=await db.from('numeros').select('id,numero,estado,apartado_hasta,participante_id,vendido_at').eq('rifa_id',r.id).order('numero');if(ne){$('status').textContent='No se pudieron cargar los números.';return}nGlobal=n||[];
 if(r.estado==='activa'&&r.metodo_sorteo==='loteria_nacional'&&nGlobal.filter(x=>x.estado==='vendido').length===100){const fechaAuto=calcularFechaSorteoDesdeUltimaVenta(nGlobal,r.loteria_tipo);if(fechaAuto&&r.loteria_fecha!==fechaAuto){await db.from('rifas').update({loteria_fecha:fechaAuto}).eq('id',r.id);r.loteria_fecha=fechaAuto;rifa=r;}}
 $('disp').textContent=n.filter(x=>estado(x)==='disponible').length;$('apart').textContent=n.filter(x=>estado(x)==='apartado').length;$('vend').textContent=n.filter(x=>x.estado==='vendido').length;actualizarBotonCerrarSorteo();$('nums').innerHTML=n.map(x=>{const st=estado(x);let b='';if(st==='apartado')b='<button class="btn small danger" title="Liberar número" aria-label="Liberar número" onclick="liberar(\''+x.id+'\')">Liberar</button>';if(st==='disponible')b='<button class="btn small" title="Marcar como vendido" aria-label="Marcar como vendido" onclick="vender(\''+x.id+'\')">Vendido</button>';if(st==='vendido')b='<button class="btn small secondary" title="Liberar número vendido" aria-label="Liberar número vendido" onclick="liberar(\''+x.id+'\')">Liberar</button>';return '<div class="ticket '+st+'"><b>'+String(x.numero).padStart(2,'0')+'</b><div class="actions">'+b+'</div></div>'}).join('');
 const participantIds=[...new Set((nGlobal||[]).filter(z=>z.participante_id).map(z=>z.participante_id))];
@@ -491,7 +504,9 @@ async function iniciarAdmin(){
   if(!(await initDb()))return;
   db.auth.onAuthStateChange((e,s)=>{if(s)sesion();else mostrarLogin()});
   await sesion();
-  setInterval(()=>{if(!$('app').classList.contains('hidden'))cargar()},30000);
+  setInterval(()=>{if(!$('app').classList.contains('hidden'))programarCargaAdmin()},30000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!$('app').classList.contains('hidden'))programarCargaAdmin()});
+  window.addEventListener('focus',()=>{if(!$('app').classList.contains('hidden'))programarCargaAdmin()});
 }
 iniciarAdmin();
 </script><script src="admin-nuevo-sorteo.js?v=20260921-2"></script></body></html>
