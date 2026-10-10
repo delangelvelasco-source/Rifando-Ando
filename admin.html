@@ -508,6 +508,7 @@ async function iniciarAdmin(){
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!$('app').classList.contains('hidden'))programarCargaAdmin()});
   window.addEventListener('focus',()=>{if(!$('app').classList.contains('hidden'))programarCargaAdmin()});
 }
+async function copiarReferencia(id){try{await navigator.clipboard.writeText(String(id||''));alert('Referencia copiada.')}catch(e){prompt('Copia la referencia:',String(id||''))}}
 async function cargarPagosPendientes(){
   const el=$('pendingPayments'); if(!el||!rifa)return;
   el.innerHTML='Consultando pagos pendientes...';
