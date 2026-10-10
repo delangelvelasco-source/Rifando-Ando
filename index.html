@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080808">
-<link rel="manifest" href="manifest.json"><meta name="version" content="2026-10-10-1855-payment-link-fix">
+<link rel="manifest" href="manifest.json"><meta name="version" content="2026-10-10-1915-mp-all-active-raffles">
 <title>Rifando Ando | Rifas en línea y sorteos</title>
 <meta name="description" content="Rifas en línea entre compas. Elige tus números, participa en nuestros sorteos y conoce las reglas para participar.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -1318,8 +1318,9 @@ async function iniciarPagoMercadoPago(){
     if(msg){msg.style.display='block';msg.textContent='No encontramos el identificador seguro de esta reserva. Conserva tus números y contacta al administrador; no vuelvas a reservar todavía.';}
     return;
   }
-  if(!rifa||String(rifa.grupo_rifa||'')!=='regular'){
-    if(msg){msg.style.display='block';msg.textContent='Mercado Pago se está habilitando primero para el Sorteo Regular.';}
+  const gruposConPago=['regular','especial','iphone','express'];
+  if(!rifa||String(rifa.estado||'').toLowerCase()!=='activa'||!gruposConPago.includes(String(rifa.grupo_rifa||'').toLowerCase())){
+    if(msg){msg.style.display='block';msg.textContent='Este sorteo no está activo o aún no admite pagos en línea. No se ha cobrado nada.';}
     return;
   }
   if(btn){btn.disabled=true;btn.textContent='Conectando con Mercado Pago…';}
@@ -1436,7 +1437,9 @@ async function confirmar(e){
   waConfirm.href=waLink;
   const mpBtn=document.getElementById('mercadoPagoBtn');
   const mpMsg=document.getElementById('mercadoPagoMsg');
-  if(mpBtn){mpBtn.style.display=(String(rifa?.grupo_rifa||'')==='regular')?'inline-block':'none';mpBtn.disabled=false;mpBtn.textContent='💳 Pagar con Mercado Pago';}
+  const gruposConPago=['regular','especial','iphone','express'];
+  const permitePago=String(rifa?.estado||'').toLowerCase()==='activa'&&gruposConPago.includes(String(rifa?.grupo_rifa||'').toLowerCase());
+  if(mpBtn){mpBtn.style.display=permitePago?'inline-block':'none';mpBtn.disabled=false;mpBtn.textContent='💳 Pagar con Mercado Pago';}
   if(mpMsg){mpMsg.style.display='none';mpMsg.textContent='';}
   confirmWhatsAppClicked=false;
   document.getElementById('modalClose')?.classList.add('locked-close');
