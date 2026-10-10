@@ -1438,7 +1438,7 @@ async function confirmar(e){
   waConfirm.href=waLink;
   const mpBtn=document.getElementById('mercadoPagoBtn');
   const mpMsg=document.getElementById('mercadoPagoMsg');
-  if(mpBtn){mpBtn.style.display=(String(rifa?.grupo_rifa||'')==='regular'&&pagoId&&paymentToken)?'inline-block':'none';mpBtn.disabled=false;mpBtn.textContent='💳 Pagar con Mercado Pago';}
+  if(mpBtn){mpBtn.style.display=(String(rifa?.grupo_rifa||'')==='regular')?'inline-block':'none';mpBtn.disabled=false;mpBtn.textContent='💳 Pagar con Mercado Pago';}
   if(mpMsg){mpMsg.style.display='none';mpMsg.textContent='';}
   confirmWhatsAppClicked=false;
   document.getElementById('modalClose')?.classList.add('locked-close');
