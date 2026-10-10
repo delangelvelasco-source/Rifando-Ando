@@ -508,7 +508,7 @@ body{overflow-x:hidden}
 <p>Tus números:</p>
 <div class="numbers" id="confirmNumbers"></div>
 <p>Total: <b class="gold" id="confirmTotal"></b></p>
-<a class="btn" id="waConfirm" href="#" target="_blank" rel="noopener" style="display:inline-block;margin:8px 4px">📲 Enviar solicitud por WhatsApp</a><br>
+<a class="btn" id="waConfirm" href="#" target="_blank" rel="noopener" style="display:inline-block;margin:8px 4px">📲 Enviar solicitud por WhatsApp</a><br><button class="btn" id="mercadoPagoBtn" type="button" onclick="iniciarPagoMercadoPago()" style="display:none;margin:8px 4px;background:#009ee3;color:#fff">💳 Pagar con Mercado Pago</button><div id="mercadoPagoMsg" role="status" style="display:none;margin:8px auto;padding:12px;border:1px solid #245c78;border-radius:12px;color:#cceeff;text-align:left"></div><br>
 <button class="btn" id="confirmCloseBtn" onclick="cerrarFormulario()" style="margin:8px 4px" title="Primero envía la solicitud por WhatsApp">Cerrar</button>
 </div>
 </div>
@@ -1309,6 +1309,63 @@ function cerrarFormulario(){
   document.getElementById('modalClose')?.classList.remove('locked-close');
   document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
 }
+async function iniciarPagoMercadoPago(){
+  const btn=document.getElementById('mercadoPagoBtn');
+  const msg=document.getElementById('mercadoPagoMsg');
+  const pagoId=window.rifandoPagoPendiente?.paymentId;
+  const paymentToken=window.rifandoPagoPendiente?.paymentToken;
+  if(!pagoId||!paymentToken){
+    if(msg){msg.style.display='block';msg.textContent='No encontramos el identificador seguro de esta reserva. Conserva tus números y contacta al administrador; no vuelvas a reservar todavía.';}
+    return;
+  }
+  if(!rifa||String(rifa.grupo_rifa||'')!=='regular'){
+    if(msg){msg.style.display='block';msg.textContent='Mercado Pago se está habilitando primero para el Sorteo Regular.';}
+    return;
+  }
+  if(btn){btn.disabled=true;btn.textContent='Conectando con Mercado Pago…';}
+  if(msg){msg.style.display='block';msg.textContent='Estamos verificando tu reserva y preparando el pago seguro.';}
+  try{
+    const {data,error}=await db.functions.invoke('mercado-pago',{body:{payment_id:pagoId,payment_token:paymentToken}});
+    if(error)throw new Error(error.message||'No se pudo iniciar el pago.');
+    if(data?.error)throw new Error(data.detail||data.error);
+    if(!data?.checkout_url)throw new Error('Mercado Pago no devolvió un enlace de pago.');
+    if(msg)msg.textContent='Reserva validada. Te estamos enviando a Mercado Pago…';
+    window.location.assign(data.checkout_url);
+  }catch(err){
+    if(msg){msg.style.display='block';msg.textContent='No pudimos iniciar Mercado Pago: '+String(err?.message||err)+'. Tus números no se marcarán como vendidos hasta confirmar el pago.';}
+    if(btn){btn.disabled=false;btn.textContent='💳 Reintentar pago con Mercado Pago';}
+  }
+}
+
+async function procesarRetornoMercadoPago(){
+  const params=new URLSearchParams(window.location.search);
+  const retorno=params.get('mp_return');
+  if(!retorno)return;
+  const pagoId=params.get('pago_id');
+  const token=params.get('payment_token');
+  const rifaId=params.get('rifa');
+  if(!pagoId||!token)return;
+  try{
+    const {data,error}=await db.functions.invoke('mercado-pago',{body:{action:'status',payment_id:pagoId,payment_token:token}});
+    if(error)throw error;
+    const estado=String(data?.estado||'pendiente');
+    if(estado==='confirmado'){
+      alert('✅ Mercado Pago confirmó tu pago. Tus números quedaron registrados como vendidos.');
+    }else if(estado==='rechazado'||retorno==='failure'){
+      alert('El pago no fue aprobado. Revisa el estado en Mercado Pago; si tu reserva sigue vigente, puedes intentar nuevamente.');
+    }else{
+      alert('Mercado Pago todavía no confirma el pago. No cierres el comprobante; verificaremos el estado antes de marcar los números como vendidos.');
+    }
+  }catch(e){
+    alert('Regresaste de Mercado Pago, pero no pudimos verificar el pago automáticamente. No se marcará como pagado hasta recibir confirmación segura.');
+  }finally{
+    params.delete('mp_return');params.delete('pago_id');params.delete('payment_token');params.delete('rifa');
+    const cleanUrl=window.location.pathname+(params.toString()?'?'+params.toString():'')+window.location.hash;
+    window.history.replaceState({},'',cleanUrl);
+    await cargarRifa().catch(()=>{});
+  }
+}
+
 async function confirmar(e){
   e.preventDefault();
   if(!rifa||!sel.size) return;
@@ -1330,6 +1387,9 @@ async function confirmar(e){
     p_correo:email,
     p_numeros:selected
   });
+  const pagoId=String(data?.pago_id||data?.payment_id||data?.id||'');
+  const paymentToken=String(data?.payment_token||data?.paymentToken||'');
+  window.rifandoPagoPendiente={paymentId:pagoId,paymentToken};
   if(error){
     alert('No se pudo apartar: '+error.message);
     btn.disabled=false;
@@ -1376,6 +1436,10 @@ async function confirmar(e){
   const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
   const waConfirm=document.getElementById('waConfirm');
   waConfirm.href=waLink;
+  const mpBtn=document.getElementById('mercadoPagoBtn');
+  const mpMsg=document.getElementById('mercadoPagoMsg');
+  if(mpBtn){mpBtn.style.display=(String(rifa?.grupo_rifa||'')==='regular'&&pagoId&&paymentToken)?'inline-block':'none';mpBtn.disabled=false;mpBtn.textContent='💳 Pagar con Mercado Pago';}
+  if(mpMsg){mpMsg.style.display='none';mpMsg.textContent='';}
   confirmWhatsAppClicked=false;
   document.getElementById('modalClose')?.classList.add('locked-close');
   document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
@@ -1513,6 +1577,7 @@ document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='visible'){
     ejecutarActualizacionesEnSegundoPlano();
     iniciarActualizacionesEnSegundoPlano();
+setTimeout(()=>procesarRetornoMercadoPago().catch(()=>{}),700);
   }else{
     detenerActualizacionesEnSegundoPlano();
   }
