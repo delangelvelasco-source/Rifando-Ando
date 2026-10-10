@@ -531,7 +531,30 @@ async function cargarPagosPendientes(){
     const saldo=Math.max(0,Number(pay.monto||0)-paid);
     const hasRef=!!(pay.mercado_pago_order_id||pay.checkout_url);
     const date=pay.created_at?new Date(pay.created_at).toLocaleString('es-MX'):'Fecha no disponible';
-    return '<div class="row" style="border:1px solid #383838;border-radius:12px;padding:12px;margin:10px 0"><b>'+esc(person.nombre||'Participante sin nombre')+'</b><br><span>'+esc(person.whatsapp||'Sin WhatsApp')+'</span><br><span class="gold">Importe original: $'+Number(pay.monto||0).toLocaleString('es-MX')+'</span><br><span style="color:#82d39b">Abonado confirmado: $'+paid.toLocaleString('es-MX')+'</span><br><span>Saldo pendiente: <b>$'+saldo.toLocaleString('es-MX')+'</b></span><br><span>Referencia Mercado Pago: '+(hasRef?'registrada':'no disponible')+'</span><br><span>Números asociados: '+(ns.length?esc(ns.join(', ')):'<b style="color:#f0a35a">Ninguno; revisar registro</b>')+'</span><br><small>'+esc(date)+'</small></div>';
+    const orderId=String(pay.mercado_pago_order_id||'');
+    const checkout=String(pay.checkout_url||'');
+    let safeCheckout='';
+    try{const u=new URL(checkout);if(u.protocol==='https:'&&/(^|\\.)mercadopago\\./i.test(u.hostname))safeCheckout=u.href}catch(e){}
+    const tel=String(person.whatsapp||'').replace(/\\D/g,'');
+    const wa=tel.length>=10?'https://wa.me/'+(tel.length===10?'52':'')+tel+'?text='+encodeURIComponent('Hola '+(person.nombre||'')+', te contacto de Rifando Ando para revisar tu pago pendiente de 
+  }).join('');
+}
+iniciarAdmin();
+</script><script src="admin-nuevo-sorteo.js?v=20260921-2"></script></body></html>+saldo.toLocaleString('es-MX')+'. Estamos verificando el estado en Mercado Pago antes de solicitar otro pago.'):'';
+    const actions='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">'+(safeCheckout?'<a class="btn small" href="'+esc(safeCheckout)+'" target="_blank" rel="noopener noreferrer">🔗 Abrir enlace de pago</a>':'<span class="btn small secondary" style="opacity:.7">Sin enlace guardado</span>')+(orderId?'<button class="btn small secondary" type="button" onclick="copiarReferencia(\\''+esc(orderId)+'\\')">📋 Copiar referencia</button>':'<span class="muted">Sin ID de orden guardado</span>')+(wa?'<a class="btn small secondary" href="'+wa+'" target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>':'')+'<button class="btn small secondary" type="button" onclick="alert(\\'El número está liberado por vencimiento. Verifica primero el pago en Mercado Pago y después revisa si el número sigue disponible. No se reasignará automáticamente.\\')">🛟 Revisar apartado</button></div>';
+    return '<div class="row" style="border:1px solid #383838;border-radius:12px;padding:12px;margin:10px 0"><b>'+esc(person.nombre||'Participante sin nombre')+'</b><br><span>'+esc(person.whatsapp||'Sin WhatsApp')+'</span><br><span class="gold">Importe original: 
+  }).join('');
+}
+iniciarAdmin();
+</script><script src="admin-nuevo-sorteo.js?v=20260921-2"></script></body></html>+Number(pay.monto||0).toLocaleString('es-MX')+'</span><br><span style="color:#82d39b">Abonado confirmado: 
+  }).join('');
+}
+iniciarAdmin();
+</script><script src="admin-nuevo-sorteo.js?v=20260921-2"></script></body></html>+paid.toLocaleString('es-MX')+'</span><br><span>Saldo pendiente: <b>
+  }).join('');
+}
+iniciarAdmin();
+</script><script src="admin-nuevo-sorteo.js?v=20260921-2"></script></body></html>+saldo.toLocaleString('es-MX')+'</b></span><br><span>Referencia Mercado Pago: '+(orderId?'ID '+esc(orderId):'sin ID de orden')+'</span><br><span>Números asociados: '+(ns.length?esc(ns.join(', ')):'<b style="color:#f0a35a">Ninguno; revisar registro</b>')+'</span><br><small>'+esc(date)+'</small>'+actions+'</div>';
   }).join('');
 }
 iniciarAdmin();
