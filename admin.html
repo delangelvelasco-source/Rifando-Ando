@@ -508,6 +508,7 @@ async function iniciarAdmin(){
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!$('app').classList.contains('hidden'))programarCargaAdmin()});
   window.addEventListener('focus',()=>{if(!$('app').classList.contains('hidden'))programarCargaAdmin()});
 }
+async function copiarReferencia(id){try{await navigator.clipboard.writeText(String(id||''));alert('ID de orden copiado.')}catch(e){prompt('Copia el ID de orden:',String(id||''))}}
 async function cargarPagosPendientes(){
   const el=$('pendingPayments'); if(!el||!rifa)return;
   el.innerHTML='Consultando pagos pendientes...';
@@ -543,7 +544,7 @@ iniciarAdmin();
     const orderLabel=orderId?'<br><span>🔎 ID de orden: <code>'+esc(orderId)+'</code></span>':'';
     const buttons='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">'+
       (safeCheckout?'<a class="btn small" href="'+esc(checkout)+'" target="_blank" rel="noopener noreferrer">🔗 Abrir enlace guardado</a>':'<button class="btn small secondary" type="button" disabled title="No hay un enlace de Mercado Pago válido guardado">🔗 Sin enlace disponible</button>')+
-      (orderId?'<button class="btn small secondary" type="button" onclick="navigator.clipboard.writeText('+JSON.stringify(orderId).replace(/</g,'\\u003c')+').then(()=>alert(\'ID de orden copiado\')).catch(()=>alert(\'ID de orden: '+esc(orderId)+'\'))">📋 Copiar referencia</button>':'')+
+      (orderId?'<button class="btn small secondary" type="button" onclick="copiarReferencia(\''+esc(orderId)+'\')">📋 Copiar referencia</button>':'')+
       (wa?'<a class="btn small secondary" href="'+wa+'" target="_blank" rel="noopener noreferrer">💬 Contactar por WhatsApp</a>':'')+
       '<button class="btn small secondary" type="button" onclick="alert(\'Revisión segura: el número ya fue liberado porque venció el apartado. Primero verifica la orden en Mercado Pago. No se restauró ni reasignó el número automáticamente. Si el pago se confirma, revisa disponibilidad antes de apartarlo nuevamente.\')">🛟 Revisar apartado</button></div>';
     return '<div class="row" style="border:1px solid #383838;border-radius:12px;padding:12px;margin:10px 0"><b>'+esc(person.nombre||'Participante sin nombre')+'</b><br><span>'+esc(person.whatsapp||'Sin WhatsApp')+'</span><br><span class="gold">Importe original: 
