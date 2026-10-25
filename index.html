@@ -12,12 +12,12 @@
 <link rel="preconnect" href="https://iaviafijfdqinehcfebr.supabase.co" crossorigin>
 <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
 <link rel="dns-prefetch" href="//iaviafijfdqinehcfebr.supabase.co">
-<link rel="canonical" href="https://delangelvelasco-source.github.io/Rifando-Ando/">
+<link rel="canonical" href="https://rifasmty.lol/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Rifando Ando">
 <meta property="og:title" content="Rifando Ando | Rifas en línea y sorteos">
 <meta property="og:description" content="Rifas en línea entre compas. Elige tus números, participa en nuestros sorteos y conoce las reglas para participar.">
-<meta property="og:url" content="https://delangelvelasco-source.github.io/Rifando-Ando/">
+<meta property="og:url" content="https://rifasmty.lol/">
 <meta property="og:image" content="https://wsrv.nl/?url=rifando-ando-mx.pages.dev%2Flogo-share.svg&output=png&w=1200&h=630&v=3">
 <meta property="og:image:secure_url" content="https://wsrv.nl/?url=rifando-ando-mx.pages.dev%2Flogo-share.svg&output=png&w=1200&h=630&v=3">
 <meta property="og:image:type" content="image/png">
@@ -1214,13 +1214,13 @@ function obtenerDatosCompartir(){
     express:'express/'
   };
   const ruta=rutasPorGrupo[String(rifa?.grupo_rifa||'').toLowerCase()];
-  const baseCloudflare='https://rifando-ando-mx.pages.dev/';
+  const baseActual=new URL('/',window.location.origin).href;
   if(ruta){
     if(window.location.hostname.includes('github.io')){
       const base=url.pathname.includes('/Rifando-Ando/')?url.pathname.split('/Rifando-Ando/')[0]+'/Rifando-Ando/':'/Rifando-Ando/';
       url.pathname=base+ruta;
     }else{
-      url.href=baseCloudflare+ruta;
+      url.href=new URL(ruta,baseActual).href;
     }
     url.search='';
     url.hash='';
