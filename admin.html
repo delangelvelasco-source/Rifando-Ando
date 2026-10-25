@@ -138,7 +138,7 @@
 <div class="box"><h2>Números</h2><p class="muted">Apartado = dorado · Vendido = tachado.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0"><input id="adminNumberSearch" type="search" inputmode="numeric" placeholder="Buscar número (ej. 01234)" style="flex:1;min-width:150px;padding:10px;border-radius:8px;border:1px solid #444;background:#111;color:#fff"><button class="btn" type="button" onclick="renderAdminNumbers(0)">Buscar</button><button class="btn secondary" type="button" onclick="clearAdminNumberSearch()">Mostrar disponibles</button></div><p id="adminNumbersHint" class="muted">Mostrando hasta 500 números a la vez para evitar que el teléfono se sature.</p><div style="display:flex;gap:8px;align-items:center;margin:8px 0"><button class="btn" type="button" onclick="renderAdminNumbers(-1)">‹ Anterior</button><span id="adminNumbersPage" class="muted">Bloque 1</span><button class="btn" type="button" onclick="renderAdminNumbers(1)">Siguiente ›</button></div><div class="grid" id="nums"></div></div><div class="box" style="margin-top:18px"><div class="collapseHead" style="cursor:default"><span class="collapseTitle">👥 Últimos participantes</span></div><div id="participantsBody" class="collapseBody open"><div id="participants">Cargando...</div></div></div><div class="box" style="margin-top:18px;border-color:#9b7926"><h2>⏳ Pagos pendientes de Mercado Pago</h2><p class="muted">Lista independiente de los números. Los pagos sin números asociados se marcarán para revisión.</p><div id="pendingPayments">Cargando pagos pendientes...</div></div><div class="box" style="margin-top:18px"><h2>📊 Historial y movimientos por sorteo</h2><div class="field"><label>Seleccionar sorteo</label><select id="historyRaffle" onchange="cargarHistorialRifa()"><option value="">Selecciona un sorteo...</option></select></div><div id="historySummary" class="muted">Selecciona un sorteo para consultar sus movimientos.</div><div id="historyParticipants" style="margin-top:12px"></div></div>
 <div id="winnerListBox" class="box" style="margin-top:18px;border-color:#d9a936"><h2>🏆 Lista de Ganadores</h2><p class="muted">Aquí puedes contactar directamente al ganador de cada sorteo.</p><div id="winnerList"><div class="muted">Cargando ganadores...</div></div></div>
 <div id="winnerBox" class="box hidden" style="margin-top:18px;border-color:#d9a936;text-align:center"><div style="font-size:52px">🏆</div><h2>GANADOR DEL SORTEO</h2><div id="winnerNumber" style="font-size:64px;font-weight:1000;color:#d9a936">--</div><h3 id="winnerName" style="font-size:28px;margin:8px 0"></h3><p id="winnerDate" class="muted"></p><a id="winnerWhatsApp" class="btn" href="#" target="_blank" rel="noopener" style="display:none;margin-top:10px">📲 Felicitar por WhatsApp</a></div></div>
-<div id="loteriaModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarLoteria()" style="float:right">×</button><h2>🇲🇽 Sorteo con Lotería Nacional</h2><p class="muted">Regla: se toman las <b>2 últimas cifras</b> del resultado oficial del Tris y ese número 00–99 determina al ganador. Deben estar vendidos los 100 números.</p><div class="field"><label>Tipo de sorteo</label><select id="lotTipo"><option>Tris Clásico</option><option>Tris de las Siete</option><option>Tris Extra</option><option>Tris de las Tres</option><option>Tris Medio Día</option></select></div><div class="field"><label>Número de sorteo</label><input id="lotSorteo" inputmode="numeric" placeholder="36657"></div><div class="field"><label>Resultado oficial de 5 dígitos</label><input id="lotResultado" inputmode="numeric" maxlength="5" placeholder="01518"></div><div class="field"><label>Fecha del sorteo</label><input id="lotFecha" type="datetime-local"></div><div class="field"><label>Fuente oficial</label><input id="lotFuente" value="https://www.loterianacional.gob.mx/Tris/resultados"></div><button class="btn" onclick="confirmarSorteoLoteria()" style="width:100%">🏆 Registrar ganador</button><p id="lotMsg"></p></div></div><div id="drawModal" class="modal"><div class="modalbox" style="width:min(900px,100%);text-align:center"><div style="font-size:44px">🎲</div><h2>SELECCIÓN DEL SORTEO</h2><p id="drawStatus" class="muted">Preparando participantes...</p><div id="drawNumber" style="font-size:86px;font-weight:1000;color:#d9a936;line-height:1">--</div><div id="drawGrid" class="grid" style="margin-top:22px;max-height:280px;overflow:auto"></div><div id="drawWinner" class="hidden" style="margin-top:20px"><div style="font-size:24px">🏆 NÚMERO GANADOR</div><div id="drawWinnerNumber" style="font-size:72px;font-weight:1000;color:#d9a936">--</div><div id="drawWinnerName" style="font-size:26px"></div></div></div></div><div id="payModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarPago()" style="float:right">×</button><h2>Registrar pago</h2><p id="payPerson"></p><div class="field"><label>Monto recibido</label><input id="payAmount" type="number" min="0.01" step="0.01"></div><div class="field"><label>Método</label><select id="payMethod"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Otro</option></select></div><button class="btn" onclick="guardarPago()">Confirmar pago</button><p id="payMsg"></p></div></div>
+<div id="loteriaModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarLoteria()" style="float:right">×</button><h2>🇲🇽 Sorteo con Lotería Nacional</h2><p class="muted">El sistema valida el tipo de sorteo y la regla de ganador correspondiente antes de registrar un resultado oficial.</p><div class="field"><label>Tipo de sorteo</label><select id="lotTipo"><option>Tris Clásico</option><option>Tris de las Siete</option><option>Tris Extra</option><option>Tris de las Tres</option><option>Tris Medio Día</option></select></div><div class="field"><label>Número de sorteo</label><input id="lotSorteo" inputmode="numeric" placeholder="36657"></div><div class="field"><label>Resultado oficial de 5 dígitos</label><input id="lotResultado" inputmode="numeric" maxlength="5" placeholder="01518"></div><div class="field"><label>Fecha del sorteo</label><input id="lotFecha" type="datetime-local"></div><div class="field"><label>Fuente oficial</label><input id="lotFuente" value="https://www.loterianacional.gob.mx/Tris/resultados"></div><button class="btn" onclick="confirmarSorteoLoteria()" style="width:100%">🏆 Registrar ganador</button><p id="lotMsg"></p></div></div><div id="drawModal" class="modal"><div class="modalbox" style="width:min(900px,100%);text-align:center"><div style="font-size:44px">🎲</div><h2>SELECCIÓN DEL SORTEO</h2><p id="drawStatus" class="muted">Preparando participantes...</p><div id="drawNumber" style="font-size:86px;font-weight:1000;color:#d9a936;line-height:1">--</div><div id="drawGrid" class="grid" style="margin-top:22px;max-height:280px;overflow:auto"></div><div id="drawWinner" class="hidden" style="margin-top:20px"><div style="font-size:24px">🏆 NÚMERO GANADOR</div><div id="drawWinnerNumber" style="font-size:72px;font-weight:1000;color:#d9a936">--</div><div id="drawWinnerName" style="font-size:26px"></div></div></div></div><div id="payModal" class="modal"><div class="modalbox"><button class="btn secondary" onclick="cerrarPago()" style="float:right">×</button><h2>Registrar pago</h2><p id="payPerson"></p><div class="field"><label>Monto recibido</label><input id="payAmount" type="number" min="0.01" step="0.01"></div><div class="field"><label>Método</label><select id="payMethod"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Otro</option></select></div><button class="btn" onclick="guardarPago()">Confirmar pago</button><p id="payMsg"></p></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://unpkg.com/@supabase/supabase-js@2"></script><script src="config.js"></script><script>
 let db=null, $=id=>document.getElementById(id), rifa=null,nGlobal=[],payParticipant=null,realtimeChannel=null,currentAdmin=null,cargaAdminEnCurso=false,cargaAdminPendiente=false,cargaAdminTimer=null;
 async function initDb(){
@@ -228,23 +228,63 @@ async function probarAnimacionClientes(){
 function cerrarLoteria(){ $('loteriaModal').classList.remove('open'); }
 async function realizarSorteoLoteria(){
   if(!rifa)return;
-  if(rifa.metodo_sorteo!=='loteria_nacional'){alert('⚠️ Esta rifa está configurada para sorteo interno. Crea la siguiente rifa con “Lotería Nacional” para usar este método.');return}
-  const vendidos=nGlobal.filter(x=>x.estado==='vendido'&&x.participante_id).length,apartados=nGlobal.filter(x=>estado(x)==='apartado').length;
-  if(vendidos!==100){alert('⚠️ Para usar Lotería Nacional deben estar vendidos los 100 números. Actualmente hay '+vendidos+' vendidos.');return}
+  if(rifa.metodo_sorteo!=='loteria_nacional'){alert('⚠️ Esta rifa no está configurada para Lotería Nacional.');return}
+  const regio=rifa.grupo_rifa==='regio'||rifa.id==='dc8973fe-17e9-4273-83d6-1e5493b5a70f';
+  const total=nGlobal.length;
+  const vendidos=nGlobal.filter(x=>x.estado==='vendido'&&x.participante_id).length;
+  const apartados=nGlobal.filter(x=>estado(x)==='apartado').length;
+  if(vendidos!==total||total!==(regio?60000:100)){
+    alert(regio
+      ? '⚠️ El Sorteo Económico Regio solo puede registrar resultado cuando los 60000 números estén vendidos y pagados. Actualmente: '+vendidos+' de 60000.'
+      : '⚠️ Para este sorteo deben estar vendidos los 100 números. Actualmente hay '+vendidos+'.');
+    return;
+  }
   if(apartados>0){alert('⚠️ Hay '+apartados+' número(s) apartados. Deben quedar en cero antes del sorteo.');return}
-  $('lotSorteo').value=rifa.loteria_sorteo||'';$('lotResultado').value=rifa.loteria_resultado||'';$('lotFuente').value=rifa.loteria_fuente||'https://www.loterianacional.gob.mx/Tris/resultados';$('lotFecha').value=rifa.loteria_fecha?new Date(rifa.loteria_fecha).toISOString().slice(0,16):new Date().toISOString().slice(0,16);$('lotMsg').textContent='';$('loteriaModal').classList.add('open');
+  $('lotTipo').value=regio?'Sorteo Mayor':(rifa.loteria_tipo||'Tris Clásico');
+  $('lotSorteo').value=regio?'':(rifa.loteria_sorteo||'');
+  $('lotResultado').value=regio?'':(rifa.loteria_resultado||'');
+  $('lotFuente').value=rifa.loteria_fuente||'https://lotenal.gob.mx/Mascarillas/ListasPremios';
+  $('lotFecha').value=new Date().toISOString().slice(0,16);
+  $('lotTipo').disabled=regio;
+  $('lotMsg').textContent='';
+  const intro=$('loteriaModal').querySelector('.modalbox p.muted');
+  if(intro)intro.innerHTML=regio
+    ? 'Regla de Sorteo Económico Regio: captura el <b>número completo del premio mayor</b> publicado en la lista oficial del Sorteo Mayor. Ese mismo número (00001–60000) identifica al ganador. Solo se habilita con los 60000 boletos vendidos y pagados.'
+    : 'Regla: se toman las <b>2 últimas cifras</b> del resultado oficial del Tris y ese número 00–99 determina al ganador. Deben estar vendidos los 100 números.';
+  $('lotResultado').maxLength=5;
+  $('lotResultado').placeholder=regio?'27481':'01518';
+  $('loteriaModal').dataset.regio=regio?'1':'0';
+  $('loteriaModal').classList.add('open');
 }
 async function confirmarSorteoLoteria(){
-  const tipo=$('lotTipo').value.trim(),sorteo=$('lotSorteo').value.trim(),resultado=$('lotResultado').value.replace(/\D/g,'').trim(),fuente=$('lotFuente').value.trim(),fecha=$('lotFecha').value;
-  if(!sorteo||resultado.length!==5||!fuente||!fecha){$('lotMsg').innerHTML='<span class="error">Completa tipo, sorteo, resultado de 5 dígitos, fecha y fuente.</span>';return}
-  const numero=Number(resultado.slice(-2)),vendido=nGlobal.find(x=>Number(x.numero)===numero&&x.estado==='vendido'&&x.participante_id);
-  if(!vendido){$('lotMsg').innerHTML='<span class="error">El resultado deriva el número '+String(numero).padStart(2,'0')+', pero ese número no aparece vendido.</span>';return}
-  if(!confirm('🇲🇽 CONFIRMACIÓN\n\nTris: '+tipo+' · Sorteo '+sorteo+'\nResultado oficial: '+resultado+'\nNúmero derivado: '+String(numero).padStart(2,'0')+'\n\n¿Registrar este ganador?'))return;
+  const regio=$('loteriaModal').dataset.regio==='1';
+  const tipo=$('lotTipo').value.trim(),sorteo=$('lotSorteo').value.trim(),resultado=$('lotResultado').value.replace(/\\D/g,'').trim(),fuente=$('lotFuente').value.trim(),fecha=$('lotFecha').value;
+  if(!sorteo||resultado.length!==5||!fuente||!fecha){$('lotMsg').innerHTML='<span class="error">Completa número de sorteo, resultado oficial de 5 dígitos, fecha y fuente.</span>';return}
+  const numero=Number(resultado);
+  if(regio&&(numero<1||numero>60000)){$('lotMsg').innerHTML='<span class="error">El número del premio mayor debe estar entre 00001 y 60000.</span>';return}
+  const ganador=regio?nGlobal.find(x=>Number(x.numero)===numero&&x.estado==='vendido'&&x.participante_id):nGlobal.find(x=>Number(x.numero)===Number(resultado.slice(-2))&&x.estado==='vendido'&&x.participante_id);
+  const numeroElegido=regio?numero:Number(resultado.slice(-2));
+  if(!ganador){$('lotMsg').innerHTML='<span class="error">El número '+String(numeroElegido).padStart(regio?5:2,'0')+' no aparece vendido con un comprador registrado.</span>';return}
+  const etiqueta=regio?'Sorteo Mayor':'Tris: '+tipo;
+  if(!confirm('🇲🇽 CONFIRMACIÓN DEL RESULTADO OFICIAL\n\n'+etiqueta+' · Sorteo '+sorteo+'\nResultado oficial: '+resultado+'\nNúmero ganador de Rifando Ando: '+String(numeroElegido).padStart(regio?5:2,'0')+'\n\n¿Registrar este ganador?'))return;
   const btn=[...$('loteriaModal').querySelectorAll('.btn')].find(x=>x.textContent.includes('Registrar ganador'));if(btn){btn.disabled=true;btn.textContent='Registrando...'}
-  const {data,error}=await db.rpc('realizar_sorteo_loteria',{p_rifa_id:rifa.id,p_tipo:tipo,p_sorteo:sorteo,p_resultado:resultado,p_fuente:fuente,p_fecha:new Date(fecha).toISOString()});
+  let data,error;
+  if(regio){
+    ({data,error}=await db.rpc('registrar_resultado_sorteo_regio',{
+      p_numero_sorteo:Number(sorteo.replace(/\\D/g,'')),
+      p_numero_ganador:numero,
+      p_fecha_sorteo:new Date(fecha).toISOString(),
+      p_fuente:fuente
+    }));
+    if(!error&&data?.ok)data={numero:data.numero_ganador,nombre:data.nombre_ganador};
+  }else{
+    ({data,error}=await db.rpc('realizar_sorteo_loteria',{p_rifa_id:rifa.id,p_tipo:tipo,p_sorteo:sorteo,p_resultado:resultado,p_fuente:fuente,p_fecha:new Date(fecha).toISOString()}));
+  }
   if(error){$('lotMsg').innerHTML='<span class="error">❌ '+esc(error.message)+'</span>';if(btn){btn.disabled=false;btn.textContent='🏆 Registrar ganador'}return}
-  $('loteriaModal').classList.remove('open');await cargar();await mostrarGanador();alert('🏆 ¡GANADOR REGISTRADO!\n\nResultado Lotería Nacional: '+resultado+'\nNúmero ganador: '+String(data.numero).padStart(2,'0')+'\nGanador: '+data.nombre);
+  $('loteriaModal').classList.remove('open');await cargar();await mostrarGanador();
+  alert('🏆 ¡GANADOR REGISTRADO!\n\nResultado oficial: '+resultado+'\nNúmero ganador: '+String(data.numero).padStart(regio?5:2,'0')+'\nGanador: '+data.nombre);
 }
+
 async function iniciarSorteo(){
   if(!rifa)return;
   if(rifa.estado==='sorteada'){alert('🏆 Este sorteo ya fue realizado.');return;}
