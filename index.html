@@ -340,6 +340,42 @@ body>*{position:relative;z-index:1}
 header{background:rgba(5,5,5,.94)!important;backdrop-filter:blur(12px)}
 @media(prefers-reduced-motion:reduce){body{background-attachment:scroll!important}}
 </style>
+
+<style id="ofrenda-theme-2026">
+/* Tema especial Ofrenda: conserva intacta la lógica de rifas y pagos. */
+html{background:#100803}
+body{
+  background:
+    radial-gradient(ellipse at 50% 0%,rgba(174,78,7,.28),transparent 48%),
+    radial-gradient(ellipse at 8% 38%,rgba(255,104,0,.17),transparent 30%),
+    radial-gradient(ellipse at 92% 38%,rgba(153,20,91,.17),transparent 32%),
+    linear-gradient(180deg,#160b06 0%,#090807 54%,#160b06 100%) !important;
+  background-attachment:fixed !important;
+  position:relative;
+}
+body:before{
+  content:"✦  ✿  ✦  🕯️  ✦  ✿  ✦";
+  position:fixed;inset:0;z-index:-1;pointer-events:none;
+  display:flex;align-items:flex-start;justify-content:space-around;
+  padding-top:clamp(70px,12vh,150px);
+  color:#f4a51c;font-size:clamp(18px,3vw,38px);letter-spacing:clamp(8px,3vw,35px);
+  opacity:.18;
+  background:
+    radial-gradient(ellipse at 4% 25%,rgba(255,116,0,.22),transparent 28%),
+    radial-gradient(ellipse at 96% 30%,rgba(255,116,0,.2),transparent 30%),
+    radial-gradient(ellipse at 50% 100%,rgba(185,72,8,.15),transparent 45%);
+}
+header{background:rgba(12,7,5,.88)!important;border-bottom-color:#6b3c12!important;backdrop-filter:blur(12px)}
+.hero{position:relative}
+.hero .eyebrow,.official,.grand-label{color:#ffd45b}
+.card,.grand-prize,.step,.quick-card{border-color:rgba(236,157,38,.42)!important}
+.grand-prize{background:radial-gradient(ellipse at 50% 35%,rgba(131,65,9,.5),#120b07 72%)!important;box-shadow:0 0 32px rgba(255,144,18,.2),inset 0 0 35px rgba(255,178,40,.08)!important}
+.btn,.nav .btn,.help-btn{background:linear-gradient(135deg,#ffda43,#f5a900)!important;color:#201004!important;box-shadow:0 4px 18px rgba(255,155,0,.14)}
+.btn:hover,.nav .btn:hover,.help-btn:hover{filter:brightness(1.08)}
+.section h2{color:#ffdc72}
+@media(prefers-reduced-motion:reduce){body:before{animation:none!important}}
+</style>
+
 </head>
 <body>
 <header>
