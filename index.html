@@ -1043,7 +1043,7 @@ async function actualizarInfoLoteria(r){
     const numeroBase=reglaAntigua?Number(resultText.slice(-2)):Number(resultText.slice(-3));
     const winner=reglaAntigua?numeroBase:(numeroBase%totalCount||totalCount);
     result.style.display='';
-    result.innerHTML='Resultado oficial: <b>'+resultText+'</b> · Número ganador: <b>'+String(winner).padStart(3,'0')+'</b>';
+    result.innerHTML='Resultado oficial: <b>'+resultText+'</b> · Número ganador: <b>'+String(winner).padStart(totalCount>100?3:2,'0')+'</b>';
   }else result.style.display='none';
 }
 async function contarNumerosPublico(rifaId){
