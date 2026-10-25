@@ -83,9 +83,16 @@ header{position:sticky;top:0;background:#080808ee;border-bottom:1px solid #29292
 
 <section class="card" id="loteria"><h2>7. Mecánica con Lotería Nacional 🇲🇽</h2>
 <ol>
-<li>Cuando la rifa indique expresamente esta modalidad, deberán estar <strong>vendidos los 100 números y con el pago confirmado</strong> para proceder a determinar al ganador.</li>
-<li>Si los 100 números quedan vendidos y con el pago confirmado <strong>antes del cierre operativo</strong> del sorteo de Lotería Nacional de referencia, se utilizará ese sorteo. Si los 100 números se completan después de dicho cierre, se utilizará el siguiente sorteo disponible de la modalidad indicada.</li>
-<li>El resultado oficial será un número de cinco dígitos. El número ganador de la rifa será el correspondiente a sus <strong>dos últimos dígitos</strong>, expresados del 00 al 99.</li>
+<li>Cuando la rifa indique expresamente esta modalidad, todos los números deberán estar <strong>vendidos y con el pago confirmado</strong> antes de determinar al ganador.</li>
+<li>Si todos los números quedan vendidos y con el pago confirmado <strong>antes del cierre operativo</strong> del sorteo de Lotería Nacional de referencia, se utilizará ese sorteo. Si se completan después de dicho cierre, se utilizará el siguiente sorteo disponible de la modalidad indicada.</li>
+<li>El resultado oficial de Tris consta de cinco dígitos. La regla depende de la numeración publicada para cada rifa:
+  <ul>
+    <li><strong>Rifas de 100 números del 00 al 99:</strong> se toman las dos últimas cifras del resultado oficial. Esas cifras identifican directamente el boleto ganador.</li>
+    <li><strong>Rifas de 250 números del 00 al 249:</strong> se toman las tres últimas cifras del resultado oficial y se calcula el residuo al dividir ese número entre 250. El residuo identifica el boleto ganador; si el residuo es 0, gana el boleto <strong>00</strong>.</li>
+  </ul>
+</li>
+<li>Ejemplos para rifas de 250 números: resultado terminado en 096 = boleto 096; terminado en 249 = boleto 249; terminado en 250 = boleto 00; terminado en 000 = boleto 00; terminado en 251 = boleto 001.</li>
+<li>El rango de boletos y la regla aplicable deberán estar visibles en la ficha de la rifa antes de que comience la participación. No se cambiará la regla después de iniciadas las ventas.</li>
 <li>El resultado se verificará contra la publicación oficial de Lotería Nacional y se conservarán los datos del sorteo utilizados para registrar al ganador.</li>
 <li>Si el sorteo de referencia no se celebra, es cancelado o su resultado oficial no está disponible, la administración utilizará el siguiente sorteo disponible de la misma modalidad y lo comunicará en la ficha correspondiente.</li>
 </ol>
