@@ -1392,13 +1392,9 @@ async function cargarHistorialGanadores(){
 function obtenerDatosCompartir(){
   const nombre=obtenerNombrePublicoRifa(rifa);
   const url=new URL(window.location.href);
-  const rutasPorGrupo={
-    regular:'regular/',
-    especial:'especial/',
-    iphone:'iphone/',
-    express:'express/'
-  };
-  const ruta=rutasPorGrupo[String(rifa?.grupo_rifa||'').toLowerCase()];
+  const rutasPorGrupo={regular:'regular/',especial:'especial/',iphone:'iphone/',express:'express/'};
+  const grupo=String(rifa?.grupo_rifa||'').toLowerCase();
+  const ruta=rutasPorGrupo[grupo];
   const baseActual=new URL('/',window.location.origin).href;
   if(ruta){
     if(window.location.hostname.includes('github.io')){
@@ -1407,16 +1403,27 @@ function obtenerDatosCompartir(){
     }else{
       url.href=new URL(ruta,baseActual).href;
     }
-    url.search='';
-    url.hash='';
-  }else if(rifa?.id){
-    url.searchParams.set('rifa',String(rifa.id));
-    url.hash='';
   }
+  // Siempre agregar el ID de esta rifa para que el enlace abra este sorteo exacto,
+  // no solamente la categoría de sorteos.
+  if(rifa?.id)url.searchParams.set('rifa',String(rifa.id));
+  url.hash='';
   const nl=String.fromCharCode(10);
+  const premioRaw=String(rifa?.premio??'').trim();
+  let premioTexto=premioRaw;
+  if(premioRaw && !/mxn/i.test(premioRaw)){
+    const numero=Number(premioRaw.replace(/[$,\s]/g,''));
+    if(Number.isFinite(numero))premioTexto='$'+numero.toLocaleString('es-MX',{minimumFractionDigits:0,maximumFractionDigits:2})+' MXN';
+    else premioTexto=premioRaw;
+  }
+  const esOfrenda=grupo==='especial'||/ofrenda/i.test(nombre);
+  const tituloPromo=esOfrenda?'💀🌼 ¡ÉCHALE NÚMERO, COMPA! 🎟️🏆':'🎟️🏆 ¡PARTICIPA EN '+String(nombre).toUpperCase()+'!';
+  const textoPromo=esOfrenda
+    ?tituloPromo+nl+nl+'¡La ofrenda ya está lista y tú puedes participar!'+nl+nl+'✨ Participa en nuestro sorteo especial.'+nl+'🏆 Premio de '+premioTexto+'.'+nl+'🎟️ Entra, conoce los detalles y elige tus números.'+nl+nl+'👉 Participa aquí:'
+    :tituloPromo+nl+nl+'✨ ¡Participa en este sorteo de Rifando Ando!'+nl+'🏆 Premio: '+premioTexto+'.'+nl+'🎟️ Entra, conoce los detalles y elige tus números.'+nl+nl+'👉 Participa aquí:';
   return {
     title:nombre+' | Rifando Ando',
-    text:'🎟️ '+nombre+nl+'💰 Premio: '+String(rifa?.premio||'')+nl+'🎫 Boleto: $'+Number(rifa?.precio_numero||0).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2})+nl+'👉 Participa aquí:',
+    text:textoPromo,
     url:url.href
   };
 }
