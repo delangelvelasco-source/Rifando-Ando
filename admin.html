@@ -258,7 +258,7 @@ async function realizarSorteoLoteria(){
 }
 async function confirmarSorteoLoteria(){
   const regio=$('loteriaModal').dataset.regio==='1';
-  const tipo=$('lotTipo').value.trim(),sorteo=$('lotSorteo').value.trim(),resultado=$('lotResultado').value.replace(/\\D/g,'').trim(),fuente=$('lotFuente').value.trim(),fecha=$('lotFecha').value;
+  const tipo=$('lotTipo').value.trim(),sorteo=$('lotSorteo').value.trim(),resultado=$('lotResultado').value.replace(/\D/g,'').trim(),fuente=$('lotFuente').value.trim(),fecha=$('lotFecha').value;
   if(!sorteo||resultado.length!==5||!fuente||!fecha){$('lotMsg').innerHTML='<span class="error">Completa número de sorteo, resultado oficial de 5 dígitos, fecha y fuente.</span>';return}
   const numero=Number(resultado);
   if(regio&&(numero<1||numero>60000)){$('lotMsg').innerHTML='<span class="error">El número del premio mayor debe estar entre 00001 y 60000.</span>';return}
@@ -271,7 +271,7 @@ async function confirmarSorteoLoteria(){
   let data,error;
   if(regio){
     ({data,error}=await db.rpc('registrar_resultado_sorteo_regio',{
-      p_numero_sorteo:Number(sorteo.replace(/\\D/g,'')),
+      p_numero_sorteo:Number(sorteo.replace(/\D/g,'')),
       p_numero_ganador:numero,
       p_fecha_sorteo:new Date(fecha).toISOString(),
       p_fuente:fuente
