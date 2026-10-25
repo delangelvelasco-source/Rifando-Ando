@@ -1030,15 +1030,20 @@ async function actualizarInfoLoteria(r){
   }else{
     status.textContent='🔵 Esta rifa se sorteará con '+drawType+'.';
   }
+  const {data:numeroRows}=await db.from('numeros').select('numero').eq('rifa_id',r.id).order('numero');
+  const listaNumeros=(numeroRows||[]).map(x=>Number(x.numero)).filter(Number.isFinite).sort((a,b)=>a-b);
+  const minNumero=listaNumeros[0],maxNumero=listaNumeros[listaNumeros.length-1];
+  const reglaAntigua=totalCount===100&&minNumero===0&&maxNumero===99;
   details.innerHTML='<div>🎯 Modalidad: <b>'+drawType+'</b></div>'+
     '<div>⏰ Hora del sorteo: <b>'+drawTime+' h</b> (hora de Monterrey)</div>'+
-    '<div>🔢 Regla: <b>últimas 2 cifras</b> del resultado oficial</div>'+
+    '<div>🔢 Regla: <b>'+(reglaAntigua?'últimas 2 cifras (boletos 00–99)':'últimas 3 cifras módulo '+totalCount+'; residuo 0 = '+totalCount)+'</b></div>'+
     '<div>🎟️ Estado de la rifa: <b>'+completeCount+'/'+totalCount+' números pagados</b></div>';
   if(r.estado==='sorteada' && r.loteria_resultado){
     const resultText=String(r.loteria_resultado).padStart(5,'0');
-    const winner=resultText.slice(-2);
+    const numeroBase=reglaAntigua?Number(resultText.slice(-2)):Number(resultText.slice(-3));
+    const winner=reglaAntigua?numeroBase:(numeroBase%totalCount||totalCount);
     result.style.display='';
-    result.innerHTML='Resultado oficial: <b>'+resultText+'</b> · Número ganador: <b>'+winner+'</b>';
+    result.innerHTML='Resultado oficial: <b>'+resultText+'</b> · Número ganador: <b>'+String(winner).padStart(3,'0')+'</b>';
   }else result.style.display='none';
 }
 async function contarNumerosPublico(rifaId){
