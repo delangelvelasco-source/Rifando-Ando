@@ -85,12 +85,15 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
   .foot a{font-size:11px}
 }
 </style>
+
+
 <style id="rfs-gold-background">
-/* Fondo visual premium negro/dorado para Rifando Ando */
-body{position:relative;isolation:isolate;background-color:#050505!important;background-image:radial-gradient(ellipse at 50% 4%,rgba(217,169,54,.20),transparent 34%),radial-gradient(ellipse at 0% 38%,rgba(217,169,54,.11),transparent 28%),radial-gradient(ellipse at 100% 72%,rgba(217,169,54,.10),transparent 30%),linear-gradient(180deg,#080808 0%,#050505 52%,#0a0803 100%)!important;background-attachment:fixed!important}
-body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.28;background-image:radial-gradient(circle at 12% 16%,#f5d36a 0 1px,transparent 2px),radial-gradient(circle at 84% 12%,#d9a936 0 1px,transparent 2px),radial-gradient(circle at 73% 38%,#f5d36a 0 1px,transparent 2px),radial-gradient(circle at 22% 62%,#d9a936 0 1px,transparent 2px),radial-gradient(circle at 91% 81%,#f5d36a 0 1px,transparent 2px),radial-gradient(circle at 8% 88%,#d9a936 0 1px,transparent 2px),radial-gradient(ellipse at 50% 0%,transparent 0 18%,rgba(217,169,54,.08) 19%,transparent 40%);background-size:280px 300px,360px 320px,420px 400px,310px 370px,390px 350px,340px 400px,100% 100%}
+/* Fondo premium visible; el contenido permanece por encima */
+html{background:#050505!important}
+body{position:relative;background-color:#050505!important;background-image:radial-gradient(ellipse at 50% 0%,rgba(255,196,48,.26),transparent 42%),radial-gradient(ellipse at 0% 45%,rgba(217,169,54,.17),transparent 35%),radial-gradient(ellipse at 100% 75%,rgba(217,169,54,.15),transparent 34%),linear-gradient(180deg,#080808 0%,#050505 48%,#100b02 100%)!important;background-attachment:fixed!important}
+body:before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.34;background-image:radial-gradient(circle at 12% 16%,#ffe08a 0 1.5px,transparent 3px),radial-gradient(circle at 84% 12%,#d9a936 0 1.5px,transparent 3px),radial-gradient(circle at 73% 38%,#ffe08a 0 1px,transparent 3px),radial-gradient(circle at 22% 62%,#d9a936 0 1.5px,transparent 3px),radial-gradient(circle at 91% 81%,#ffe08a 0 1.5px,transparent 3px),radial-gradient(circle at 8% 88%,#d9a936 0 1px,transparent 3px);background-size:280px 300px,360px 320px,420px 400px,310px 370px,390px 350px,340px 400px}
+body>*{position:relative;z-index:1}
 header{background:rgba(5,5,5,.94)!important;backdrop-filter:blur(12px)}
-.card,.step,.winner-card,.modal-box{box-shadow:0 8px 28px rgba(0,0,0,.24)}
 @media(prefers-reduced-motion:reduce){body{background-attachment:scroll!important}}
 </style>
 </head>
