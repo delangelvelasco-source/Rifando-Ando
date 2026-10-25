@@ -494,7 +494,7 @@ body{padding-top:158px!important}
 </head>
 <body>
 <header>
-<div id="raffle-payment-notice" role="note" aria-label="Condición de realización de sorteos"><span class="notice-icon" aria-hidden="true">📣</span><span class="notice-copy">Todos los sorteos se realizan <strong>una vez pagado el último número.</strong></span><span class="notice-icon notice-calendar" aria-hidden="true">▣</span></div>
+<div id="raffle-payment-notice" role="note" aria-label="Condición de realización de sorteos"><span class="notice-icon" aria-hidden="true">📣</span><span class="notice-copy">Cada sorteo tiene su propia modalidad, fecha y condiciones. <strong>Consulta las reglas del sorteo seleccionado.</strong></span><span class="notice-icon notice-calendar" aria-hidden="true">▣</span></div>
 <div class="nav">
 <div class="logo">RIFANDO <span>ANDO</span> 🎟️</div>
 <div style="display:flex;gap:8px;align-items:center">
@@ -1303,7 +1303,7 @@ async function cargarRifa(){
     const stateClass=free?'available':(x.estado==='apartado'?'pending':'sold');
     b.className='ticket '+stateClass;
     b.textContent=String(x.numero).padStart(2,'0');
-    if(free && r.estado!=='cerrada'){
+    if(free && !['cerrada','preparando','sorteada'].includes(String(r.estado))){
       b.addEventListener('click',()=>{
         if(solicitudPendiente)return;
         if(sel.has(x.numero)){sel.delete(x.numero);b.classList.remove('selected')}
