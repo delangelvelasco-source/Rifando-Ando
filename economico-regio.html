@@ -31,7 +31,7 @@ button{cursor:pointer;font-weight:800}button.primary{background:var(--green);bor
 <div class="legend"><span><i style="background:#fff;border:1px solid #8ee344"></i>Disponibles</span><span><i style="background:#f6c453"></i>Pendientes de pago · 24 h</span><span>Los vendidos no se muestran</span></div>
 <div id="status" class="status">Cargando números…</div><section class="purchase"><h2>Tu compra</h2><p id="selectedSummary">Selecciona números disponibles.</p><button id="clearSelection" type="button" class="secondary" style="display:none;width:100%;margin:0 0 12px;border-color:#8a6b25;color:#f5c343">✕ Borrar selección</button><label>Nombre completo <input id="buyerName" maxlength="120" placeholder="Tu nombre" style="display:block;width:100%;margin:6px 0"></label><label>WhatsApp <input id="buyerPhone" maxlength="20" placeholder="Tu WhatsApp" style="display:block;width:100%;margin:6px 0"></label><label>Correo (opcional) <input id="buyerEmail" type="email" maxlength="160" placeholder="correo@ejemplo.com" style="display:block;width:100%;margin:6px 0"></label><p id="buyMessage" style="display:none;overflow-wrap:anywhere"></p><button id="buyButton" class="primary" style="width:100%" disabled>Selecciona números</button></section><div id="grid" class="grid" aria-live="polite"></div>
 <div class="pager"><button id="prev">‹ Anterior</button><span id="page">Bloque 1</span><button id="next">Siguiente ›</button></div>
-<p class="note">Vista de preparación. Las ventas permanecen desactivadas hasta completar y verificar el proceso de reserva y pago. Los estados se actualizan automáticamente cuando hay cambios en la base de datos.</p>
+
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
