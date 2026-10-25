@@ -1278,7 +1278,7 @@ async function cargarRifa(){
 
   if(r.estado==='sorteada'){
     const winnerBanner=document.querySelector('.winner-text');
-    if(winnerBanner){winnerBanner.textContent='🏆 SORTEO FINALIZADO';winnerBanner.setAttribute('aria-hidden','false');winnerBanner.style.animation='none';winnerBanner.style.color='#d9a936';}
+    if(winnerBanner){winnerBanner.style.display='none';}
     tickets.innerHTML='<div style="grid-column:1/-1;padding:28px;text-align:center;border:1px solid #3a2d0d;border-radius:16px;background:#111"><div style="font-size:48px">🏆</div><h3>¡El sorteo ya fue realizado!</h3><p style="color:#aaa">Consulta el ganador y el historial más abajo.</p></div>';
     const precioFormateado='$'+Number(r.precio_numero).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
     const nombrePublico=obtenerNombrePublicoRifa(r);
