@@ -287,6 +287,7 @@ async function confirmarSorteoLoteria(){
 
 async function iniciarSorteo(){
   if(!rifa)return;
+  if(rifa.grupo_rifa==='regio'||rifa.id==='dc8973fe-17e9-4273-83d6-1e5493b5a70f'){await realizarSorteoLoteria();return;}
   if(rifa.estado==='sorteada'){alert('🏆 Este sorteo ya fue realizado.');return;}
   const total=nGlobal.length;
   const vendidos=nGlobal.filter(x=>x.estado==='vendido').length;
