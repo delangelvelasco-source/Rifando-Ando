@@ -23,5 +23,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Incorporar cualquier cambio reciente antes de crear el commit del PNG.
+          git fetch origin main
+          git reset --hard origin/main
           git add economico-regio-share.png
-          if git diff --cached --quiet; then echo "No hay cambios"; else git commit -m "Generar PNG para vista previa social"; git push; fi
+          if git diff --cached --quiet; then echo "No hay cambios"; else git commit -m "Generar PNG para vista previa social"; git push origin HEAD:main; fi
