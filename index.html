@@ -1160,8 +1160,8 @@ async function cargarRifa(){
   const loadSeq=++cargarRifaSeq;
   const params=new URLSearchParams(window.location.search);
   const rutaRifa=window.location.pathname.replace(/\/+$/,'').split('/').pop().toLowerCase();
-  const gruposRifa={regular:'regular',especial:'especial',iphone:'iphone',express:'express'};
-  const fallbackRutas={regular:'4b23f516-7973-4a04-bff6-9b9b5cb90f4d',especial:'60f9a81d-bdd6-4e28-b330-dc92cfe4d113',iphone:'9a9bca1f-3f22-4a1a-8813-70c7f5914f65',express:'af9945a6-fe0d-4f53-a147-d8e332e39b59'};
+  const gruposRifa={regular:'regular',especial:'especial',iphone:'iphone',express:'express',regio:'regio'};
+  const fallbackRutas={regular:'4b23f516-7973-4a04-bff6-9b9b5cb90f4d',especial:'60f9a81d-bdd6-4e28-b330-dc92cfe4d113',iphone:'9a9bca1f-3f22-4a1a-8813-70c7f5914f65',express:'af9945a6-fe0d-4f53-a147-d8e332e39b59',regio:'dc8973fe-17e9-4273-83d6-1e5493b5a70f'};
   const mapaRutas={...fallbackRutas};
   let rifasActuales=window.__rifasActualesMapa?{...window.__rifasActualesMapa}:{};
   let listaActuales=null;
@@ -1189,7 +1189,8 @@ async function cargarRifa(){
     '4b23f516-7973-4a04-bff6-9b9b5cb90f4d':'regular',
     '60f9a81d-bdd6-4e28-b330-dc92cfe4d113':'especial',
     '9a9bca1f-3f22-4a1a-8813-70c7f5914f65':'iphone',
-    'af9945a6-fe0d-4f53-a147-d8e332e39b59':'express'
+    'af9945a6-fe0d-4f53-a147-d8e332e39b59':'express',
+    'dc8973fe-17e9-4273-83d6-1e5493b5a70f':'regio'
   };
   let requestedRifa=requestedParam?String(requestedParam):(mapaRutas[rutaRifa]||mapaRutas.regular);
   const legacyGrupo=legacyGrupoPorId[requestedRifa];
@@ -1214,7 +1215,8 @@ async function cargarRifa(){
     '4b23f516-7973-4a04-bff6-9b9b5cb90f4d':{nombre:'Sorteo Regular',precio:'$15.00 por número',boleto:'$15.00',numeros:'100',premio:'$1,000.00'},
     '60f9a81d-bdd6-4e28-b330-dc92cfe4d113':{nombre:'Sorteo Especial',precio:'$100.00 por número',boleto:'$100.00',numeros:'100',premio:'$10,000.00'},
     '9a9bca1f-3f22-4a1a-8813-70c7f5914f65':{nombre:'iPhone 18 Pro Max 256 GB',precio:'$180.00 por número',boleto:'$180.00',numeros:'250',premio:'$31,999.00'},
-    'af9945a6-fe0d-4f53-a147-d8e332e39b59':{nombre:'Sorteo Express',precio:'$25.00 por número',boleto:'$25.00',numeros:'30',premio:'$500.00'}
+    'af9945a6-fe0d-4f53-a147-d8e332e39b59':{nombre:'Sorteo Express',precio:'$25.00 por número',boleto:'$25.00',numeros:'30',premio:'$500.00'},
+    'dc8973fe-17e9-4273-83d6-1e5493b5a70f':{nombre:'Gran Sorteo Regio',precio:'$2.00 por número',boleto:'$2.00',numeros:'60,000',premio:'$60,000 MXN'}
   };
   const base=datosBase[requestedRifa];
   if(base){
@@ -1443,7 +1445,7 @@ async function cargarHistorialGanadores(){
 function obtenerDatosCompartir(){
   const nombre=obtenerNombrePublicoRifa(rifa);
   const url=new URL(window.location.href);
-  const rutasPorGrupo={regular:'regular/',especial:'especial/',iphone:'iphone/',express:'express/'};
+  const rutasPorGrupo={regular:'regular/',especial:'especial/',iphone:'iphone/',express:'express/',regio:'regio/'};
   const grupo=String(rifa?.grupo_rifa||'').toLowerCase();
   const ruta=rutasPorGrupo[grupo];
   const baseActual=new URL('/',window.location.origin).href;
@@ -1561,7 +1563,7 @@ async function iniciarPagoMercadoPago(){
     if(msg){msg.style.display='block';msg.textContent='No encontramos el identificador seguro de esta reserva. Conserva tus números y contacta al administrador; no vuelvas a reservar todavía.';}
     return;
   }
-  const gruposConPago=['regular','especial','iphone','express'];
+  const gruposConPago=['regular','especial','iphone','express','regio'];
   if(!rifa||String(rifa.estado||'').toLowerCase()!=='activa'||!gruposConPago.includes(String(rifa.grupo_rifa||'').toLowerCase())){
     if(msg){msg.style.display='block';msg.textContent='Este sorteo no está activo o aún no admite pagos en línea. No se ha cobrado nada.';}
     return;
