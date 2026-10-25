@@ -456,6 +456,11 @@ body{padding-top:158px!important}
  body{padding-top:260px!important}
 }
 </style>
+
+<style id="site-visitor-counter-style">
+.site-visitor-count{display:inline-flex;align-items:center;gap:8px;margin:12px 0 0;padding:9px 13px;border:1px solid rgba(245,185,35,.55);border-radius:999px;background:rgba(10,7,5,.82);color:#e9d9b6;font-size:13px;font-weight:700;box-shadow:0 3px 14px #0004}
+.site-visitor-count strong{color:#ffd044;font-variant-numeric:tabular-nums;font-size:15px}
+</style>
 </head>
 <body>
 <header>
@@ -487,6 +492,7 @@ body{padding-top:158px!important}
 </div></nav>
 
 <button type="button" class="share-raffle" id="shareRaffle" aria-label="Compartir este sorteo">📤 Compartir este sorteo</button>
+<div id="siteVisitorCount" class="site-visitor-count" role="status" aria-live="polite"><span aria-hidden="true">👥</span> Visitantes únicos: <strong id="siteVisitorNumber">—</strong></div>
 </div>
 <div class="card grand-prize">
 <div class="sparkles" aria-hidden="true">✦ ✨ ✦ ✨ ✦</div>
@@ -1714,6 +1720,36 @@ setTimeout(()=>procesarRetornoMercadoPago().catch(()=>{}),700);
   }
 });
 iniciarActualizacionesEnSegundoPlano();
+</script>
+
+<script id="site-visitor-counter-script">
+(async function registrarVisitanteUnico(){
+  const out=document.getElementById('siteVisitorNumber');
+  if(!out) return;
+  try{
+    const storageKey='rifando_ando_unique_visitor_v1';
+    let visitorId=localStorage.getItem(storageKey);
+    if(!visitorId){
+      if(window.crypto && typeof crypto.randomUUID==='function') visitorId=crypto.randomUUID();
+      else visitorId='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(ch){const r=Math.random()*16|0;return(ch==='x'?r:(r&3|8)).toString(16)});
+      localStorage.setItem(storageKey,visitorId);
+    }
+    const url=String(SUPABASE_URL).replace(/\/$/,'')+'/rest/v1/rpc/register_site_visit';
+    const response=await fetch(url,{
+      method:'POST',
+      cache:'no-store',
+      headers:{'apikey':SUPABASE_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_visitor_id:visitorId})
+    });
+    if(!response.ok) throw new Error('No se pudo consultar el contador');
+    const count=await response.json();
+    const value=Number(count);
+    if(Number.isFinite(value)&&value>=0) out.textContent=new Intl.NumberFormat('es-MX').format(value);
+  }catch(error){
+    out.textContent='—';
+    console.warn('Contador de visitantes no disponible:',error);
+  }
+})();
 </script>
 </body>
 </html>
