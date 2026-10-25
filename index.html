@@ -1030,22 +1030,15 @@ async function actualizarInfoLoteria(r){
   }else{
     status.textContent='🔵 Esta rifa se sorteará con '+drawType+'.';
   }
-  const {data:numeroRows}=await db.from('numeros').select('numero').eq('rifa_id',r.id).order('numero');
-  const listaNumeros=(numeroRows||[]).map(x=>Number(x.numero)).filter(Number.isFinite).sort((a,b)=>a-b);
-  const minNumero=listaNumeros[0],maxNumero=listaNumeros[listaNumeros.length-1];
-  const reglaAntigua=totalCount===100&&minNumero===0&&maxNumero===99;
-  const ceroBase=minNumero===0&&maxNumero===totalCount-1;
   details.innerHTML='<div>🎯 Modalidad: <b>'+drawType+'</b></div>'+
     '<div>⏰ Hora del sorteo: <b>'+drawTime+' h</b> (hora de Monterrey)</div>'+
-    '<div>🔢 Regla: <b>'+(reglaAntigua?'últimas 2 cifras (boletos 00–99)':'últimas 3 cifras módulo '+totalCount+(ceroBase?'; residuo 0 = 00':' ; residuo 0 = '+String(totalCount).padStart(2,'0'))+'</b></div>'+
+    '<div>🔢 Regla: <b>últimas 2 cifras</b> del resultado oficial</div>'+
     '<div>🎟️ Estado de la rifa: <b>'+completeCount+'/'+totalCount+' números pagados</b></div>';
   if(r.estado==='sorteada' && r.loteria_resultado){
     const resultText=String(r.loteria_resultado).padStart(5,'0');
-    const numeroBase=reglaAntigua?Number(resultText.slice(-2)):Number(resultText.slice(-3));
-    const residuo=numeroBase%totalCount;
-    const winner=reglaAntigua?numeroBase:(residuo===0&&!ceroBase?totalCount:residuo);
+    const winner=resultText.slice(-2);
     result.style.display='';
-    result.innerHTML='Resultado oficial: <b>'+resultText+'</b> · Número ganador: <b>'+String(winner).padStart(2,'0')+'</b>';
+    result.innerHTML='Resultado oficial: <b>'+resultText+'</b> · Número ganador: <b>'+winner+'</b>';
   }else result.style.display='none';
 }
 async function contarNumerosPublico(rifaId){
@@ -1443,7 +1436,7 @@ async function cargarHistorialGanadores(){
     const codigo=r?.codigo_sorteo||('RA-'+String(r?.numero_sorteo||'?').padStart(4,'0'));
     const d=w.created_at?new Date(w.created_at).toLocaleDateString('es-MX'):'';
     const nombreVisible=formatearNombrePublico(w.nombre_snapshot);
-    const premioRaw=String(r?.premio||'').trim(); const premioNumero=Number(premioRaw.replace(/[^0-9,.-]/g,'').replace(/,/g,'')); const premio=premioRaw && Number.isFinite(premioNumero) ? '$'+premioNumero.toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2})+' MXN' : 'Premio no disponible';
+    const premio=String(r?.premio||'No disponible');
     return '<div class="winner-card"><div><div class="wname">'+esc(codigo)+'</div><div class="wdate">'+esc(d)+'</div></div><div class="wname">'+esc(nombreVisible)+'</div><div class="wprize">'+esc(premio)+'</div><div class="wnum">#'+esc(String(w.numero).padStart(2,'0'))+'</div></div>';
   }).join('');
 }
