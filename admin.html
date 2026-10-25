@@ -470,6 +470,7 @@ function nombreRifaAdmin(r){
   if(g==='especial')return 'Sorteo Especial';
   if(g==='iphone')return 'Sorteo iPhone 18 Pro Max 256 GB';
   if(g==='express')return 'Sorteo Express';
+  if(g==='regio'||r?.id==='dc8973fe-17e9-4273-83d6-1e5493b5a70f')return 'Sorteo Económico Regio';
   return r?.id==='4b23f516-7973-4a04-bff6-9b9b5cb90f4d'?'Sorteo Regular':(r?.id==='60f9a81d-bdd6-4e28-b330-dc92cfe4d113'?'Sorteo Especial':(r?.id==='9a9bca1f-3f22-4a1a-8813-70c7f5914f65'?'Sorteo iPhone 18 Pro Max 256 GB':(r?.id==='af9945a6-fe0d-4f53-a147-d8e332e39b59'?'Sorteo Express':(r?.nombre||'Sorteo'))));
 }
 function calcularFechaSorteoDesdeUltimaVenta(numeros, tipo){
@@ -490,7 +491,8 @@ async function cargarSelectorRifas(){
     {key:'regular',label:'Sorteo Regular'},
     {key:'especial',label:'Sorteo Especial'},
     {key:'iphone',label:'Sorteo iPhone 18 Pro Max 256 GB'},
-    {key:'express',label:'Sorteo Express'}
+    {key:'express',label:'Sorteo Express'},
+    {key:'regio',label:'Sorteo Económico Regio'}
   ];
   const {data:list,error}=await db.from('rifas').select('id,nombre,numero_sorteo,estado,precio_numero,codigo_sorteo,grupo_rifa,created_at').order('created_at',{ascending:false});
   const selected=new URLSearchParams(window.location.search).get('rifa');
