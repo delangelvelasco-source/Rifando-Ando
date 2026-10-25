@@ -490,6 +490,50 @@ body{padding-top:158px!important}
  #historial-ganadores .winner-card .wprize{font-size:11px!important}
  #historial-ganadores .winner-card .wnum{font-size:17px!important}
 }
+
+/* Diseño unificado: último ganador e historial */
+.winner-section{max-width:980px;margin:0 auto;padding:30px 18px 12px}
+#ultimo-ganador{max-width:620px;margin:0 auto 12px!important;padding:28px 22px!important;border:1px solid #b88b25!important;border-radius:24px!important;background:radial-gradient(ellipse at top,rgba(217,169,54,.13),transparent 58%),linear-gradient(145deg,#17110a,#0d0a08)!important;box-shadow:0 12px 34px rgba(0,0,0,.28),inset 0 1px rgba(255,220,120,.08)}
+#ultimo-ganador h2{margin:0 0 10px!important;color:#f5d36a;font-size:clamp(25px,4vw,34px);letter-spacing:-.5px}
+#publicWinnerNumber{display:inline-flex;align-items:center;justify-content:center;min-width:104px;min-height:92px;margin:4px auto 8px;padding:0 18px;border:1px solid rgba(245,211,106,.38);border-radius:20px;background:linear-gradient(145deg,#30220b,#171109);font-size:clamp(48px,8vw,68px)!important;line-height:1;color:#f5d36a!important;text-shadow:0 0 22px rgba(217,169,54,.24)}
+#publicWinnerName{color:#fff;font-size:clamp(20px,4vw,26px)!important}
+#ultimo-ganador .btn{min-height:46px;border-radius:14px;padding:12px 20px;font-weight:900}
+#historial-ganadores{max-width:1040px;margin:0 auto;padding:26px 18px 38px}
+#historial-ganadores h2{margin:0 0 18px;color:#f5d36a;font-size:clamp(24px,3.5vw,30px);line-height:1.2}
+.winner-history{gap:9px}
+.winner-head,.winner-card{grid-template-columns:minmax(115px,1fr) minmax(130px,1.25fr) minmax(120px,.95fr) minmax(76px,.55fr);gap:14px}
+.winner-head{align-items:center;padding:12px 16px;border-radius:12px;background:linear-gradient(100deg,#21190a,#12100d);font-size:12px;letter-spacing:.15px}
+.winner-card{min-width:0;padding:13px 16px;border:1px solid #342914;border-radius:14px;background:linear-gradient(110deg,#15120e,#101010);transition:border-color .18s ease,transform .18s ease}
+.winner-card:hover{border-color:#80601e;transform:translateY(-1px)}
+.winner-card .wname{font-size:15px;line-height:1.25;overflow-wrap:anywhere}
+.winner-card .wprize{font-size:16px;line-height:1.25;overflow-wrap:anywhere}
+.winner-card .wnum{justify-self:end;display:inline-flex;align-items:center;justify-content:center;min-width:58px;min-height:44px;padding:4px 10px;border:1px solid rgba(217,169,54,.28);border-radius:12px;background:rgba(217,169,54,.09);font-size:25px}
+.winner-card .wdate{font-size:11px;margin-top:4px}
+.winner-empty{padding:24px 18px;background:#111;border:1px dashed #5a4720;border-radius:16px;line-height:1.5}
+@media(max-width:680px){
+ .winner-section{padding:22px 14px 8px}
+ #ultimo-ganador{padding:23px 16px!important;border-radius:20px!important}
+ #historial-ganadores{padding:22px 14px 30px}
+ #historial-ganadores h2{margin-bottom:14px}
+ #historial-ganadores .winner-head{display:none}
+ #historial-ganadores .winner-card{grid-template-columns:minmax(0,1fr) auto;gap:7px 10px;padding:13px 12px;border-radius:14px}
+ #historial-ganadores .winner-card>div:nth-child(1){grid-column:1;grid-row:1}
+ #historial-ganadores .winner-card>div:nth-child(2){grid-column:1;grid-row:2}
+ #historial-ganadores .winner-card>div:nth-child(3){grid-column:1;grid-row:3}
+ #historial-ganadores .winner-card>div:nth-child(4){grid-column:2;grid-row:1 / span 3;align-self:center}
+ #historial-ganadores .winner-card>div:nth-child(1) .wname{color:#f5d36a;font-size:14px}
+ #historial-ganadores .winner-card .wname{font-size:14px;line-height:1.25}
+ #historial-ganadores .winner-card .wprize{font-size:15px}
+ #historial-ganadores .winner-card .wnum{min-width:56px;min-height:48px;font-size:23px}
+ #historial-ganadores .winner-card .wdate{font-size:11px}
+}
+@media(max-width:380px){
+ #historial-ganadores .winner-card{padding:12px 10px;gap:7px 8px}
+ #historial-ganadores .winner-card .wname{font-size:13px}
+ #historial-ganadores .winner-card .wprize{font-size:14px}
+ #historial-ganadores .winner-card .wnum{min-width:50px;min-height:44px;font-size:21px}
+}
+
 </style>
 </head>
 <body>
