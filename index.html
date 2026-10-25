@@ -728,11 +728,11 @@ function actualizarReglasModalidad(r){
   }
   if(r.metodo_sorteo==='loteria_nacional'){
     const tipo=String(r.loteria_tipo||'Tris Clásico');
-    if(notice)notice.innerHTML='Modalidad: <strong>'+tipo+'.</strong> Consulta la fecha y las condiciones de este sorteo.';
+    if(notice)notice.innerHTML='Modalidad: <strong>'+tipo+'.</strong> El sorteo se realizará cuando se venda el último boleto.';
     if(method)method.textContent='🎯 Ganador: últimas 2 cifras del resultado oficial de '+tipo;
     if(rules){
       const spans=rules.querySelectorAll('span');
-      if(spans[0])spans[0].textContent='⏰ Revisa la fecha y hora publicadas para el sorteo';
+      if(spans[0])spans[0].textContent='🎟️ El sorteo se realizará cuando se venda el último boleto';
       if(spans[1])spans[1].textContent='💳 Paga con el método habilitado en tu orden';
       if(spans[2])spans[2].textContent='🔄 Si vence el apartado sin pago, se libera el número';
     }
