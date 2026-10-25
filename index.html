@@ -706,6 +706,7 @@ body{padding-top:158px!important}
 <form onsubmit="confirmar(event)">
 <div class="field"><label>👤 Nombre y primer apellido</label><input id="nombre" required maxlength="60" placeholder="Ejemplo: Juan Pérez" autocomplete="name"></div>
 <div class="field"><label>📱 Número de WhatsApp</label><input id="whatsapp" required type="tel" maxlength="20" placeholder="Ejemplo: 812 123 4567" autocomplete="tel" inputmode="tel"></div>
+<div class="field"><label>✉️ Correo electrónico (opcional, necesario para OXXO)</label><input id="correo" type="email" maxlength="120" placeholder="tucorreo@ejemplo.com" autocomplete="email" inputmode="email"></div>
 <p>Tu selección: <span class="numbers" id="formNumbers"></span></p>
 <button class="btn" type="submit" style="width:100%">Solicitar apartado</button>
 </form>
@@ -718,7 +719,7 @@ body{padding-top:158px!important}
 <p>Tus números:</p>
 <div class="numbers" id="confirmNumbers"></div>
 <p>Total: <b class="gold" id="confirmTotal"></b></p>
-<a class="btn" id="waConfirm" href="#" target="_blank" rel="noopener" style="display:inline-block;margin:8px 4px">📲 Enviar solicitud por WhatsApp</a><br><button class="btn" id="mercadoPagoBtn" type="button" onclick="iniciarPagoMercadoPago()" style="display:none;margin:8px 4px;background:#009ee3;color:#fff">💳 Pagar con Mercado Pago</button><div id="mercadoPagoMsg" role="status" style="display:none;margin:8px auto;padding:12px;border:1px solid #245c78;border-radius:12px;color:#cceeff;text-align:left"></div><br>
+<a class="btn" id="waConfirm" href="#" target="_blank" rel="noopener" style="display:inline-block;margin:8px 4px">📲 Enviar solicitud por WhatsApp</a><br><button class="btn" id="mercadoPagoBtn" type="button" onclick="iniciarPagoMercadoPago('mercado_pago')" style="display:none;margin:8px 4px;background:#009ee3;color:#fff">💳 Otros métodos de pago</button><button class="btn" id="oxxoBtn" type="button" onclick="iniciarPagoMercadoPago('oxxo')" style="display:none;margin:8px 4px;background:#c62828;color:#fff">🏪 Generar ticket OXXO · 24 h</button><div id="mercadoPagoMsg" role="status" style="display:none;margin:8px auto;padding:12px;border:1px solid #245c78;border-radius:12px;color:#cceeff;text-align:left"></div><br>
 <button class="btn" id="confirmCloseBtn" onclick="cerrarFormulario()" style="margin:8px 4px" title="Primero envía la solicitud por WhatsApp">Cerrar</button>
 </div>
 </div>
@@ -1553,11 +1554,16 @@ function cerrarFormulario(){
   document.getElementById('modalClose')?.classList.remove('locked-close');
   document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
 }
-async function iniciarPagoMercadoPago(){
+async function iniciarPagoMercadoPago(paymentMethod='mercado_pago'){
   const btn=document.getElementById('mercadoPagoBtn');
   const msg=document.getElementById('mercadoPagoMsg');
   const pagoId=window.rifandoPagoPendiente?.paymentId;
   const paymentToken=window.rifandoPagoPendiente?.paymentToken;
+  let payerEmail=String(document.getElementById('correo')?.value||'').trim();
+  if(paymentMethod==='oxxo'&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payerEmail)){
+    payerEmail=String(window.prompt('Para generar tu ticket OXXO de 24 horas, escribe tu correo electrónico:',payerEmail)||'').trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payerEmail)){if(msg){msg.style.display='block';msg.textContent='Necesitamos un correo válido para generar el ticket OXXO. No se ha creado ningún cobro.';}return;}
+  }
   if(!pagoId||!paymentToken){
     if(msg){msg.style.display='block';msg.textContent='No encontramos el identificador seguro de esta reserva. Conserva tus números y contacta al administrador; no vuelvas a reservar todavía.';}
     return;
@@ -1567,18 +1573,21 @@ async function iniciarPagoMercadoPago(){
     if(msg){msg.style.display='block';msg.textContent='Este sorteo no está activo o aún no admite pagos en línea. No se ha cobrado nada.';}
     return;
   }
-  if(btn){btn.disabled=true;btn.textContent='Conectando con Mercado Pago…';}
-  if(msg){msg.style.display='block';msg.textContent='Estamos verificando tu reserva y preparando el pago seguro.';}
+  const oxxoBtn=document.getElementById('oxxoBtn');
+  if(btn){btn.disabled=true;btn.textContent=paymentMethod==='oxxo'?'Generando ticket OXXO…':'Conectando con Mercado Pago…';}
+  if(oxxoBtn){oxxoBtn.disabled=true;}
+  if(msg){msg.style.display='block';msg.textContent=paymentMethod==='oxxo'?'Estamos generando tu ticket OXXO con vencimiento de 24 horas…':'Estamos verificando tu reserva y preparando el pago seguro.';}
   try{
-    const {data,error}=await db.functions.invoke('mercado-pago',{body:{payment_id:pagoId,payment_token:paymentToken}});
+    const {data,error}=await db.functions.invoke('mercado-pago',{body:{payment_id:pagoId,payment_token:paymentToken,payment_method:paymentMethod,payer_email:payerEmail}});
     if(error)throw new Error(error.message||'No se pudo iniciar el pago.');
     if(data?.error)throw new Error(data.detail||data.error);
     if(!data?.checkout_url)throw new Error('Mercado Pago no devolvió un enlace de pago.');
-    if(msg)msg.textContent='Reserva validada. Te estamos enviando a Mercado Pago…';
+    if(msg)msg.textContent=paymentMethod==='oxxo'?'Ticket OXXO generado. Abriendo instrucciones de pago…':'Reserva validada. Te estamos enviando a Mercado Pago…';
     window.location.assign(data.checkout_url);
   }catch(err){
     if(msg){msg.style.display='block';msg.textContent='No pudimos iniciar Mercado Pago: '+String(err?.message||err)+'. Tus números no se marcarán como vendidos hasta confirmar el pago.';}
-    if(btn){btn.disabled=false;btn.textContent='💳 Reintentar pago con Mercado Pago';}
+    if(btn){btn.disabled=false;btn.textContent=paymentMethod==='oxxo'?'💳 Otros métodos de pago':'💳 Reintentar pago con Mercado Pago';}
+    if(oxxoBtn){oxxoBtn.disabled=false;oxxoBtn.textContent='🏪 Reintentar ticket OXXO · 24 h';}
   }
 }
 
@@ -1629,7 +1638,7 @@ async function confirmar(e){
   const selected=Array.from(sel);
   const name=nombre.value.trim();
   const phone=whatsapp.value.trim();
-  const email='';
+  const email=String(document.getElementById('correo')?.value||'').trim();
   if(!name||!phone){
     alert('Completa tu nombre y WhatsApp, compa.');
     return;
@@ -1680,10 +1689,12 @@ async function confirmar(e){
   const waConfirm=document.getElementById('waConfirm');
   waConfirm.href=waLink;
   const mpBtn=document.getElementById('mercadoPagoBtn');
+  const oxxoBtn=document.getElementById('oxxoBtn');
   const mpMsg=document.getElementById('mercadoPagoMsg');
   const gruposConPago=['regular','especial','iphone','express'];
   const permitePago=String(rifa?.estado||'').toLowerCase()==='activa'&&gruposConPago.includes(String(rifa?.grupo_rifa||'').toLowerCase());
-  if(mpBtn){mpBtn.style.display=permitePago?'inline-block':'none';mpBtn.disabled=false;mpBtn.textContent='💳 Pagar con Mercado Pago';}
+  if(mpBtn){mpBtn.style.display=permitePago?'inline-block':'none';mpBtn.disabled=false;mpBtn.textContent='💳 Otros métodos de pago';}
+  if(oxxoBtn){oxxoBtn.style.display=permitePago?'inline-block':'none';oxxoBtn.disabled=false;oxxoBtn.textContent='🏪 Generar ticket OXXO · 24 h';}
   if(mpMsg){mpMsg.style.display='none';mpMsg.textContent='';}
   confirmWhatsAppClicked=false;
   document.getElementById('modalClose')?.classList.add('locked-close');
