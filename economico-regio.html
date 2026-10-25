@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080808"><title>Sorteo Económico Regio | Rifando Ando</title>
+<style>
+:root{color-scheme:dark;--gold:#d9a936;--green:#8ee344;--bg:#080808}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{position:sticky;top:0;z-index:3;background:#111;border-bottom:3px solid var(--green);padding:14px 16px;text-align:center;box-shadow:0 5px 12px #0008}
+.brand{font-weight:1000;letter-spacing:.5px}.brand span{color:var(--green)}main{max-width:1100px;margin:auto;padding:18px 12px 48px}
+.hero{border:1px solid #395d20;border-radius:16px;padding:18px;background:linear-gradient(135deg,#17210f,#111);text-align:center}
+h1{margin:0 0 8px;font-size:clamp(24px,5vw,38px)}.hero p{margin:6px 0;color:#d0d0d0}.price{font-size:22px;color:var(--green);font-weight:1000}
+.controls{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin:18px 0}
+input,select,button{font:inherit;border-radius:10px;border:1px solid #555;padding:12px;background:#171717;color:white;min-width:0}
+button{cursor:pointer;font-weight:800}button.primary{background:var(--green);border-color:var(--green);color:#101010}
+.legend{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:14px 0;color:#ddd;font-size:13px}.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px}
+.ticket{background:#fff;color:#111;border:1px solid var(--green);border-radius:4px;padding:8px 1px;text-align:center;font-size:clamp(10px,2.2vw,16px);font-weight:850;line-height:1.15;overflow:hidden}
+.ticket.pending{background:#f6c453;color:#332400;border-color:#f6c453}.ticket.selected{background:var(--green);outline:2px solid #fff}
+.status{padding:10px;border-radius:10px;background:#161616;color:#bbb;text-align:center;margin:12px 0;font-size:13px}
+.pager{display:flex;align-items:center;justify-content:center;gap:10px;margin:16px 0}.pager button{padding:10px 16px}.note{color:#888;text-align:center;font-size:12px;line-height:1.5;margin-top:18px}
+@media(min-width:760px){.grid{grid-template-columns:repeat(12,minmax(0,1fr));gap:5px}.ticket{font-size:14px;padding:9px 2px}}
+@media(max-width:390px){.grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:3px}.ticket{font-size:11px;padding:8px 0}.controls{grid-template-columns:1fr 1fr}.controls .primary{grid-column:1/-1}}
+</style></head>
+<body>
+<header><div class="brand">RIFANDO <span>ANDO</span> · SORTEO ECONÓMICO REGIO</div></header>
+<main>
+<section class="hero"><h1>Sorteo Económico Regio</h1><p>Elige tus números de la suerte</p><div class="price">$2 MXN por número</div><p>Premio de $60,000 MXN si se venden todos los boletos</p><p>Numeración del 00001 al 60000</p></section>
+<div class="controls"><select id="mode" aria-label="Tipo de búsqueda"><option value="exact">Número exacto</option><option value="ending">Termina con</option></select><input id="search" inputmode="numeric" maxlength="5" placeholder="Ej. 00125" aria-label="Buscar número"><button id="find" class="primary">Buscar</button></div>
+<div class="legend"><span><i style="background:#fff;border:1px solid #8ee344"></i>Disponibles</span><span><i style="background:#f6c453"></i>Pendientes de pago · 24 h</span><span>Los vendidos no se muestran</span></div>
+<div id="status" class="status">Cargando números…</div><div id="grid" class="grid" aria-live="polite"></div>
+<div class="pager"><button id="prev">‹ Anterior</button><span id="page">Bloque 1</span><button id="next">Siguiente ›</button></div>
+<p class="note">Vista de preparación. Las ventas permanecen desactivadas hasta completar y verificar el proceso de reserva y pago. Los estados se actualizan automáticamente cuando hay cambios en la base de datos.</p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+const URL='https://iaviafijfdqinehcfebr.supabase.co',KEY='sb_publishable_OOyCaQno11jdZhXkmZvd3w_Wl6PjmES',RIFA='dc8973fe-17e9-4273-83d6-1e5493b5a70f',SIZE=500;
+const grid=document.getElementById('grid'),status=document.getElementById('status'),pageLabel=document.getElementById('page'),prev=document.getElementById('prev'),next=document.getElementById('next'),search=document.getElementById('search'),mode=document.getElementById('mode');
+let page=0,selectedSearch=null,client=null,channel=null,cache=new Map(),busy=false;
+const fmt=n=>String(n).padStart(5,'0');
+async function getRows(from,to){
+ const {data,error}=await client.from('numeros').select('numero,estado,apartado_hasta').eq('rifa_id',RIFA).order('numero',{ascending:true}).range(from,to);
+ if(error)throw error;return data||[];
+}
+function visibleRows(rows){return rows.filter(x=>x.estado==='disponible'||(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)>new Date()));}
+function render(rows,desc){
+ grid.replaceChildren();const shown=visibleRows(rows);
+ shown.forEach(x=>{const b=document.createElement('button');b.type='button';b.className='ticket'+(x.estado==='apartado'?' pending':'');b.textContent=fmt(x.numero);b.title=x.estado==='apartado'?'Pendiente de pago':'Disponible';b.disabled=true;grid.appendChild(b)});
+ status.textContent=desc+' · '+shown.length+' números visibles'+(rows.length<1?' · No hay resultados para esta búsqueda.':'');
+}
+async function load(){
+ if(busy)return;busy=true;prev.disabled=next.disabled=true;status.textContent='Consultando números…';
+ try{
+  if(selectedSearch!==null){let q=client.from('numeros').select('numero,estado,apartado_hasta').eq('rifa_id',RIFA).order('numero',{ascending:true}).limit(500);
+   if(mode.value==='exact'){const n=Number(selectedSearch);if(!Number.isInteger(n)||n<1||n>60000){render([],'Escribe un número entre 00001 y 60000');return}q=q.eq('numero',n)}
+   else {const ending=selectedSearch.replace(/\D/g,'').slice(-5);if(!ending){render([],'Escribe una terminación');return}const all=[];for(let from=0;from<60000;from+=1000){const part=await getRows(from,Math.min(from+999,59999));all.push(...part.filter(x=>fmt(x.numero).endsWith(ending)))}render(all,'Búsqueda: '+ending);return}
+   const {data,error}=await q;if(error)throw error;render(data||[],'Resultado de búsqueda');return;
+  }
+  const from=page*SIZE;let rows=cache.get(page);if(!rows){rows=await getRows(from,Math.min(from+SIZE-1,59999));cache.set(page,rows)}render(rows,'Números '+fmt(from+1)+'–'+fmt(Math.min(from+SIZE,60000)));
+  pageLabel.textContent='Bloque '+(page+1)+' de 120';prev.disabled=page===0;next.disabled=page===119;
+ }catch(e){status.textContent='No se pudieron cargar los números. Verifica los permisos de lectura de la base de datos.';console.error(e)}
+ finally{busy=false;if(selectedSearch===null){prev.disabled=page===0;next.disabled=page===119}}
+}
+document.getElementById('find').addEventListener('click',()=>{selectedSearch=search.value.trim();page=0;load()});
+search.addEventListener('keydown',e=>{if(e.key==='Enter'){selectedSearch=search.value.trim();page=0;load()}});
+search.addEventListener('input',()=>{if(!search.value){selectedSearch=null;load()}});
+prev.addEventListener('click',()=>{if(page>0){selectedSearch=null;page--;load()}});
+next.addEventListener('click',()=>{if(page<119){selectedSearch=null;page++;load()}});
+if(window.supabase?.createClient){client=window.supabase.createClient(URL,KEY);load();channel=client.channel('regio-numeros-preview').on('postgres_changes',{event:'*',schema:'public',table:'numeros',filter:'rifa_id=eq.'+RIFA},payload=>{cache.clear();if(selectedSearch===null)load()}).subscribe();window.addEventListener('pagehide',()=>{if(channel)client.removeChannel(channel)})}else status.textContent='No se pudo iniciar la conexión de datos.';
+})();
+</script></body></html>
