@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#101b0d"/><stop offset=".55" stop-color="#080b08"/><stop offset="1" stop-color="#1c280f"/></linearGradient><linearGradient id="lime" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b8ff65"/><stop offset="1" stop-color="#75d92b"/></linearGradient><radialGradient id="glow"><stop stop-color="#9af044" stop-opacity=".25"/><stop offset="1" stop-color="#9af044" stop-opacity="0"/></radialGradient></defs>
+<rect width="1200" height="630" fill="url(#bg)"/><circle cx="1050" cy="110" r="360" fill="url(#glow)"/><circle cx="100" cy="580" r="250" fill="url(#glow)"/>
+<rect x="32" y="32" width="1136" height="566" rx="34" fill="none" stroke="#9af044" stroke-opacity=".55" stroke-width="2"/>
+<text x="70" y="105" font-family="Arial,sans-serif" font-size="34" font-weight="900" fill="#ffffff">RIFANDO <tspan fill="#9af044">ANDO</tspan></text>
+<path d="M70 132H1130" stroke="#9af044" stroke-width="3" opacity=".8"/>
+<text x="70" y="205" font-family="Arial,sans-serif" font-size="27" font-weight="700" letter-spacing="4" fill="#f5c343">🎟 SORTEO ESPECIAL</text>
+<text x="65" y="285" font-family="Arial,sans-serif" font-size="58" font-weight="900" fill="#ffffff">SORTEO</text>
+<text x="65" y="355" font-family="Arial,sans-serif" font-size="58" font-weight="900" fill="#ffffff">ECONÓMICO REGIO</text>
+<text x="70" y="414" font-family="Arial,sans-serif" font-size="27" fill="#d6e4ce">¡Échale número, compa!</text>
+<rect x="68" y="455" width="500" height="96" rx="20" fill="url(#lime)"/>
+<text x="98" y="490" font-family="Arial,sans-serif" font-size="19" font-weight="800" fill="#15200e">CADA BOLETO</text>
+<text x="98" y="535" font-family="Arial,sans-serif" font-size="46" font-weight="900" fill="#15200e">$2 MXN</text>
+<g transform="translate(790 180)"><circle cx="135" cy="135" r="130" fill="#111a0e" stroke="#9af044" stroke-width="5"/><circle cx="135" cy="135" r="104" fill="none" stroke="#f5c343" stroke-width="2" stroke-dasharray="8 10"/><text x="135" y="112" text-anchor="middle" font-family="Arial,sans-serif" font-size="25" font-weight="900" fill="#f5c343">ELIGE</text><text x="135" y="153" text-anchor="middle" font-family="Arial,sans-serif" font-size="31" font-weight="900" fill="#ffffff">TUS</text><text x="135" y="193" text-anchor="middle" font-family="Arial,sans-serif" font-size="31" font-weight="900" fill="#9af044">NÚMEROS</text></g>
+<text x="710" y="500" font-family="Arial,sans-serif" font-size="24" font-weight="700" fill="#ffffff">Participa en línea</text>
+<text x="710" y="538" font-family="Arial,sans-serif" font-size="22" fill="#b7c5b0">rifasmty.lol/economico-regio</text>
+</svg>
