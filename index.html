@@ -1436,10 +1436,7 @@ async function cargarHistorialGanadores(){
     const codigo=r?.codigo_sorteo||('RA-'+String(r?.numero_sorteo||'?').padStart(4,'0'));
     const d=w.created_at?new Date(w.created_at).toLocaleDateString('es-MX'):'';
     const nombreVisible=formatearNombrePublico(w.nombre_snapshot);
-    const premioRaw=String(r?.premio||'').trim();
-    const premioNumero=Number(premioRaw.replace(/[^0-9,.-]/g,'').replace(/,/g,''));
-    const premio=Number.isFinite(premioNumero)&&premioRaw
-      ?'
+    const premioRaw=String(r?.premio||'').trim(); const premioNumero=Number(premioRaw.replace(/[^0-9,.-]/g,'').replace(/,/g,'')); const premio=premioRaw && Number.isFinite(premioNumero) ? '
     return '<div class="winner-card"><div><div class="wname">'+esc(codigo)+'</div><div class="wdate">'+esc(d)+'</div></div><div class="wname">'+esc(nombreVisible)+'</div><div class="wprize">'+esc(premio)+'</div><div class="wnum">#'+esc(String(w.numero).padStart(2,'0'))+'</div></div>';
   }).join('');
 }
@@ -1863,8 +1860,7 @@ iniciarActualizacionesEnSegundoPlano();
 </script>
 </body>
 </html>
-+premioNumero.toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2})+' MXN'
-      :'Premio no disponible';
++premioNumero.toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2})+' MXN' : 'Premio no disponible';
     return '<div class="winner-card"><div><div class="wname">'+esc(codigo)+'</div><div class="wdate">'+esc(d)+'</div></div><div class="wname">'+esc(nombreVisible)+'</div><div class="wprize">'+esc(premio)+'</div><div class="wnum">#'+esc(String(w.numero).padStart(2,'0'))+'</div></div>';
   }).join('');
 }
