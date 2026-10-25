@@ -269,7 +269,7 @@ function activarSorteoPublico(payload){
   const lista=(payload.numeros||[]).map(Number).sort((a,b)=>a-b);if(!lista.length)return;
   overlay.classList.add('open');res.classList.remove('show');status.textContent=payload.demo?'👁️ PRUEBA DE ANIMACIÓN · No es un sorteo real':'Participan '+lista.length+' números · selección en curso';grid.innerHTML=lista.map(n=>'<span>'+String(n).padStart(2,'0')+'</span>').join('');
   const cells=[...grid.children];let i=0;clearInterval(drawAnimationTimer);clearTimeout(window.drawDemoRevealTimer);
-  const duration=Number(payload.duration_ms)||40000;const startAt=Number(payload.start_at)||Date.now();let timerId=null,startTimer=null;
+  const duration=Number(payload.duration_ms)||15000;const startAt=Number(payload.start_at)||Date.now();let timerId=null,startTimer=null;
   const run=()=>{
     const elapsed=Math.max(0,Date.now()-startAt);
     const terminoAnimacion=elapsed>=duration;
@@ -338,7 +338,7 @@ async function revisarSorteoRealPersistente(){
     .maybeSingle();
   if(error||!data)return;
   const startAt=new Date(data.start_at).getTime();
-  const duration=Number(data.duration_ms)||45000;
+  const duration=Number(data.duration_ms)||15000;
   if(data.estado==='en_vivo' && startAt<=Date.now()+2000 && Date.now()<=startAt+duration+10000){
     if(Number(lastDemoStartAt)!==startAt){
       lastDemoStartAt=startAt;
@@ -361,7 +361,7 @@ async function revisarPruebaPersistente(){
     .maybeSingle();
   if(error||!data)return;
   const startAt=new Date(data.start_at).getTime();
-  const duration=Number(data.duration_ms)||45000;
+  const duration=Number(data.duration_ms)||15000;
   const ahora=Date.now();
   if(startAt<=0||ahora>startAt+duration+5000)return;
   if(Number(lastDemoStartAt)===startAt)return;
@@ -393,10 +393,10 @@ async function reproducirUltimoSorteo(){
   if(ne||!n||!n.length){alert('No se pudo cargar la lista del último sorteo.');return;}
   const lista=n.map(x=>Number(x.numero)).filter(Number.isFinite).sort((a,b)=>a-b);
   const startAt=Date.now()+300;
-  activarSorteoPublico({rifa_id:rifa.id,numeros:lista,demo:false,start_at:startAt,duration_ms:45000});
+  activarSorteoPublico({rifa_id:rifa.id,numeros:lista,demo:false,start_at:startAt,duration_ms:15000});
   window.ultimoSorteoReplayTimer=setTimeout(()=>{
     revelarSorteoPublico({rifa_id:rifa.id,numero:Number(w.numero),nombre:formatearNombrePublico(w.nombre_snapshot||'Ganador'),demo:false});
-  },45000);
+  },15000);
 }
 
 function formatearNombrePublico(nombre){
