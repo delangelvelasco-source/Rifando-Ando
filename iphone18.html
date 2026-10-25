@@ -257,14 +257,15 @@ function activarSorteoPublico(payload){
   const lista=(payload.numeros||[]).map(Number).sort((a,b)=>a-b);if(!lista.length)return;
   overlay.classList.add('open');res.classList.remove('show');status.textContent=payload.demo?'👁️ PRUEBA DE ANIMACIÓN · No es un sorteo real':'Participan '+lista.length+' números · selección en curso';grid.innerHTML=lista.map(n=>'<span>'+String(n).padStart(2,'0')+'</span>').join('');
   const cells=[...grid.children];let i=0;clearInterval(drawAnimationTimer);clearTimeout(window.drawDemoRevealTimer);
-  const duration=Number(payload.duration_ms)||45000;const startAt=Number(payload.start_at)||Date.now();let timerId=null;
+  const duration=Number(payload.duration_ms)||45000;const startAt=Number(payload.start_at)||Date.now();let timerId=null,startTimer=null;
   const run=()=>{
-    const elapsed=Date.now()-startAt;
-    if(elapsed>=duration){if(timerId)clearTimeout(timerId);return}
-    const progress=elapsed/duration;
+    const elapsed=Math.max(0,Date.now()-startAt);
+    const terminoAnimacion=elapsed>=duration;
+    if(terminoAnimacion&&!payload.demo)status.textContent='⏳ Animación terminada · esperando el resultado oficial';
+    const progress=Math.min(1,elapsed/duration);
     let delay;
     const wave=Math.sin(progress*14)+0.45*Math.sin(progress*31);
-    if(progress>0.90) delay=260+Math.floor(Math.random()*420);
+    if(progress>0.90) delay=terminoAnimacion?700+Math.floor(Math.random()*500):260+Math.floor(Math.random()*420);
     else if(wave>0.55) delay=45+Math.floor(Math.random()*45);
     else if(wave<-0.35) delay=260+Math.floor(Math.random()*260);
     else delay=80+Math.floor(Math.random()*110);
@@ -273,7 +274,7 @@ function activarSorteoPublico(payload){
     const cell=cells[i%cells.length];cell.classList.add('active');num.textContent=cell.textContent;i=(i+jump)%cells.length;
     timerId=setTimeout(run,delay);
   };
-  const wait=Math.max(0,startAt-Date.now());setTimeout(run,wait);drawAnimationTimer={stop:()=>clearTimeout(timerId)};
+  const wait=Math.max(0,startAt-Date.now());startTimer=setTimeout(run,wait);drawAnimationTimer={stop:()=>{clearTimeout(timerId);clearTimeout(startTimer)}};
   if(payload.demo){
     const demo=lista[Math.floor(lista.length/2)];
     window.drawDemoRevealTimer=setTimeout(()=>revelarSorteoPublico({rifa_id:rifa.id,numero:demo,nombre:'Prueba de animación · NO es un ganador real',demo:true}),wait+duration);
