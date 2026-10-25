@@ -134,7 +134,7 @@ if(!confirm('🏆 VERIFICACIÓN DEL SORTEO\n\nNúmeros vendidos elegibles: '+ven
 const btn=[...document.querySelectorAll('.btn')].find(x=>x.textContent.includes('Realizar sorteo'));if(btn){btn.disabled=true;btn.textContent='🎲 Sorteando...'}
 const lista=(sold||[]).map(x=>Number(x.numero)).sort((a,b)=>a-b);
 const drawStartAt=Date.now()+1500;
-$('drawModal').classList.add('open');$('drawWinner').classList.add('hidden');$('drawStatus').textContent='Participan '+lista.length+' números vendidos. La selección final se realiza en el servidor.';$('drawGrid').innerHTML=lista.map(n=>'<div class="ticket"><b>'+String(n).padStart(2,'0')+'</b></div>').join('');const drawDurationMs=45000;
+$('drawModal').classList.add('open');$('drawWinner').classList.add('hidden');$('drawStatus').textContent='Participan '+lista.length+' números vendidos. La selección final se realiza en el servidor.';$('drawGrid').innerHTML=lista.map(n=>'<div class="ticket"><b>'+String(n).padStart(2,'0')+'</b></div>').join('');const drawDurationMs=40000;
 const drawStartIso=new Date(drawStartAt).toISOString();
 const {data:drawEvent,error:drawEventError}=await db.from('sorteo_eventos_en_vivo').insert({rifa_id:rifa.id,start_at:drawStartIso,duration_ms:drawDurationMs,numeros:lista,estado:'en_vivo'}).select('id').single();
 if(drawEventError){$('drawStatus').textContent='❌ No se pudo iniciar la transmisión.';alert('No se pudo iniciar la transmisión del sorteo: '+drawEventError.message);if(btn){btn.disabled=false;btn.textContent='🏆 Realizar sorteo'}return}
@@ -158,7 +158,7 @@ if(!publicChannelReady){
 }
 await publicDraw.send({type:'broadcast',event:'sorteo_inicio',payload:{rifa_id:rifa.id,numeros:lista,start_at:drawStartAt,duration_ms:drawDurationMs}});
 const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-if(!reduce){let i=0;const started=Date.now();while(Date.now()-started<45000){$('drawNumber').textContent=String(lista[i%lista.length]).padStart(2,'0');i++;await new Promise(r=>setTimeout(r,55+Math.min(90,((Date.now()-started)/45000)*90)));}}else{$('drawNumber').textContent='🎲';await new Promise(r=>setTimeout(r,700));}
+if(!reduce){let i=0;const started=Date.now();while(Date.now()-started<drawDurationMs){$('drawNumber').textContent=String(lista[i%lista.length]).padStart(2,'0');i++;await new Promise(r=>setTimeout(r,55+Math.min(90,((Date.now()-started)/45000)*90)));}}else{$('drawNumber').textContent='🎲';await new Promise(r=>setTimeout(r,700));}
 $('drawStatus').textContent='🔐 Confirmando selección aleatoria en el servidor...';
 const {data,error}=await db.rpc('realizar_sorteo_especial',{p_rifa_id:rifa.id});
 if(error){$('drawStatus').textContent='❌ No se pudo completar el sorteo.';alert('No se pudo realizar el sorteo: '+error.message);setTimeout(()=>{$('drawModal').classList.remove('open')},1200);if(btn){btn.disabled=false;btn.textContent='🏆 Realizar sorteo'}return}
