@@ -273,7 +273,11 @@ function activarSorteoPublico(payload){
   const run=()=>{
     const elapsed=Math.max(0,Date.now()-startAt);
     const terminoAnimacion=elapsed>=duration;
-    if(terminoAnimacion&&!payload.demo)status.textContent='⏳ Animación terminada · esperando el resultado oficial';
+    if(terminoAnimacion&&!payload.demo){
+      status.textContent='⏳ Animación terminada · esperando el resultado oficial';
+      drawAnimationTimer=null;
+      return;
+    }
     const progress=Math.min(1,elapsed/duration);
     let delay;
     const wave=Math.sin(progress*14)+0.45*Math.sin(progress*31);
@@ -348,6 +352,21 @@ async function revisarSorteoRealPersistente(){
   if(data.estado==='finalizado' && data.numero_ganador!=null && data.id!==lastRealEventId){
     lastRealEventId=data.id;
     revelarSorteoPublico({rifa_id:rifa.id,numero:data.numero_ganador,nombre:data.nombre_ganador||'Ganador',demo:false});
+    return;
+  }
+  // Respaldo: si el ganador ya se guardó pero la transmisión no se finalizó, recuperar el resultado del historial.
+  if(data.estado==='en_vivo' && startAt>0 && Date.now()>startAt+duration && data.id!==lastRealEventId){
+    const {data:winner,error:winnerError}=await db.from('ganadores')
+      .select('numero,nombre_snapshot,created_at,rifa_id')
+      .eq('rifa_id',rifa.id)
+      .gte('created_at',new Date(startAt).toISOString())
+      .order('created_at',{ascending:false})
+      .limit(1)
+      .maybeSingle();
+    if(!winnerError && winner && winner.numero!=null){
+      lastRealEventId=data.id;
+      revelarSorteoPublico({rifa_id:rifa.id,numero:winner.numero,nombre:winner.nombre_snapshot||'Ganador',demo:false});
+    }
   }
 }
 
