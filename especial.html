@@ -96,6 +96,36 @@ body>*{position:relative;z-index:1}
 header{background:rgba(5,5,5,.94)!important;backdrop-filter:blur(12px)}
 @media(prefers-reduced-motion:reduce){body{background-attachment:scroll!important}}
 </style>
+
+<style id="historial-compacto-ganadores-v2">
+/* Historial compacto: permite ver más ganadores en pantalla sin perder legibilidad */
+#historial-ganadores.section{padding-top:24px!important;padding-bottom:24px!important}
+#historial-ganadores h2{font-size:clamp(22px,2.5vw,29px)!important;line-height:1.15!important;margin:0 0 14px!important}
+#historial-ganadores .winner-history{gap:7px!important}
+#historial-ganadores .winner-head{padding:8px 12px!important;gap:8px!important;font-size:11px!important;line-height:1.15!important;border-radius:10px!important}
+#historial-ganadores .winner-card{min-height:0!important;padding:8px 12px!important;gap:8px!important;border-radius:12px!important}
+#historial-ganadores .winner-card>div{min-width:0}
+#historial-ganadores .winner-card .wname{font-size:15px!important;line-height:1.15!important;overflow-wrap:anywhere}
+#historial-ganadores .winner-card .wprize{font-size:16px!important;line-height:1.15!important}
+#historial-ganadores .winner-card .wnum{font-size:25px!important;line-height:1!important}
+#historial-ganadores .winner-card .wdate{font-size:10px!important;line-height:1.15!important;margin-top:3px!important}
+@media(max-width:760px){
+ #historial-ganadores.section{padding:18px 12px!important}
+ #historial-ganadores h2{font-size:22px!important;margin-bottom:12px!important}
+ #historial-ganadores .winner-head{font-size:8px!important;padding:7px 5px!important;gap:4px!important}
+ #historial-ganadores .winner-card{padding:8px 6px!important;gap:4px!important}
+ #historial-ganadores .winner-card .wname{font-size:11px!important}
+ #historial-ganadores .winner-card .wprize{font-size:12px!important}
+ #historial-ganadores .winner-card .wnum{font-size:19px!important}
+ #historial-ganadores .winner-card .wdate{font-size:9px!important}
+}
+@media(max-width:380px){
+ #historial-ganadores .winner-head{font-size:7px!important;padding:6px 4px!important}
+ #historial-ganadores .winner-card .wname{font-size:10px!important}
+ #historial-ganadores .winner-card .wprize{font-size:11px!important}
+ #historial-ganadores .winner-card .wnum{font-size:17px!important}
+}
+</style>
 </head>
 <body>
 <header>
