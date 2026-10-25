@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1200" viewBox="0 0 1800 1200">
+<defs>
+ <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#16070d"/><stop offset=".48" stop-color="#1a0b09"/><stop offset="1" stop-color="#080807"/></linearGradient>
+ <radialGradient id="glow"><stop stop-color="#ff7b12" stop-opacity=".65"/><stop offset="1" stop-color="#ff4b00" stop-opacity="0"/></radialGradient>
+ <linearGradient id="candle"><stop stop-color="#fff4c2"/><stop offset=".45" stop-color="#f7b84a"/><stop offset="1" stop-color="#7d3210"/></linearGradient>
+ <linearGradient id="gold"><stop stop-color="#8b430d"/><stop offset=".45" stop-color="#ffd76a"/><stop offset=".7" stop-color="#d77b12"/><stop offset="1" stop-color="#fff0a3"/></linearGradient>
+ <radialGradient id="flame"><stop stop-color="#fff9c4"/><stop offset=".35" stop-color="#ffd04e"/><stop offset="1" stop-color="#ff5a00" stop-opacity="0"/></radialGradient>
+ <pattern id="cut" width="92" height="84" patternUnits="userSpaceOnUse"><path d="M0 0H92V58L80 70 68 58 56 70 46 58 34 70 22 58 10 70 0 58Z" fill="#b51b70" stroke="#f18e35" stroke-width="2"/><circle cx="46" cy="20" r="10" fill="none" stroke="#ffcb59" stroke-width="2"/><path d="M46 8V32M34 20H58M17 43l8 8m42-8 8 8" stroke="#ffcb59" stroke-width="2"/></pattern>
+ <g id="flower"><g fill="#f75a0a"><ellipse rx="10" ry="25" transform="rotate(0) translate(0 -17)"/><ellipse rx="10" ry="25" transform="rotate(30) translate(0 -17)"/><ellipse rx="10" ry="25" transform="rotate(60) translate(0 -17)"/><ellipse rx="10" ry="25" transform="rotate(90) translate(0 -17)"/><ellipse rx="10" ry="25" transform="rotate(120) translate(0 -17)"/><ellipse rx="10" ry="25" transform="rotate(150) translate(0 -17)"/></g><circle r="13" fill="#ffb51b"/><circle r="7" fill="#7b2107"/></g>
+ <g id="candle"><rect x="-18" y="-2" width="36" height="95" rx="5" fill="url(#candle)"/><path d="M-18 14q18 10 36 0M-18 58q18 8 36 0" stroke="#fff1b0" stroke-opacity=".55" fill="none" stroke-width="2"/><ellipse cy="-7" rx="26" ry="12" fill="url(#flame)"/><path d="M0 -45C-20 -20 -5 -11 0 -5C10 -16 17 -27 0 -45Z" fill="#ffb02e"/><path d="M0 -34C-7 -22 -2 -15 1 -12C7 -20 7 -26 0 -34Z" fill="#fff7bd"/></g>
+</defs>
+<rect width="1800" height="1200" fill="url(#bg)"/>
+<ellipse cx="80" cy="410" rx="500" ry="540" fill="url(#glow)" opacity=".8"/><ellipse cx="1720" cy="470" rx="500" ry="600" fill="url(#glow)" opacity=".8"/>
+<rect x="0" y="0" width="1800" height="170" fill="url(#cut)" opacity=".94"/>
+<path d="M0 170Q200 185 400 170T800 170T1200 170T1600 170T1800 170" fill="none" stroke="#d88a22" stroke-width="7"/>
+<!-- distant altar shelves -->
+<g opacity=".62" stroke="#6b3215" stroke-width="14" fill="#1b0c08"><path d="M0 400H1800M0 600H1800M0 800H1800"/><path d="M0 400V850M1800 400V850"/></g>
+<!-- framed portraits -->
+<g transform="translate(580 330) rotate(-4)"><rect x="-72" y="-100" width="144" height="180" rx="5" fill="#6b3916" stroke="url(#gold)" stroke-width="7"/><rect x="-57" y="-85" width="114" height="150" fill="#20130f"/><circle cy="-38" r="26" fill="#8b674c"/><path d="M-42 35Q-36 -5 0 -4Q38 -5 42 35Z" fill="#3b2720"/><path d="M-22 -44q22 15 44 0" stroke="#2a160f" stroke-width="5" fill="none"/></g>
+<g transform="translate(1240 320) rotate(3)"><rect x="-75" y="-95" width="150" height="180" rx="5" fill="#6b3916" stroke="url(#gold)" stroke-width="7"/><rect x="-60" y="-80" width="120" height="150" fill="#20130f"/><circle cy="-35" r="27" fill="#b48a60"/><path d="M-42 35Q-36 -5 0 -4Q38 -5 42 35Z" fill="#493025"/></g>
+<!-- candles -->
+<use href="#candle" transform="translate(160 500) scale(1.3)"/><use href="#candle" transform="translate(330 640) scale(1.05)"/><use href="#candle" transform="translate(480 470) scale(.78)"/><use href="#candle" transform="translate(1450 485) scale(1.1)"/><use href="#candle" transform="translate(1630 610) scale(1.25)"/><use href="#candle" transform="translate(1330 660) scale(.8)"/>
+<!-- sugar skull on left -->
+<g transform="translate(180 770)"><path d="M-72 -45Q-68 -105 0 -106Q68 -105 72 -45L60 20Q50 45 25 48L18 76H-18L-25 48Q-50 45 -60 20Z" fill="#f4dfb5" stroke="#9d5a23" stroke-width="6"/><circle cx="-30" cy="-28" r="22" fill="#25140e" stroke="#ed4c7a" stroke-width="8"/><circle cx="30" cy="-28" r="22" fill="#25140e" stroke="#ed4c7a" stroke-width="8"/><path d="M0 -5l-12 20h24Z" fill="#352018"/><path d="M-26 34v13m18-13v13m18-13v13m18-13v13" stroke="#9d5a23" stroke-width="5"/><path d="M-48 -75l15 -14 13 14 20 -18 20 18 16 -14 14 16" stroke="#ffb22d" stroke-width="8" fill="none"/><circle cx="-30" cy="-28" r="7" fill="#ffb52d"/><circle cx="30" cy="-28" r="7" fill="#ffb52d"/></g>
+<!-- marigold clusters -->
+<g><use href="#flower" transform="translate(35 270) scale(1.5)"/><use href="#flower" transform="translate(90 330) scale(1.2)"/><use href="#flower" transform="translate(35 600) scale(1.4)"/><use href="#flower" transform="translate(290 960) scale(1.5)"/><use href="#flower" transform="translate(390 1000) scale(1.1)"/><use href="#flower" transform="translate(500 1050) scale(1.5)"/><use href="#flower" transform="translate(1400 1000) scale(1.2)"/><use href="#flower" transform="translate(1550 950) scale(1.5)"/><use href="#flower" transform="translate(1710 840) scale(1.7)"/><use href="#flower" transform="translate(1770 690) scale(1.2)"/><use href="#flower" transform="translate(1690 300) scale(1.2)"/><use href="#flower" transform="translate(1770 360) scale(1.4)"/></g>
+<!-- pan de muerto on right altar -->
+<g transform="translate(1630 890)"><ellipse rx="145" ry="55" cy="22" fill="#43200c" stroke="#a55b19" stroke-width="7"/><ellipse rx="118" ry="48" fill="#c57b2d"/><path d="M-85 -10Q-65 -55 -25 -40Q0 -80 25 -40Q65 -55 85 -10Q70 30 0 30Q-70 30 -85 -10Z" fill="#e6ad57"/><path d="M-30 -42Q-10 -15 -20 10M30 -42Q10 -15 20 10M0 -50V20" stroke="#f8d49a" stroke-width="12" stroke-linecap="round" fill="none"/></g>
+<!-- altar table and scattered petals -->
+<path d="M0 1030Q400 980 900 1035T1800 1020V1200H0Z" fill="#140b08" stroke="#6c3512" stroke-width="8"/>
+<g fill="#ff8a11" opacity=".9"><ellipse cx="700" cy="1090" rx="24" ry="7" transform="rotate(-20 700 1090)"/><ellipse cx="750" cy="1120" rx="24" ry="7" transform="rotate(20 750 1120)"/><ellipse cx="1120" cy="1080" rx="25" ry="7" transform="rotate(-20 1120 1080)"/><ellipse cx="1190" cy="1125" rx="22" ry="7" transform="rotate(25 1190 1125)"/><ellipse cx="980" cy="1140" rx="22" ry="7"/></g>
+<!-- center vignette keeps copy legible -->
+<rect x="250" y="170" width="1300" height="880" fill="#090708" opacity=".28"/>
+<rect width="1800" height="1200" fill="none" stroke="#d88820" stroke-opacity=".25" stroke-width="8"/>
+</svg>
