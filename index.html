@@ -616,7 +616,7 @@ body{padding-top:158px!important}
 </div>
 <div class="rules-box compact">
 <h3>📋 Reglas básicas</h3>
-<div class="rules-inline"><span>⏰ Respeta la fecha límite del pago</span><span>💳 Paga desde Mercado Pago</span><span>🔄 Si vence sin pago, se libera el número</span></div>
+<div class="rules-inline" id="rulesByModality"><span>⏰ Respeta la fecha límite del pago</span><span>💳 Usa el método de pago indicado en tu orden</span><span>🔄 Si vence sin pago, se libera el número</span><span id="rulesDrawMethod">🎯 Consulta la modalidad y fecha en la ficha del sorteo</span></div>
 </div>
 <div class="lottery-info" id="lotteryInfo" style="display:none">
 <div class="lottery-badge">🇲🇽 LOTERÍA NACIONAL</div>
@@ -710,6 +710,34 @@ let realtimeChannel=null;let drawPublicChannel=null;let drawAnimationTimer=null;
 
 function nums(){
   return Array.from(sel).sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0'));
+}
+function actualizarReglasModalidad(r){
+  const notice=document.querySelector('#raffle-payment-notice .notice-copy');
+  const method=document.getElementById('rulesDrawMethod');
+  const rules=document.getElementById('rulesByModality');
+  if(!r)return;
+  if(r.estado==='sorteada'){
+    if(notice)notice.innerHTML='Este sorteo ya fue realizado. <strong>Consulta el resultado y al ganador.</strong>';
+    if(rules)rules.innerHTML='<span>🏆 Sorteo realizado</span><span>📋 Consulta el resultado oficial publicado</span><span>🔒 Ya no se pueden seleccionar números</span>';
+    return;
+  }
+  if(r.metodo_sorteo==='loteria_nacional'){
+    const tipo=String(r.loteria_tipo||'Tris Clásico');
+    if(notice)notice.innerHTML='Modalidad: <strong>'+tipo+'.</strong> Consulta la fecha y las condiciones de este sorteo.';
+    if(method)method.textContent='🎯 Ganador: últimas 2 cifras del resultado oficial de '+tipo;
+    if(rules){
+      const spans=rules.querySelectorAll('span');
+      if(spans[0])spans[0].textContent='⏰ Revisa la fecha y hora publicadas para el sorteo';
+      if(spans[1])spans[1].textContent='💳 Paga con el método habilitado en tu orden';
+      if(spans[2])spans[2].textContent='🔄 Si vence el apartado sin pago, se libera el número';
+    }
+  }else if(r.metodo_sorteo==='interno'){
+    if(notice)notice.innerHTML='Modalidad: <strong>sorteo interno.</strong> Consulta las condiciones publicadas en esta página.';
+    if(method)method.textContent='🎯 El ganador se seleccionará mediante la mecánica indicada en la ficha';
+  }else{
+    if(notice)notice.innerHTML='Cada sorteo tiene su propia modalidad, fecha y condiciones. <strong>Consulta las reglas del sorteo seleccionado.</strong>';
+    if(method)method.textContent='🎯 Consulta la modalidad y fecha en la ficha del sorteo';
+  }
 }
 function update(){
   count.textContent=sel.size;
@@ -1227,6 +1255,7 @@ async function cargarRifa(){
     return;
   }
   rifa=r;
+  actualizarReglasModalidad(r);
   activarTiempoReal();
   document.querySelectorAll('.raffle-link[data-rifa]').forEach(a=>a.classList.remove('active'));
   const activeRaffleLink=document.querySelector('.raffle-link[data-rifa="'+CSS.escape(String(r.id))+'"]');
