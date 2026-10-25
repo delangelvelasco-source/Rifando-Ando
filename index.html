@@ -147,6 +147,40 @@ header{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,e
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 </style>
+
+<style id="rfs-premium-enhancements">
+/* Mejora visual aislada: no modifica la lógica de rifas, pagos ni sorteos. */
+:root{color-scheme:dark;scroll-behavior:smooth}
+body{background-color:#080808;background-image:radial-gradient(ellipse at 12% 0%,rgba(217,169,54,.13),transparent 38%),radial-gradient(ellipse at 92% 32%,rgba(217,169,54,.07),transparent 32%),linear-gradient(180deg,#090909 0%,#080808 48%,#0b0905 100%)}
+body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.24;background-image:radial-gradient(circle,rgba(245,211,106,.55) .7px,transparent .9px);background-size:46px 46px;mask-image:linear-gradient(to bottom,black,transparent 78%)}
+header{background:rgba(8,8,8,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom-color:rgba(217,169,54,.28);box-shadow:0 8px 30px rgba(0,0,0,.18)}
+.logo{letter-spacing:.7px;text-shadow:0 0 22px rgba(217,169,54,.12)}
+.btn{transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;box-shadow:0 5px 18px rgba(217,169,54,.12)}
+.btn:hover{filter:brightness(1.08);box-shadow:0 7px 24px rgba(217,169,54,.23)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible,a:focus-visible,button:focus-visible{outline:3px solid #f5d36a;outline-offset:3px}
+.hero{position:relative}
+.hero .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid rgba(217,169,54,.28);border-radius:999px;background:rgba(217,169,54,.07)}
+.hero h1{text-wrap:balance;text-shadow:0 5px 30px rgba(0,0,0,.4)}
+.card{border-color:rgba(217,169,54,.24);background:linear-gradient(145deg,rgba(25,23,18,.97),rgba(14,14,14,.98));box-shadow:0 18px 55px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.025)}
+.prize{background:radial-gradient(circle at 50% 40%,rgba(217,169,54,.23),transparent 40%),linear-gradient(145deg,#292316,#111 70%);border:1px solid rgba(217,169,54,.2)}
+.quick-card,.step{transition:border-color .2s ease,transform .2s ease,background .2s ease}
+.quick-card:hover,.step:hover{border-color:rgba(217,169,54,.45);background:linear-gradient(145deg,#17150f,#101010)}
+.ticket.available{transition:transform .14s ease,box-shadow .14s ease}
+.ticket.available:hover{transform:translateY(-2px);box-shadow:0 7px 18px rgba(32,201,87,.16)}
+.section h2{letter-spacing:-.5px;text-wrap:balance}
+.winner-card{box-shadow:inset 3px 0 rgba(217,169,54,.35)}
+.modal-box{box-shadow:0 25px 90px rgba(0,0,0,.55);border-color:rgba(217,169,54,.3)}
+@media(max-width:760px){
+ .hero{gap:24px}
+ .nav>div:last-child{flex-wrap:wrap;justify-content:flex-end;max-width:72%}
+ .nav .btn{width:auto;min-width:0;min-height:42px;font-size:12px;padding:9px 10px}
+ #topContinue{font-size:13px}
+ .section{padding-top:34px;padding-bottom:34px}
+ .quick-card{padding:16px}
+}
+@media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}.btn,.quick-card,.step,.ticket.available{transition:none}}
+</style>
 </head>
 <body>
 <header>
