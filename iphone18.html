@@ -257,7 +257,7 @@ function activarSorteoPublico(payload){
   const lista=(payload.numeros||[]).map(Number).sort((a,b)=>a-b);if(!lista.length)return;
   overlay.classList.add('open');res.classList.remove('show');status.textContent=payload.demo?'👁️ PRUEBA DE ANIMACIÓN · No es un sorteo real':'Participan '+lista.length+' números · selección en curso';grid.innerHTML=lista.map(n=>'<span>'+String(n).padStart(2,'0')+'</span>').join('');
   const cells=[...grid.children];let i=0;clearInterval(drawAnimationTimer);clearTimeout(window.drawDemoRevealTimer);
-  const duration=Number(payload.duration_ms)||45000;const startAt=Number(payload.start_at)||Date.now();let timerId=null,startTimer=null;
+  const duration=Number(payload.duration_ms)||40000;const startAt=Number(payload.start_at)||Date.now();let timerId=null,startTimer=null;
   const run=()=>{
     const elapsed=Math.max(0,Date.now()-startAt);
     const terminoAnimacion=elapsed>=duration;
