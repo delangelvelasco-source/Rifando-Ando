@@ -128,8 +128,24 @@ $('drawModal').classList.add('open');$('drawWinner').classList.add('hidden');$('
 const drawStartIso=new Date(drawStartAt).toISOString();
 const {data:drawEvent,error:drawEventError}=await db.from('sorteo_eventos_en_vivo').insert({rifa_id:rifa.id,start_at:drawStartIso,duration_ms:drawDurationMs,numeros:lista,estado:'en_vivo'}).select('id').single();
 if(drawEventError){$('drawStatus').textContent='❌ No se pudo iniciar la transmisión.';alert('No se pudo iniciar la transmisión del sorteo: '+drawEventError.message);if(btn){btn.disabled=false;btn.textContent='🏆 Realizar sorteo'}return}
-const publicDraw=db.channel('rifa-sorteo-publico-'+rifa.id);publicDraw.subscribe();
-await new Promise(r=>setTimeout(r,300));
+const publicDraw=db.channel('rifa-sorteo-publico-'+rifa.id,{config:{broadcast:{ack:true,self:false}}});
+const publicChannelReady=await new Promise(resolve=>{
+ let done=false;
+ const finish=value=>{if(!done){done=true;resolve(value)}};
+ publicDraw.subscribe(status=>{
+  if(status==='SUBSCRIBED')finish(true);
+  else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED')finish(false);
+ });
+ setTimeout(()=>finish(false),8000);
+});
+if(!publicChannelReady){
+ $('drawStatus').textContent='❌ No se pudo conectar con la página pública.';
+ await publicDraw.unsubscribe();
+ alert('No se pudo establecer la conexión en tiempo real. No se ha realizado el sorteo; vuelve a intentarlo.');
+ $('drawModal').classList.remove('open');
+ if(btn){btn.disabled=false;btn.textContent='🏆 Realizar sorteo'}
+ return;
+}
 await publicDraw.send({type:'broadcast',event:'sorteo_inicio',payload:{rifa_id:rifa.id,numeros:lista,start_at:drawStartAt,duration_ms:drawDurationMs}});
 const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if(!reduce){let i=0;const started=Date.now();while(Date.now()-started<45000){$('drawNumber').textContent=String(lista[i%lista.length]).padStart(2,'0');i++;await new Promise(r=>setTimeout(r,55+Math.min(90,((Date.now()-started)/45000)*90)));}}else{$('drawNumber').textContent='🎲';await new Promise(r=>setTimeout(r,700));}
@@ -137,8 +153,17 @@ $('drawStatus').textContent='🔐 Confirmando selección aleatoria en el servido
 const {data,error}=await db.rpc('realizar_sorteo',{p_rifa_id:rifa.id});
 if(error){$('drawStatus').textContent='❌ No se pudo completar el sorteo.';alert('No se pudo realizar el sorteo: '+error.message);setTimeout(()=>{$('drawModal').classList.remove('open')},1200);if(btn){btn.disabled=false;btn.textContent='🏆 Realizar sorteo'}return}
 const numero=String(data.numero).padStart(2,'0');$('drawNumber').textContent=numero;$('drawWinnerNumber').textContent=numero;$('drawWinnerName').textContent=data.nombre;$('drawWinner').classList.remove('hidden');$('drawStatus').textContent='✅ Selección registrada en el historial.';
-await db.from('sorteo_eventos_en_vivo').update({estado:'finalizado',numero_ganador:data.numero,nombre_ganador:data.nombre}).eq('id',drawEvent.id);
-await publicDraw.send({type:'broadcast',event:'sorteo_resultado',payload:{rifa_id:rifa.id,numero:data.numero,nombre:data.nombre}});
+const {error:finalizarError}=await db.from('sorteo_eventos_en_vivo').update({estado:'finalizado',numero_ganador:data.numero,nombre_ganador:data.nombre}).eq('id',drawEvent.id);
+if(finalizarError){
+ $('drawStatus').textContent='⚠️ Ganador seleccionado, pero falta confirmar la transmisión pública.';
+ console.error('No se pudo finalizar el evento público:',finalizarError);
+ alert('El servidor seleccionó el ganador, pero no se pudo confirmar el evento público. No repitas el sorteo. Verifica el historial y el estado del evento.');
+ await publicDraw.unsubscribe();
+ if(btn){btn.disabled=false;btn.textContent='⚠️ Verificar resultado'}
+ return;
+}
+const {error:publicResultError}=await publicDraw.send({type:'broadcast',event:'sorteo_resultado',payload:{rifa_id:rifa.id,numero:data.numero,nombre:data.nombre}});
+if(publicResultError)console.error('No se pudo transmitir el resultado; la página pública lo recuperará del evento guardado:',publicResultError);
 await publicDraw.unsubscribe();
 await new Promise(r=>setTimeout(r,2500));$('drawModal').classList.remove('open');await mostrarGanador();alert('🏆 ¡SORTEO REALIZADO!\n\nNúmero ganador: '+numero+'\nGanador: '+data.nombre);if(btn){btn.disabled=true;btn.textContent='🏆 Sorteo realizado'}await cargar();}
 async function cargarListaGanadores(){
