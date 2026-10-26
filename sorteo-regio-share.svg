@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050806"/><stop offset=".55" stop-color="#101a0d"/><stop offset="1" stop-color="#243f15"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff19a"/><stop offset=".45" stop-color="#ffc52e"/><stop offset="1" stop-color="#b77808"/></linearGradient>
+ <linearGradient id="lime" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#aaff54"/><stop offset="1" stop-color="#67db21"/></linearGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="12"/></filter>
+</defs>
+<rect width="1200" height="630" fill="#f6f0e4"/>
+<rect x="14" y="14" width="1172" height="602" rx="42" fill="url(#bg)"/>
+<rect x="34" y="34" width="1132" height="562" rx="30" fill="none" stroke="#83d632" stroke-width="3"/>
+<circle cx="950" cy="293" r="150" fill="#8de43a" opacity=".12" filter="url(#glow)"/>
+<text x="70" y="95" font-family="Arial,Helvetica,sans-serif" font-size="54" font-weight="900" fill="#fff">SORTEO <tspan fill="#9af044">REGIO</tspan></text>
+<path d="M70 123 H1130" stroke="#8de63b" stroke-width="4"/>
+<text x="70" y="187" font-family="Arial,Helvetica,sans-serif" font-size="30" font-weight="800" letter-spacing="3" fill="#ffcf4b">SORTEO REGIO</text>
+<text x="66" y="292" font-family="Arial,Helvetica,sans-serif" font-size="92" font-weight="900" fill="url(#gold)">$60,000.00</text>
+<text x="72" y="340" font-family="Arial,Helvetica,sans-serif" font-size="31" font-weight="800" fill="#fff">MXN EN PREMIOS</text>
+<text x="72" y="397" font-family="Arial,Helvetica,sans-serif" font-size="27" fill="#e8eee5">¡Échale número, compa!</text>
+<rect x="70" y="432" width="405" height="112" rx="20" fill="url(#lime)"/>
+<text x="100" y="474" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="900" fill="#10170b">CADA BOLETO</text>
+<text x="100" y="523" font-family="Arial,Helvetica,sans-serif" font-size="43" font-weight="900" fill="#10170b">$2 MXN</text>
+<circle cx="930" cy="285" r="139" fill="#071008" stroke="url(#gold)" stroke-width="5"/>
+<circle cx="930" cy="285" r="119" fill="none" stroke="#9af044" stroke-width="3" stroke-dasharray="10 12"/>
+<g fill="url(#gold)" stroke="#8e5d05" stroke-width="2" stroke-linejoin="round">
+ <path d="M891 231 H969 V292 Q969 330 930 342 Q891 330 891 292 Z"/>
+ <path d="M891 244 H859 Q850 244 854 261 L870 291 Q880 306 901 303 L901 283 Q886 283 879 270 L875 262 H891 Z"/>
+ <path d="M969 244 H1001 Q1010 244 1006 261 L990 291 Q980 306 959 303 L959 283 Q974 283 981 270 L985 262 H969 Z"/>
+ <rect x="910" y="337" width="40" height="25" rx="4"/><rect x="884" y="360" width="92" height="15" rx="4"/><rect x="871" y="379" width="118" height="14" rx="4"/>
+</g>
+<path d="M897 273 H963 M897 289 H963" stroke="#17140a" stroke-width="9"/>
+<text x="930" y="439" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="800" fill="#fff">ELIGE TUS NÚMEROS EN LÍNEA</text>
+<text x="930" y="476" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="24" fill="#c8d1c3">rifasmty.lol/sorteo-regio</text>
+</svg>
