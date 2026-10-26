@@ -1,0 +1,28 @@
+name: Validate Mercado Pago Edge Function
+
+on:
+  pull_request:
+    paths:
+      - "supabase/functions/mercado-pago/**"
+      - ".github/workflows/validate-mercado-pago.yml"
+  push:
+    branches:
+      - fix/payment-expiry-reconciliation
+    paths:
+      - "supabase/functions/mercado-pago/**"
+      - ".github/workflows/validate-mercado-pago.yml"
+
+jobs:
+  static-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type-check Mercado Pago function
+        run: deno check supabase/functions/mercado-pago/index.ts
+      - name: Verify 24-hour reservation policy
+        run: |
+          grep -F 'const reservationMs = 24 * 60 * 60 * 1000;' supabase/functions/mercado-pago/index.ts
+          grep -F 'expiration_time: reservationDurationIso' supabase/functions/mercado-pago/index.ts
