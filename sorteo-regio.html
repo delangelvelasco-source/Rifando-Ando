@@ -195,6 +195,33 @@ main{position:relative}
 @media(hover:hover){.price:hover{transform:translateY(-3px) scale(1.015);filter:brightness(1.06);box-shadow:inset 0 2px 0 #ffffffa8,inset 0 -4px 0 #568c20,0 9px 0 #426d20,0 16px 26px #0008,0 0 32px #9af04445}}
 @media(max-width:650px){.hero h1{text-shadow:0 2px 0 #7b7b7b,0 4px 0 #252525,0 7px 12px #000c,0 0 20px #9af04435}.status,.chat-promo,.purchase,.payment-minimum{border-radius:19px}}
 @media(prefers-reduced-motion:reduce){body:before,body:after,.hero h1:after,.lottery-ticket:after,.status:before{animation:none!important}.chat-bubble,.chat-share-btn,button.primary,.price{transition:none!important}}
+
+/* Refinamiento visual final: luz cinematográfica, capas y microinteracciones */
+@media screen{
+.hero{overflow:hidden;box-shadow:inset 0 1px 0 #ffffff18,0 24px 55px #000a,0 0 0 1px #f5c34318,0 0 42px #9af04412}
+.hero:before{background:linear-gradient(112deg,transparent 15%,#ffffff05 34%,#d8ff9c19 48%,#fff4c208 53%,transparent 70%);background-size:240% 100%;animation:regioSurfaceLight 8s ease-in-out infinite}
+.hero:after{filter:drop-shadow(0 0 8px #f5c34365);text-shadow:0 0 12px #f5c34345}
+.price{transform:translateZ(0);position:relative;overflow:hidden}
+.price:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 25%,#ffffff65 48%,transparent 65%);transform:translateX(-140%);animation:regioPriceShine 5.5s ease-in-out infinite}
+.prize-card{box-shadow:inset 0 2px 0 #fff4,inset 0 -12px 22px #0008,0 8px 0 #60420d,0 15px 30px #000a,0 0 32px #f5c34336}
+.prize-card:before{inset:5px;border-color:#ffe28a88;box-shadow:inset 0 0 22px #ffe28a12,0 0 16px #f5c34325}
+.prize-card:after{background:linear-gradient(105deg,transparent 42%,#fff4b044 48%,#fff9e3ee 50%,#ffcf4b88 51%,transparent 58%);animation:regioGoldFlash 3.2s ease-in-out infinite}
+.prize-amount{filter:drop-shadow(0 0 9px #ffc83d35)}
+.lottery-ticket{filter:drop-shadow(0 17px 14px #000a) drop-shadow(0 0 12px #ffcf4b30)}
+.chat-promo{border:1px solid #7acb48;background:radial-gradient(ellipse at 0% 0%,#2d5b252e 0,transparent 42%),radial-gradient(ellipse at 100% 100%,#f5c3430c 0,transparent 35%),linear-gradient(145deg,#101b10,#080b08);box-shadow:inset 0 1px 0 #ffffff18,0 18px 42px #0009,0 0 28px #9af04412}
+.chat-bubble{border:1px solid #9af04428;backdrop-filter:blur(6px);transition:transform .25s ease,filter .25s ease,box-shadow .25s ease}
+.chat-bubble:nth-child(odd){border-bottom-left-radius:7px}
+.chat-bubble:nth-child(even){border-bottom-right-radius:7px}
+.chat-sound{box-shadow:0 0 0 3px #9af04410,0 0 15px #9af04428}
+.chat-share-btn{position:relative;overflow:hidden;isolation:isolate;box-shadow:inset 0 2px 0 #ffffff90,0 6px 0 #477821,0 12px 24px #0007,0 0 24px #9af04428}
+.chat-share-btn:after{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(105deg,transparent 25%,#ffffff65 48%,transparent 66%);transform:translateX(-140%);animation:regioPriceShine 5s ease-in-out infinite}
+.chat-share-note{letter-spacing:.1px}
+.purchase{border:1px solid #638d3e;background:radial-gradient(ellipse at 10% 0%,#25421d30,transparent 45%),linear-gradient(145deg,#111811,#0b0e0b);box-shadow:inset 0 1px 0 #ffffff12,0 18px 38px #0008}
+@keyframes regioPriceShine{0%,18%{transform:translateX(-140%);opacity:0}28%{opacity:.9}58%,100%{transform:translateX(140%);opacity:0}}
+@media(hover:hover){.chat-bubble:hover{transform:translateY(-3px) perspective(700px) rotateX(1deg);filter:brightness(1.08);box-shadow:inset 0 1px 0 #ffffff20,0 8px 0 #07170f,0 15px 25px #0008,0 0 22px #9af04420}.lottery-ticket:hover{filter:drop-shadow(0 20px 17px #000a) drop-shadow(0 0 21px #ffcf4b85)}.purchase:hover{border-color:#9af0448a}}
+@media(max-width:650px){.hero{box-shadow:inset 0 1px 0 #ffffff12,0 14px 32px #0009,0 0 22px #9af0440c}.chat-bubble{backdrop-filter:none}.prize-card:after{animation-duration:4s}}
+@media(prefers-reduced-motion:reduce){.hero:before,.price:after,.chat-share-btn:after{animation:none!important}.chat-bubble,.purchase{transition:none!important}}
+}
 </style></head>
 <body>
 <header><div class="brand">SORTEO <span>REGIO</span></div></header>
