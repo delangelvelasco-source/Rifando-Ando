@@ -568,20 +568,7 @@ body{padding-top:158px!important}
 </head>
 <body>
 
-<section id="paymentSuccess" role="dialog" aria-modal="true" aria-labelledby="psTitle">
-  <div class="ps-brand">🎟️ SORTEO ECONÓMICO <span>REGIO</span></div>
-  <div class="ps-card">
-    <div class="ps-check" aria-hidden="true">✓</div>
-    <h1 id="psTitle">¡Pago confirmado!</h1>
-    <p class="ps-lead">Tu participación ha quedado confirmada correctamente.</p>
-    <div class="ps-panel"><div class="ps-label">🎟️ TU SORTEO</div><div class="ps-value" id="psRaffleCode">Sorteo Económico Regio</div><div class="ps-sub" id="psRaffleName"></div></div>
-    <div class="ps-panel"><div class="ps-label">🎫 TUS NÚMEROS</div><div class="ps-numbers" id="psNumbers">Consulta tus boletos en la sección de números.</div></div>
-    <div class="ps-panel"><div class="ps-label">💰 RESUMEN DE TU PARTICIPACIÓN</div><div class="ps-summary">✅ Estado: <strong style="color:#087849">Pagado</strong><br><span id="psAmount"></span></div></div>
-    <div class="ps-luck"><strong>🍀 ¡Mucha suerte en el sorteo!</strong><span>Gracias por participar en Sorteo Económico Regio.</span></div>
-    <button class="ps-action" type="button" id="psViewTickets">🎟️ Ver mis boletos　›</button>
-    <div class="ps-small">Guarda esta confirmación para tu referencia.</div>
-  </div>
-</section>
+<!-- La confirmación de pago vive en pago-confirmado.html; no mostrarla como modal en la página pública. -->
 
 <header>
 <div id="raffle-payment-notice" role="note" aria-label="Condición de realización de sorteos"><span class="notice-icon" aria-hidden="true">📣</span><span class="notice-copy">Cada sorteo tiene su propia modalidad, fecha y condiciones. <strong>Consulta las reglas del sorteo seleccionado.</strong></span><span class="notice-icon notice-calendar" aria-hidden="true">▣</span></div>
@@ -1646,27 +1633,14 @@ document.getElementById('psViewTickets')?.addEventListener('click',()=>{
 });
 
 function mostrarConfirmacionPago(){
-  const panel=document.getElementById('paymentSuccess');
-  if(!panel)return;
-  const code=document.getElementById('psRaffleCode');
-  const name=document.getElementById('psRaffleName');
-  const nums=document.getElementById('psNumbers');
-  const amount=document.getElementById('psAmount');
-  const raffleNameText=String(rifa?.nombre||'Sorteo Económico Regio');
-  const raffleCode=String(rifa?.codigo_sorteo||rifa?.codigo||'');
-  if(code)code.textContent=raffleCode?('SORTEO: '+raffleCode):'Sorteo Económico Regio';
-  if(name)name.textContent=raffleNameText.toLowerCase().includes('sorteo económico regio')?'':'Sorteo Económico Regio';
-  if(nums){
-    const selected=Array.from(sel||[]).map(n=>String(n).padStart(2,'0'));
-    nums.textContent=selected.length?selected.join(', '):'Tus números ya están confirmados. Pulsa “Ver mis boletos” para consultarlos.';
+  const params=new URLSearchParams(window.location.search);
+  const pagoId=params.get('pago_id');
+  const token=params.get('payment_token');
+  if(!pagoId||!token){
+    console.warn('No se puede abrir la confirmación sin los datos de retorno de Mercado Pago.');
+    return;
   }
-  if(amount){
-    const selected=Array.from(sel||[]);
-    const total=Number(rifa?.precio||rifa?.precio_numero||0)*selected.length;
-    amount.textContent=selected.length&&Number.isFinite(total)&&total>0?('Total pagado: '+total.toLocaleString('es-MX')+' MXN'):'Pago recibido y registrado correctamente.';
-  }
-  panel.classList.add('open');
-  document.body.style.overflow='hidden';
+  window.location.replace('/pago-confirmado.html?mp_return=success&pago_id='+encodeURIComponent(pagoId)+'&payment_token='+encodeURIComponent(token));
 }
 
 async function confirmar(e){
