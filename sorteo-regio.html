@@ -224,9 +224,9 @@ main{position:relative}
 }
 
 /* Boletos animados limitados exclusivamente a la zona del chat */
-.money-float-layer{position:fixed;inset:0;z-index:20;pointer-events:none!important;overflow:hidden;contain:strict}
-.money-float-layer,.money-float-layer *{pointer-events:none!important;user-select:none!important;-webkit-user-select:none!important}
-.money-float{position:absolute;left:var(--x);top:var(--y);width:clamp(90px,18vw,150px);aspect-ratio:2.35/1;opacity:0;filter:drop-shadow(0 5px 7px #0009);animation:ticketSurprise var(--duration) ease-in-out var(--delay) infinite}
+.money-float-layer{position:fixed;inset:0;z-index:9999;pointer-events:none!important;overflow:hidden;contain:strict;isolation:isolate}
+.money-float-layer,.money-float-layer *{pointer-events:none!important;user-select:none!important;-webkit-user-select:none!important}.money-float-layer{mix-blend-mode:normal}.money-float{position:absolute!important;z-index:9999!important;pointer-events:none!important}
+.money-float{position:absolute;left:var(--x);top:var(--y);width:clamp(90px,18vw,150px);aspect-ratio:2.35/1;opacity:0;filter:drop-shadow(0 7px 10px #000b);animation:ticketSurprise var(--duration) ease-in-out var(--delay) infinite}
 .ticket-art{pointer-events:none!important}
 @keyframes ticketSurprise{0%,8%{opacity:0;transform:translate3d(0,24px,0) rotate(-10deg) scale(.75)}12%{opacity:.32;transform:translate3d(0,0,0) rotate(5deg) scale(1)}18%{opacity:.25;transform:translate3d(7px,-8px,0) rotate(-4deg) scale(1.02)}24%,100%{opacity:0;transform:translate3d(-5px,-18px,0) rotate(9deg) scale(.9)}}
 @media(max-width:600px){.money-float{width:clamp(76px,24vw,112px)}.money-float:nth-child(even){display:none}}
