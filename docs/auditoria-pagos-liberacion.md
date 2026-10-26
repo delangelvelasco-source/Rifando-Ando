@@ -3,12 +3,12 @@
 ## Alcance de esta rama
 - No modifica la base de datos ni los sorteos activos.
 - Sincroniza la duración del apartado con la vigencia configurada de la orden de Mercado Pago.
-- Mantiene 24 horas para Sorteo Regio y para el método OXXO; usa 30 minutos para otros sorteos con checkout de Mercado Pago.
+- Mantiene 24 horas para Sorteo Regio, OXXO y checkout estándar de Mercado Pago (incluido SPEI cuando esté disponible dentro del checkout).
 - No despliega la función. El despliegue a Supabase debe hacerse después de revisar el diff y probarlo en un entorno de pruebas.
 
 ## Pruebas de regresión requeridas antes de desplegar
 1. Sorteo Regio + Mercado Pago: orden y apartado expiran a 24 horas.
-2. Sorteo regular + Mercado Pago: orden y apartado expiran a 30 minutos.
+2. Sorteo regular + Mercado Pago/SPEI: orden y apartado expiran a 24 horas.
 3. Sorteo regular + OXXO: ticket y apartado expiran a 24 horas.
 4. Doble clic/reintento de crear orden: reutiliza la orden existente; no crea segundo cobro.
 5. Webhook duplicado de pago aprobado: no duplica boletos vendidos.
