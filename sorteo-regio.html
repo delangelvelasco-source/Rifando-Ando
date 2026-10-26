@@ -225,18 +225,22 @@ main{position:relative}
 
 /* Billetes decorativos de $500 flotando por la página: solo decoración, no bloquean controles */
 .money-float-layer{position:fixed;inset:0;z-index:4;pointer-events:none;overflow:hidden;contain:strict}
-.money-float{position:absolute;left:var(--x);top:var(--y);width:clamp(76px,10vw,132px);aspect-ratio:2.05/1;opacity:0;transform-style:preserve-3d;filter:drop-shadow(0 9px 7px #0008);animation:moneyExcited var(--duration) cubic-bezier(.45,.05,.55,.95) var(--delay) infinite}
+.money-float{position:absolute;left:var(--x);top:var(--y);width:clamp(48px,6.4vw,84px);aspect-ratio:2.05/1;opacity:0;transform-style:preserve-3d;filter:drop-shadow(0 6px 5px #0008);animation:moneyExcited var(--duration) cubic-bezier(.45,.05,.55,.95) var(--delay) infinite}
 .money-float svg{display:block;width:100%;height:100%;overflow:visible}
 .money-float .bill-face{transform-origin:50% 50%;animation:moneyFlip var(--flip) ease-in-out var(--delay) infinite}
 .money-float .bill-glow{filter:drop-shadow(0 0 7px #c7ff7a70)}
 /* Acabado azul y crema inspirado en el billete de $500; SVG integrado para no depender de descargas externas */
 .money-float svg{filter:drop-shadow(0 0 8px #d9b86b55)}
+/* Billetes pequeños y discretos para no cubrir los números ni los controles del sorteo */
+.money-float-layer{z-index:2}
+.money-float{pointer-events:none}
+@media(max-width:600px){.money-float-layer{opacity:.9}.money-float:nth-child(1){top:25%!important;left:3%!important}.money-float:nth-child(3){top:54%!important;left:3%!important}.money-float:nth-child(5){top:78%!important;left:3%!important}.money-float:nth-child(7){top:40%!important;left:86%!important}}
 .money-float .bill-face{animation:moneyFlip var(--flip) ease-in-out var(--delay) infinite, billWave 3.8s ease-in-out var(--delay) infinite}
 @keyframes billWave{0%,100%{translate:0 0}50%{translate:0 -5px}}
 
 @keyframes moneyExcited{0%{opacity:0;translate:0 24px;rotate:-16deg}10%{opacity:.86}26%{translate:10px -12px;rotate:12deg}42%{translate:-8px 5px;rotate:-8deg}58%{translate:12px -17px;rotate:15deg}74%{opacity:.8;translate:-5px -5px;rotate:-10deg}90%,100%{opacity:0;translate:0 -30px;rotate:18deg}}
 @keyframes moneyFlip{0%,100%{transform:perspective(500px) rotateY(-22deg) rotateX(7deg) scale(.94,1)}25%{transform:perspective(500px) rotateY(32deg) rotateX(-7deg) scale(1,.94)}50%{transform:perspective(500px) rotateY(175deg) rotateX(8deg) scale(.9,1)}75%{transform:perspective(500px) rotateY(325deg) rotateX(-5deg) scale(1.02,.96)}}
-@media(max-width:600px){.money-float{width:clamp(58px,15vw,88px);opacity:.7}.money-float-layer{inset:0}}
+@media(max-width:600px){.money-float{width:clamp(42px,10vw,58px);opacity:.58}.money-float-layer{inset:0}.money-float-layer .money-float:nth-child(2n){display:none}}
 @media(prefers-reduced-motion:reduce){.money-float,.money-float .bill-face{animation:none!important;opacity:.18;transform:none}}
 </style></head>
 <body><div class="money-float-layer" aria-hidden="true">
