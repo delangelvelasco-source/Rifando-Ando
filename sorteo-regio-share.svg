@@ -12,7 +12,7 @@
 <text x="70" y="95" font-family="Arial,Helvetica,sans-serif" font-size="54" font-weight="900" fill="#fff">SORTEO <tspan fill="#9af044">REGIO</tspan></text>
 <path d="M70 123 H1130" stroke="#8de63b" stroke-width="4"/>
 <text x="70" y="187" font-family="Arial,Helvetica,sans-serif" font-size="30" font-weight="800" letter-spacing="3" fill="#ffcf4b">SORTEO REGIO</text>
-<text x="66" y="292" font-family="Arial,Helvetica,sans-serif" font-size="92" font-weight="900" fill="url(#gold)">$60,000.00</text>
+<text x="66" y="292" font-family="Arial,Helvetica,sans-serif" font-size="92" font-weight="900" fill="url(#gold)">$50,000.00</text>
 <text x="72" y="340" font-family="Arial,Helvetica,sans-serif" font-size="31" font-weight="800" fill="#fff">MXN EN PREMIOS</text>
 <text x="72" y="397" font-family="Arial,Helvetica,sans-serif" font-size="27" fill="#e8eee5">¡Échale número, compa!</text>
 <rect x="70" y="432" width="405" height="112" rx="20" fill="url(#lime)"/>
