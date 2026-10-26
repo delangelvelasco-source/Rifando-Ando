@@ -24,7 +24,7 @@ Deno.serve(async (req: Request) => {
     const { data: participant, error: pe } = await db.from("participantes").select("id,nombre,consulta_token").eq("consulta_token", token).maybeSingle();
     if (pe) throw pe;
     if (!participant) return new Response(JSON.stringify({ error: "No encontramos esta participación. Solicita al administrador un enlace nuevo." }), { status: 404, headers: cors });
-    const { data: numbers, error: ne } = await db.from("numeros").select("id,numero,estado,pago_id,rifa_id").eq("participante_id", participant.id).order("numero");
+    const { data: numbers, error: ne } = await db.from("numeros").select("id,numero,estado,apartado_hasta,pago_id,rifa_id").eq("participante_id", participant.id).order("numero");
     if (ne) throw ne;
     const raffleIds = [...new Set((numbers || []).map((x: any) => x.rifa_id))];
     const { data: raffles, error: re } = raffleIds.length ? await db.from("rifas").select("id,nombre,codigo_sorteo,precio_numero,fecha_sorteo").in("id", raffleIds) : { data: [], error: null };
@@ -36,7 +36,7 @@ Deno.serve(async (req: Request) => {
     const payById = new Map(paidPayments.map((p: any) => [p.id, p]));
     const grouped = raffleIds.map((rid) => {
       const raffle: any = raffleMap.get(rid) || {};
-      const ns = (numbers || []).filter((n: any) => n.rifa_id === rid && n.estado !== "disponible");
+      const ns = (numbers || []).filter((n: any) => n.rifa_id === rid && (n.estado === "vendido" || (n.estado === "apartado" && (!n.apartado_hasta || new Date(n.apartado_hasta).getTime() > Date.now()))));
       const ps = paidPayments.filter((p: any) => p.rifa_id === rid);
       const paid = ps.reduce((sum: number, p: any) => sum + Number(p.monto || 0), 0);
       const total = ns.length * Number(raffle.precio_numero || 0);
