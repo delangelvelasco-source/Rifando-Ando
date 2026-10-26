@@ -109,6 +109,14 @@ button.primary{background:linear-gradient(110deg,#a8f65a,#c4ff69 50%,#9af044);bo
 @keyframes chatTitleGlow{0%,100%{text-shadow:0 0 0 #9af04400}50%{text-shadow:0 0 16px #9af04450}}
 @keyframes chatSoundPulse{0%,75%,100%{box-shadow:0 0 0 0 #9af04400;scale:1}84%{box-shadow:0 0 0 5px #9af04420;scale:1.06}}
 @media(prefers-reduced-motion:reduce){.chat-stack .chat-bubble,.chat-promo h2,.chat-bubble .chat-sound{animation:none;will-change:auto}}
+
+/* Aparición y desaparición suave de la conversación */
+.chat-stack .chat-bubble{animation:chatBubblePop 5.6s ease-in-out infinite;will-change:opacity,transform}
+.chat-stack .chat-bubble:nth-child(2){animation-delay:1.4s}
+.chat-stack .chat-bubble:nth-child(3){animation-delay:2.8s}
+.chat-stack .chat-bubble:nth-child(4){animation-delay:4.2s}
+@keyframes chatBubblePop{0%,8%{opacity:0;transform:translateY(12px) scale(.97)}18%,72%{opacity:1;transform:translateY(0) scale(1)}84%,100%{opacity:0;transform:translateY(-8px) scale(.98)}}
+@media(prefers-reduced-motion:reduce){.chat-stack .chat-bubble{animation:none;opacity:1;transform:none;will-change:auto}}
 </style></head>
 <body>
 <header><div class="brand">SORTEO <span>REGIO</span></div></header>
