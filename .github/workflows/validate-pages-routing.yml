@@ -1,0 +1,25 @@
+name: Validate Pages routing
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-routing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Validate direct admin pages and routing rules
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f admin.html
+          test -f admin-especial.html
+          if grep -Eiq '^[[:space:]]*/admin(-especial)?/?[[:space:]]+' _redirects; then
+            echo "::error file=_redirects::No agregues aliases /admin o /admin-especial en _redirects. Los paneles deben abrirse mediante sus archivos HTML directos hasta validar una estrategia de rutas en staging."
+            exit 1
+          fi
+          echo "OK: existen los archivos admin y _redirects no redefine sus rutas."
