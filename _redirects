@@ -2,3 +2,7 @@
 /especial/  /index.html   200
 /iphone/    /index.html   200
 /express/   /index.html   200
+/admin       /admin.html          200
+/admin/      /admin.html          200
+/admin-especial  /admin-especial.html  200
+/admin-especial/ /admin-especial.html  200
