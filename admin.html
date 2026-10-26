@@ -488,9 +488,20 @@ function normalizarNumeroWhatsApp(telefono){
   return clean;
 }
 function abrirWhatsAppSeguro(telefono, mensaje){
-  // El administrador elige el chat existente; el mensaje no expone el teléfono registrado.
   const texto=String(mensaje||'');
-  window.open('https://wa.me/?text='+encodeURIComponent(texto),'_blank');
+  const raw=String(telefono||'').trim();
+  // Los mensajes a participantes deben abrir directamente el chat del número registrado.
+  // Los enlaces generales, como compartir boletos, pueden abrir el selector de WhatsApp.
+  if(!raw){
+    window.open('https://wa.me/?text='+encodeURIComponent(texto),'_blank','noopener,noreferrer');
+    return;
+  }
+  const numero=normalizarNumeroWhatsApp(raw);
+  if(!numero){
+    alert('No se puede abrir el chat porque el WhatsApp registrado no tiene un formato válido. Edita el número del participante y guarda los 10 dígitos correctos.');
+    return;
+  }
+  window.open('https://wa.me/'+numero+'?text='+encodeURIComponent(texto),'_blank','noopener,noreferrer');
 }
 document.addEventListener('click',function(e){
   const button=e.target.closest('.share-ticket-link');
