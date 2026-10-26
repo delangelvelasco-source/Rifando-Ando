@@ -557,6 +557,14 @@ body{padding-top:158px!important}
 }
 
 </style>
+<script>
+(function(){
+  var p=new URLSearchParams(window.location.search);
+  if(p.has('mp_return') && p.has('pago_id') && p.has('payment_token')){
+    window.location.replace('/pago-confirmado.html'+window.location.search+window.location.hash);
+  }
+})();
+</script>
 </head>
 <body>
 
