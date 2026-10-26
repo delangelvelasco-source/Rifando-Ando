@@ -627,7 +627,7 @@ async function cargarPagosPendientes(){
   }).join('');
 }
 iniciarAdmin();
-</script><script src="admin-nuevo-sorteo.js?v=20260921-2"></script></body></html>+paid[pid].toLocaleString('es-MX'):'⚪ Sin pago confirmado')+'<div class="pay">'+(rows||'Sin movimientos de pago')+'</div>'+(x.consulta_token?'<button class="btn small" onclick="enviarEnlaceBoletos(\''+x.consulta_token+'\',\''+String(x.nombre||'Participante').replace(/\\\\/g,'').replace(/'/g,'')+'\')">🔗 Enviar enlace privado</button>':'')+'</div>'}).join(''):'Sin participantes registrados en este sorteo.'}
+</script><script src="admin-nuevo-sorteo.js?v=20260921-2"></script></body></html>+paid[pid].toLocaleString('es-MX'):'⚪ Sin pago confirmado')+'<div class="pay">'+(rows||'Sin movimientos de pago')+'</div>'+(x.consulta_token?'<button class="btn small" onclick="enviarEnlaceBoletos(\\''+x.consulta_token+'\\')">🔗 Enviar enlace privado</button>':'')+'</div>'}).join(''):'Sin participantes registrados en este sorteo.'}
 let adminNumbersPage=0;
 function renderAdminNumbers(delta=0){
  const el=$('nums'),input=$('adminNumberSearch'),hint=$('adminNumbersHint'),label=$('adminNumbersPage');
