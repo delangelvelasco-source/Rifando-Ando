@@ -1630,6 +1630,13 @@ async function iniciarPagoMercadoPago(paymentMethod='mercado_pago'){
 }
 
 
+document.getElementById('psViewTickets')?.addEventListener('click',()=>{
+  document.getElementById('paymentSuccess')?.classList.remove('open');
+  document.body.style.overflow='';
+  const target=document.getElementById('numeros');
+  if(target)target.scrollIntoView({behavior:'smooth',block:'start'});
+});
+
 function mostrarConfirmacionPago(){
   const panel=document.getElementById('paymentSuccess');
   if(!panel)return;
