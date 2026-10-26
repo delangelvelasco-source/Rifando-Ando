@@ -232,11 +232,11 @@ function abrirWhatsAppSeguro(telefono, mensaje){
   const texto=String(mensaje||'');
   window.open('https://wa.me/?text='+encodeURIComponent(texto),'_blank');
 }
-function enviarEnlaceBoletos(token,nombre){
+function enviarEnlaceBoletos(token){
   if(!token){alert('No hay enlace disponible para este participante.');return}
   const link='https://rifasmty.lol/mis-boletos.html?token='+encodeURIComponent(token);
   const nl=String.fromCharCode(10);
-  const msg='👋 ¡Hola, '+String(nombre||'participante')+'!'+nl+nl+'🎟️ SORTEO REGIO'+nl+'Aquí puedes consultar tus boletos y pagos confirmados, además de descargar tu comprobante PDF:'+nl+link+nl+nl+'🔒 Este enlace es privado; no lo compartas públicamente.'+nl+nl+'🤝 Gracias por participar.';
+  const msg='👋 ¡Hola!'+nl+nl+'🎟️ SORTEO REGIO'+nl+'Aquí puedes consultar tus boletos y pagos confirmados, además de descargar tu comprobante PDF:'+nl+link+nl+nl+'🔒 Este enlace es privado; no lo compartas públicamente.'+nl+nl+'🤝 Gracias por participar.';
   abrirWhatsAppSeguro('',msg);
 }
 function enviarWhatsApp(nombre,telefono,numeros,total,pagado,saldo){
