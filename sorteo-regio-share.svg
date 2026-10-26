@@ -18,15 +18,16 @@
 <rect x="70" y="432" width="405" height="112" rx="20" fill="url(#lime)"/>
 <text x="100" y="474" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="900" fill="#10170b">CADA BOLETO</text>
 <text x="100" y="523" font-family="Arial,Helvetica,sans-serif" font-size="43" font-weight="900" fill="#10170b">$2 MXN</text>
-<circle cx="930" cy="285" r="139" fill="#071008" stroke="url(#gold)" stroke-width="5"/>
-<circle cx="930" cy="285" r="119" fill="none" stroke="#9af044" stroke-width="3" stroke-dasharray="10 12"/>
-<g fill="url(#gold)" stroke="#8e5d05" stroke-width="2" stroke-linejoin="round">
- <path d="M891 231 H969 V292 Q969 330 930 342 Q891 330 891 292 Z"/>
- <path d="M891 244 H859 Q850 244 854 261 L870 291 Q880 306 901 303 L901 283 Q886 283 879 270 L875 262 H891 Z"/>
- <path d="M969 244 H1001 Q1010 244 1006 261 L990 291 Q980 306 959 303 L959 283 Q974 283 981 270 L985 262 H969 Z"/>
- <rect x="910" y="337" width="40" height="25" rx="4"/><rect x="884" y="360" width="92" height="15" rx="4"/><rect x="871" y="379" width="118" height="14" rx="4"/>
+<g transform="translate(930 290) rotate(-8)">
+ <ellipse cx="0" cy="90" rx="190" ry="24" fill="#9af044" opacity=".16" filter="url(#glow)"/>
+ <g stroke="#b68b35" stroke-width="2">
+  <g transform="translate(-105 -18) rotate(-18)"><rect x="-120" y="-58" width="240" height="116" rx="8" fill="#d7c49a"/><rect x="-110" y="-48" width="220" height="96" rx="5" fill="#e8d9ad" stroke="#387b42" stroke-width="3"/><circle cx="0" cy="0" r="34" fill="#a8c58a" stroke="#397b48" stroke-width="3"/><text x="0" y="10" text-anchor="middle" font-family="Arial" font-size="34" font-weight="900" fill="#276b3a" stroke="none">500</text><text x="-88" y="-22" font-family="Arial" font-size="18" font-weight="900" fill="#286d3a" stroke="none">BANCO DE</text><text x="-88" y="0" font-family="Arial" font-size="18" font-weight="900" fill="#286d3a" stroke="none">MÉXICO</text></g>
+  <g transform="translate(-70 -8) rotate(-10)"><rect x="-120" y="-58" width="240" height="116" rx="8" fill="#c9b78d"/><rect x="-110" y="-48" width="220" height="96" rx="5" fill="#e7d7a7" stroke="#397c43" stroke-width="3"/><circle cx="0" cy="0" r="34" fill="#b4ca8b" stroke="#397c43" stroke-width="3"/><text x="0" y="10" text-anchor="middle" font-family="Arial" font-size="34" font-weight="900" fill="#286b3a" stroke="none">500</text><text x="-88" y="-22" font-family="Arial" font-size="18" font-weight="900" fill="#286d3a" stroke="none">BANCO DE</text><text x="-88" y="0" font-family="Arial" font-size="18" font-weight="900" fill="#286d3a" stroke="none">MÉXICO</text></g>
+  <g transform="translate(-20 16) rotate(-2)"><rect x="-120" y="-58" width="240" height="116" rx="8" fill="#d2c093"/><rect x="-110" y="-48" width="220" height="96" rx="5" fill="#f0dfb0" stroke="#397c43" stroke-width="3"/><circle cx="0" cy="0" r="34" fill="#b4ca8b" stroke="#397c43" stroke-width="3"/><text x="0" y="10" text-anchor="middle" font-family="Arial" font-size="34" font-weight="900" fill="#286b3a" stroke="none">500</text><text x="-88" y="-22" font-family="Arial" font-size="18" font-weight="900" fill="#286d3a" stroke="none">BANCO DE</text><text x="-88" y="0" font-family="Arial" font-size="18" font-weight="900" fill="#286d3a" stroke="none">MÉXICO</text></g>
+ </g>
+ <g transform="translate(12 22) rotate(-5)"><rect x="-130" y="-62" width="260" height="124" rx="8" fill="#d8c49b" stroke="#8f6928" stroke-width="3"/><rect x="-120" y="-52" width="240" height="104" rx="5" fill="#f1dfb4" stroke="#3d8548" stroke-width="3"/><rect x="-110" y="-42" width="220" height="84" rx="4" fill="none" stroke="#d4a83c" stroke-width="2"/><circle cx="0" cy="0" r="37" fill="#b6ce95" stroke="#3d8548" stroke-width="3"/><text x="0" y="12" text-anchor="middle" font-family="Arial" font-size="37" font-weight="900" fill="#286b3a" stroke="none">500</text><text x="-101" y="-20" font-family="Arial" font-size="17" font-weight="900" fill="#286d3a" stroke="none">BANCO DE</text><text x="-101" y="2" font-family="Arial" font-size="17" font-weight="900" fill="#286d3a" stroke="none">MÉXICO</text><text x="100" y="36" text-anchor="end" font-family="Arial" font-size="14" font-weight="700" fill="#286d3a" stroke="none">QUINIENTOS PESOS</text></g>
+ <g fill="#fff19a"><path d="M-185 -105 l5 13 13 5 -13 5 -5 13 -5 -13 -13 -5 13 -5z"/><path d="M175 -85 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z"/><path d="M180 95 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z"/></g>
 </g>
-<path d="M897 273 H963 M897 289 H963" stroke="#17140a" stroke-width="9"/>
 <text x="930" y="439" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="800" fill="#fff">ELIGE TUS NÚMEROS EN LÍNEA</text>
 <text x="930" y="476" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="24" fill="#c8d1c3">rifasmty.lol/sorteo-regio</text>
 </svg>
