@@ -484,6 +484,10 @@ function abrirWhatsAppSeguro(telefono, mensaje){
   const texto=String(mensaje||'');
   window.open('https://wa.me/?text='+encodeURIComponent(texto),'_blank');
 }
+document.addEventListener('click',function(e){
+  const button=e.target.closest('.share-ticket-link');
+  if(button)enviarEnlaceBoletos(button.dataset.consultaToken);
+});
 function enviarEnlaceBoletos(token){
   if(!token){alert('No hay enlace disponible para este participante.');return}
   const link='https://rifasmty.lol/mis-boletos.html?token='+encodeURIComponent(token);
@@ -627,7 +631,7 @@ async function cargarPagosPendientes(){
   }).join('');
 }
 iniciarAdmin();
-</script><script src="admin-nuevo-sorteo.js?v=20260921-2"></script></body></html>+paid[pid].toLocaleString('es-MX'):'⚪ Sin pago confirmado')+'<div class="pay">'+(rows||'Sin movimientos de pago')+'</div>'+(x.consulta_token?'<button class="btn small" onclick="enviarEnlaceBoletos(\\''+x.consulta_token+'\\')">🔗 Enviar enlace privado</button>':'')+'</div>'}).join(''):'Sin participantes registrados en este sorteo.'}
+</script><script src="admin-nuevo-sorteo.js?v=20260921-2"></script></body></html>+paid[pid].toLocaleString('es-MX'):'⚪ Sin pago confirmado')+'<div class="pay">'+(rows||'Sin movimientos de pago')+'</div>'+(x.consulta_token?'<button class="btn small share-ticket-link" data-consulta-token="'+x.consulta_token+'">🔗 Enviar enlace privado</button>':'')+'</div>'}).join(''):'Sin participantes registrados en este sorteo.'}
 let adminNumbersPage=0;
 function renderAdminNumbers(delta=0){
  const el=$('nums'),input=$('adminNumberSearch'),hint=$('adminNumbersHint'),label=$('adminNumbersPage');
