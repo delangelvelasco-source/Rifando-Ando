@@ -480,13 +480,11 @@ function normalizarNumeroWhatsApp(telefono){
   return clean;
 }
 function abrirWhatsAppSeguro(telefono, mensaje){
+  // Abre WhatsApp con el mensaje preparado, sin forzar un número que la app no reconoce.
+  // El administrador elige el chat existente; así no se bloquea por un teléfono mal asociado.
   const waNumber=normalizarNumeroWhatsApp(telefono);
-  if(!waNumber){
-    alert('El número guardado no tiene un formato válido. Edita WhatsApp del participante y guarda los 10 dígitos correctos.');
-    return;
-  }
-  // Endpoint oficial alternativo para abrir WhatsApp con el número internacional normalizado.
-  window.open('https://api.whatsapp.com/send?phone='+waNumber+'&text='+encodeURIComponent(mensaje),'_blank','noopener');
+  const texto=String(mensaje||'')+(waNumber?'\\n\\n📱 Número registrado: +'+waNumber:'');
+  window.open('https://wa.me/?text='+encodeURIComponent(texto),'_blank');
 }
 function enviarWhatsApp(nombre,telefono,numeros,total,pagado,saldo){
   const nl=String.fromCharCode(10);
