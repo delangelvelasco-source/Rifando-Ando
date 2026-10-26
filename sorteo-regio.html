@@ -58,6 +58,27 @@ button{cursor:pointer;font-weight:800}button.primary{background:var(--green);bor
 @media(min-width:760px){.grid{grid-template-columns:repeat(12,minmax(0,1fr));gap:5px}.ticket{font-size:14px;padding:9px 2px}}
 #mode{width:100%;min-width:0;white-space:nowrap;text-overflow:clip;font-size:clamp(13px,1.6vw,17px);padding-left:12px;padding-right:36px;line-height:1.25}@media(max-width:650px){.controls{grid-template-columns:minmax(0,1fr);gap:10px;padding:12px;margin:14px 0 10px;width:100%;min-width:0}.controls #mode{display:block;width:100%;min-width:0;max-width:100%;font-size:16px;line-height:1.25;letter-spacing:0;padding:14px 38px 14px 14px;white-space:normal;overflow:visible;text-overflow:clip;background-position:right 12px center;background-size:18px 18px,100% 100%;background-color:#7835df!important;border-radius:12px}.controls #search{display:block;width:100%;min-width:0;max-width:100%;font-size:16px;padding:14px 12px}.controls #find{grid-column:auto;width:100%;min-width:0;padding:14px}.controls>*{box-sizing:border-box}}
 @media(max-width:390px){.grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:3px}.ticket{font-size:11px;padding:8px 0}}
+
+/* Toque más alegre y dinámico para Sorteo Regio, sin alterar la lógica */
+body{background:radial-gradient(ellipse at 12% 8%,#263f18 0,transparent 28%),radial-gradient(ellipse at 92% 24%,#38230e 0,transparent 24%),linear-gradient(160deg,#10190c 0%,#090b08 48%,#171006 100%)}
+header{background:rgba(10,15,8,.91);border-bottom:3px solid var(--green);box-shadow:0 5px 0 #f5c3431c,0 10px 30px #0008}
+.brand{font-size:1.05rem;letter-spacing:1.2px;text-shadow:0 0 18px #9af04435}
+.hero{position:relative;border:1px solid #6f9c3b;background:radial-gradient(ellipse at 12% 0%,#345d1e 0,transparent 42%),radial-gradient(ellipse at 100% 70%,#54340f55 0,transparent 38%),linear-gradient(135deg,#172a12 0%,#182116 48%,#20180d 100%);box-shadow:0 0 0 1px #f5c34312,0 18px 45px #0008}
+.hero:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 20%,#ffffff05 42%,transparent 60%);background-size:220% 100%;animation:regioShine 9s ease-in-out infinite}
+.hero>*{position:relative}
+.price{background:linear-gradient(100deg,#a9f65a,#d1ff70 48%,#9af044);box-shadow:0 5px 0 #4e8228,0 0 24px #9af04424;transition:transform .2s ease,box-shadow .2s ease}
+.prize-card{background:radial-gradient(ellipse at 50% 0,#6d4c16 0,#30240b 38%,#17130a 75%);box-shadow:0 0 0 5px #f5c34312,0 14px 36px #0008,0 0 28px #f5c34313}
+.prize-amount{text-shadow:0 2px 0 #8a6415,0 0 26px #f5c34399}
+.lottery-ticket{box-shadow:0 15px 30px #0008,0 0 0 4px #d83b4b18;transition:transform .25s ease,box-shadow .25s ease}
+.ticket-caption{color:#a51f32}
+.controls,.purchase{box-shadow:0 12px 30px #0005,0 0 0 1px #9af04408}
+button.primary{background:linear-gradient(110deg,#a8f65a,#c4ff69 50%,#9af044);box-shadow:0 4px 0 #4e8228,0 0 18px #9af04416}
+.ticket{transition:transform .12s ease,box-shadow .12s ease,filter .12s ease}
+.ticket:hover{transform:translateY(-2px);filter:brightness(1.04);box-shadow:0 5px 12px #0003}
+.ticket.selected{box-shadow:0 0 0 2px #fff,0 0 15px #9af04465}
+@keyframes regioShine{0%,60%,100%{background-position:180% 0}75%{background-position:-20% 0}}
+@media(hover:hover){.price:hover{transform:translateY(-2px);box-shadow:0 7px 0 #4e8228,0 0 28px #9af04435}.lottery-ticket:hover{transform:rotate(0deg) translateY(-3px);box-shadow:0 20px 36px #0009,0 0 0 4px #d83b4b20}}
+@media(prefers-reduced-motion:reduce){.hero:before{animation:none}.price,.lottery-ticket,.ticket{transition:none}}
 </style></head>
 <body>
 <header><div class="brand">SORTEO <span>REGIO</span></div></header>
