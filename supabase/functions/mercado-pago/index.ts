@@ -112,9 +112,9 @@ async function createOrder(body: any) {
   if (String(pago.payment_token) !== token) return json({ error: "Token de pago inválido." }, 403);
   if (pago.estado !== "pendiente") return json({ error: "Este pago ya no está pendiente." }, 409);
   const { data: reservationRifa } = await admin.from("rifas").select("grupo_rifa").eq("id", pago.rifa_id).maybeSingle();
-  const reservationMs = (reservationRifa?.grupo_rifa === "regio" || paymentMethod === "oxxo")
-    ? 24 * 60 * 60 * 1000
-    : 30 * 60 * 1000;
+  // Mantener 24 horas para Sorteo Regio, OXXO y checkout estándar de Mercado Pago
+  // (incluye SPEI cuando Mercado Pago lo ofrece dentro de su checkout).
+  const reservationMs = 24 * 60 * 60 * 1000;
   const reservationDurationIso = reservationMs === 24 * 60 * 60 * 1000 ? "P1D" : "PT30M";
   if (new Date(pago.created_at).getTime() + reservationMs <= Date.now())
     return json({ error: "La reserva ya expiró." }, 409);
