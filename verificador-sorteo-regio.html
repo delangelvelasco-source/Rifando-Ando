@@ -60,6 +60,28 @@ footer{padding-bottom:20px}
 @media(max-width:520px){main{padding-left:12px;padding-right:12px}.hero{border-radius:22px;padding:22px 16px}.ticket-row{grid-template-columns:minmax(0,1fr);gap:8px}.status-pill{max-width:100%;justify-self:start}.result-summary{align-items:flex-start}}
 @media(prefers-reduced-motion:reduce){body:before,body:after,.hero:before{animation:none!important}.ticket-row,.back,button{transition:none!important}}
 }
+
+/* Matching premium finish for the live ticket verifier */
+@media screen{
+.hero{background:radial-gradient(ellipse at 0% 0%,#315c203b 0,transparent 42%),radial-gradient(ellipse at 100% 100%,#62430d20 0,transparent 35%),linear-gradient(145deg,#172416,#0d110d 58%,#15130c);box-shadow:inset 0 1px 0 #ffffff18,0 24px 50px #0009,0 0 0 1px #f5c34312,0 0 30px #9af0440e}
+.hero:after{content:"";position:absolute;z-index:-1;inset:-30% -70%;pointer-events:none;background:linear-gradient(110deg,transparent 43%,#ffffff09 49%,#d5ff9a12 51%,transparent 58%);animation:regioVerifierSweep 9s ease-in-out infinite}
+.hero>*{position:relative}
+.eyebrow{box-shadow:inset 0 1px 0 #ffffff12,0 5px 16px #0004}
+.intro-icon{position:relative;box-shadow:inset 0 1px 0 #ffffff20,0 7px 0 #29451c,0 12px 24px #0007,0 0 24px #9af04420;animation:regioVerifierIcon 4s ease-in-out infinite}
+h1{text-shadow:0 2px 0 #333,0 4px 0 #101010,0 9px 22px #0009,0 0 22px #9af04425}
+input{border-color:#65705c;box-shadow:inset 0 2px 4px #0002,0 5px 0 #080b08,0 9px 20px #0004}
+button:not(.print-btn):not(.wa-btn){box-shadow:inset 0 2px 0 #ffffffa8,0 5px 0 #4e8228,0 11px 22px #0006,0 0 22px #9af04420}
+#result{box-shadow:inset 0 1px 0 #ffffff14,0 16px 32px #0007}
+.ticket-row{box-shadow:inset 0 1px 0 #ffffff0d,0 5px 14px #0002}
+.status-pill{box-shadow:inset 0 1px 0 #ffffff12}
+.live-customer{box-shadow:inset 0 1px 0 #fff,0 7px 0 #7b9b63,0 12px 22px #0005}
+.live-count{box-shadow:inset 0 1px 0 #fff9,0 4px 0 #b5d89b,0 7px 14px #0003}
+.back{box-shadow:inset 0 1px 0 #ffffff0c,0 6px 16px #0004}
+@keyframes regioVerifierSweep{0%,100%{transform:translateX(-25%);opacity:.35}50%{transform:translateX(25%);opacity:1}}
+@keyframes regioVerifierIcon{0%,100%{transform:perspective(300px) rotateX(4deg) translateY(0)}50%{transform:perspective(300px) rotateX(0) translateY(-3px)}}
+@media(hover:hover){.ticket-row:hover{box-shadow:inset 0 1px 0 #ffffff12,0 8px 18px #0004,0 0 18px #9af04412}.live-count:hover{transform:translateY(-2px)}}
+@media(prefers-reduced-motion:reduce){.hero:after,.intro-icon{animation:none!important}}
+}
 </style></head>
 <body>
 <header>SORTEO <span>REGIO</span></header>
