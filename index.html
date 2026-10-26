@@ -69,7 +69,29 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 .numbers{font-weight:900;color:#d9a936;word-break:break-word;font-size:19px}
 @media(max-width:760px){.grand-prize{max-width:330px;padding:11px 10px 10px}.grand-prize .prize{height:110px;font-size:58px}.grand-amount{font-size:50px}.nav{align-items:flex-start}.logo{font-size:18px}.nav .btn{padding:11px 12px;font-size:13px}.hero{grid-template-columns:1fr;padding-top:42px}.tickets{grid-template-columns:repeat(5,1fr)}.how{grid-template-columns:1fr}.summary{flex-direction:row;gap:12px;text-align:left;padding:20px 16px;min-height:82px}.summary>div{font-size:19px;line-height:1.4;font-weight:700}.summary .btn{min-width:150px;min-height:56px;padding:15px 22px;font-size:17px;border-radius:14px}}
 @media(max-width:760px){.modal-box{width:calc(100% - 12px);padding:28px 24px;border-radius:24px}.modal-box h2{font-size:29px}.modal-box .field label{font-size:22px}.modal-box .field input{font-size:23px;min-height:64px;padding:17px;border-width:2px;box-shadow:0 0 0 3px #d9a93612}.modal-box .field input:focus{box-shadow:0 0 0 4px #d9a93622}.modal-box .notice{font-size:19px;padding:16px}.modal-box form>p{font-size:20px}.modal-box .field label{display:flex;align-items:center;gap:8px}.modal-box .field input::placeholder{color:#777;opacity:1}.modal-box form .btn{min-height:64px;font-size:20px}}
-@media(prefers-reduced-motion:reduce){.grand-prize *{animation:none!important}}\n</style>
+@media(prefers-reduced-motion:reduce){.grand-prize *{animation:none!important}}\n
+/* Confirmación de pago: Sorteo Económico Regio */
+#paymentSuccess{position:fixed;inset:0;z-index:30000;display:none;overflow:auto;background:#f5f8f6;color:#263238;padding:18px 14px 28px}
+#paymentSuccess.open{display:block}
+.ps-brand{margin:-18px -14px 20px;padding:24px 16px 22px;text-align:center;background:radial-gradient(ellipse at top,#087b43,#003d25 72%);color:#fff;font-weight:1000;font-size:clamp(24px,6vw,38px);line-height:1.05;letter-spacing:-.5px;text-shadow:0 3px 0 #002e1b}
+.ps-brand span{display:block;color:#a9f58c}
+.ps-card{max-width:720px;margin:0 auto;background:#fff;border:1px solid #e0ebe5;border-radius:25px;padding:24px 18px;box-shadow:0 12px 38px #143b2612;text-align:center}
+.ps-check{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;margin:0 auto 20px;background:linear-gradient(145deg,#40ce6a,#008348);color:white;font-size:64px;font-weight:900;box-shadow:0 8px 20px #00834826}
+.ps-card h1{margin:0 0 8px;color:#07552f;font-size:clamp(30px,7vw,44px);line-height:1.05}
+.ps-lead{font-size:18px;line-height:1.45;color:#475569;margin:0 auto 22px}
+.ps-panel{margin:12px 0;padding:17px 16px;border-radius:17px;background:#eff9f2;text-align:left}
+.ps-label{font-size:14px;font-weight:900;letter-spacing:.5px;color:#364152;margin-bottom:6px}
+.ps-value{font-size:clamp(18px,4.4vw,25px);font-weight:900;color:#087849;overflow-wrap:anywhere}
+.ps-sub{font-size:17px;color:#344054;margin-top:4px}
+.ps-numbers{font-size:clamp(18px,4.5vw,24px);font-weight:900;line-height:1.6;color:#087849;overflow-wrap:anywhere}
+.ps-summary{font-size:18px;line-height:1.8}
+.ps-luck{margin:14px 0 20px;padding:20px 12px;border-radius:20px;background:#e5f8eb;color:#07552f}
+.ps-luck strong{display:block;font-size:21px;margin-bottom:5px}
+.ps-action{width:100%;border:0;border-radius:50px;padding:17px 20px;background:linear-gradient(90deg,#087b4a,#00633c);color:#fff;font-size:20px;font-weight:900;cursor:pointer;box-shadow:0 7px 18px #087b4a25}
+.ps-small{font-size:13px;color:#64748b;margin-top:14px}
+@media(min-width:600px){#paymentSuccess{padding:24px}.ps-brand{margin:-24px -24px 24px;padding:28px}.ps-card{padding:30px}.ps-panel{padding:20px}}
+
+</style>
 <style>
 .share-raffle{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;max-width:560px;margin:14px 0 0;padding:13px 16px;border:1px solid #5e4816;border-radius:13px;background:#111;color:#fff;font-weight:1000;font-size:15px;cursor:pointer;transition:.2s}.share-raffle:hover{border-color:#d9a936;background:#18140a;transform:translateY(-1px)}.share-raffle:active{transform:translateY(0)}.share-raffle.copied{border-color:#4ade80;background:#0b2413;color:#4ade80}
 </style>
@@ -537,6 +559,22 @@ body{padding-top:158px!important}
 </style>
 </head>
 <body>
+
+<section id="paymentSuccess" role="dialog" aria-modal="true" aria-labelledby="psTitle">
+  <div class="ps-brand">🎟️ SORTEO ECONÓMICO <span>REGIO</span></div>
+  <div class="ps-card">
+    <div class="ps-check" aria-hidden="true">✓</div>
+    <h1 id="psTitle">¡Pago confirmado!</h1>
+    <p class="ps-lead">Tu participación ha quedado confirmada correctamente.</p>
+    <div class="ps-panel"><div class="ps-label">🎟️ TU SORTEO</div><div class="ps-value" id="psRaffleCode">Sorteo Económico Regio</div><div class="ps-sub" id="psRaffleName"></div></div>
+    <div class="ps-panel"><div class="ps-label">🎫 TUS NÚMEROS</div><div class="ps-numbers" id="psNumbers">Consulta tus boletos en la sección de números.</div></div>
+    <div class="ps-panel"><div class="ps-label">💰 RESUMEN DE TU PARTICIPACIÓN</div><div class="ps-summary">✅ Estado: <strong style="color:#087849">Pagado</strong><br><span id="psAmount"></span></div></div>
+    <div class="ps-luck"><strong>🍀 ¡Mucha suerte en el sorteo!</strong><span>Gracias por participar en Sorteo Económico Regio.</span></div>
+    <button class="ps-action" type="button" id="psViewTickets">🎟️ Ver mis boletos　›</button>
+    <div class="ps-small">Guarda esta confirmación para tu referencia.</div>
+  </div>
+</section>
+
 <header>
 <div id="raffle-payment-notice" role="note" aria-label="Condición de realización de sorteos"><span class="notice-icon" aria-hidden="true">📣</span><span class="notice-copy">Cada sorteo tiene su propia modalidad, fecha y condiciones. <strong>Consulta las reglas del sorteo seleccionado.</strong></span><span class="notice-icon notice-calendar" aria-hidden="true">▣</span></div>
 <div class="nav">
@@ -1591,6 +1629,318 @@ async function iniciarPagoMercadoPago(paymentMethod='mercado_pago'){
   }
 }
 
+
+function mostrarConfirmacionPago(){
+  const panel=document.getElementById('paymentSuccess');
+  if(!panel)return;
+  const code=document.getElementById('psRaffleCode');
+  const name=document.getElementById('psRaffleName');
+  const nums=document.getElementById('psNumbers');
+  const amount=document.getElementById('psAmount');
+  const raffleNameText=String(rifa?.nombre||'Sorteo Económico Regio');
+  const raffleCode=String(rifa?.codigo_sorteo||rifa?.codigo||'');
+  if(code)code.textContent=raffleCode?('SORTEO: '+raffleCode):'Sorteo Económico Regio';
+  if(name)name.textContent=raffleNameText.toLowerCase().includes('sorteo económico regio')?'':'Sorteo Económico Regio';
+  if(nums){
+    const selected=Array.from(sel||[]).map(n=>String(n).padStart(2,'0'));
+    nums.textContent=selected.length?selected.join(', '):'Tus números ya están confirmados. Pulsa “Ver mis boletos” para consultarlos.';
+  }
+  if(amount){
+    const selected=Array.from(sel||[]);
+    const total=Number(rifa?.precio||rifa?.precio_numero||0)*selected.length;
+    amount.textContent=selected.length&&Number.isFinite(total)&&total>0?('Total pagado: 
+  const params=new URLSearchParams(window.location.search);
+  const retorno=params.get('mp_return');
+  if(!retorno)return;
+  const pagoId=params.get('pago_id');
+  const token=params.get('payment_token');
+  if(!pagoId||!token)return;
+  let estado='pendiente';
+  let falloConsulta=false;
+  try{
+    // Reconsulta la orden varias veces: Mercado Pago puede tardar unos segundos
+    // en reflejar el pago aprobado y la función sincroniza el estado con la base.
+    for(let intento=0;intento<8;intento++){
+      try{
+        const {data,error}=await db.functions.invoke('mercado-pago',{body:{action:'status',payment_id:pagoId,payment_token:token}});
+        if(error)throw error;
+        estado=String(data?.estado||'pendiente');
+        if(estado==='confirmado'||estado==='rejected'||estado==='cancelled'||estado==='expired'||estado==='rechazado')break;
+      }catch(e){
+        falloConsulta=true;
+      }
+      if(intento<7)await new Promise(resolve=>setTimeout(resolve,2500));
+    }
+    if(estado==='confirmado'){
+      mostrarConfirmacionPago();
+    }else if(estado==='rechazado'||estado==='rejected'||estado==='cancelled'||estado==='expired'||retorno==='failure'){
+      alert('El pago no fue aprobado. Revisa el estado en Mercado Pago antes de volver a intentarlo.');
+    }else if(falloConsulta){
+      alert('No logramos consultar el pago automáticamente. No vuelvas a pagar; revisa Mis compras y contacta al administrador para verificarlo.');
+    }else{
+      alert('Tu pago sigue verificándose. No vuelvas a pagar: actualiza esta página en un momento para consultar el estado nuevamente.');
+    }
+  }finally{
+    params.delete('mp_return');params.delete('pago_id');params.delete('payment_token');params.delete('rifa');
+    const cleanUrl=window.location.pathname+(params.toString()?'?'+params.toString():'')+window.location.hash;
+    window.history.replaceState({},'',cleanUrl);
+    await cargarRifa().catch(()=>{});
+  }
+}
+
+async function confirmar(e){
+  e.preventDefault();
+  if(!rifa||!sel.size) return;
+  const btn=e.submitter||e.target.querySelector('button[type="submit"]');
+  const selected=Array.from(sel);
+  const name=nombre.value.trim();
+  const phone=whatsapp.value.trim();
+  const email=String(document.getElementById('correo')?.value||'').trim();
+  if(!name||!phone){
+    alert('Completa tu nombre y WhatsApp, compa.');
+    return;
+  }
+  btn.disabled=true;
+  btn.textContent='Apartando...';
+  const {data,error}=await db.rpc('apartar_numeros',{
+    p_rifa_id:rifa.id,
+    p_nombre:name,
+    p_whatsapp:phone,
+    p_correo:email,
+    p_numeros:selected
+  });
+  const pagoId=String(data?.pago_id||data?.payment_id||data?.id||'');
+  const paymentToken=String(data?.payment_token||data?.paymentToken||'');
+  window.rifandoPagoPendiente={paymentId:pagoId,paymentToken};
+  if(error){
+    alert('No se pudo apartar: '+error.message);
+    btn.disabled=false;
+    btn.textContent='Solicitar apartado';
+    await cargarRifa();
+    return;
+  }
+  limpiarBorradorCompra();
+  // La respuesta de la base es la única fuente de verdad: no sumar números antiguos del navegador.
+  const numerosConfirmados=Array.isArray(data?.numeros)
+    ? data.numeros.map(Number).filter(Number.isInteger).sort((a,b)=>a-b)
+    : selected.slice().sort((a,b)=>a-b);
+  const displayNumbers=numerosConfirmados.map(n=>String(n).padStart(2,'0')).join(', ');
+  const displayTotal=Number(data?.total ?? (numerosConfirmados.length*Number(rifa.precio_numero))).toLocaleString('es-MX');
+  document.getElementById('confirmName').textContent=name;
+  document.getElementById('confirmNumbers').textContent=displayNumbers;
+  document.getElementById('confirmTotal').textContent=String.fromCharCode(36)+displayTotal;
+  const solicitudGeneral={
+    rifaId:rifa.id,
+    numbers:displayNumbers,
+    name:name,
+    total:'$'+displayTotal,
+    timestamp:Date.now()
+  };
+  const solicitudesPendientes=[solicitudGeneral];
+  try{
+    localStorage.setItem('rifando_pendiente_whatsapp',JSON.stringify(solicitudesPendientes));
+    localStorage.removeItem('rifando_modo_agregar');
+  }catch(e){}
+  const message=construirMensajeSolicitudes(solicitudesPendientes);
+  const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
+  const waConfirm=document.getElementById('waConfirm');
+  waConfirm.href=waLink;
+  const mpBtn=document.getElementById('mercadoPagoBtn');
+  const oxxoBtn=document.getElementById('oxxoBtn');
+  const mpMsg=document.getElementById('mercadoPagoMsg');
+  const gruposConPago=['regular','especial','iphone','express'];
+  const permitePago=String(rifa?.estado||'').toLowerCase()==='activa'&&gruposConPago.includes(String(rifa?.grupo_rifa||'').toLowerCase());
+  if(mpBtn){mpBtn.style.display=permitePago?'inline-block':'none';mpBtn.disabled=false;mpBtn.textContent='💳 Otros métodos de pago';}
+  if(oxxoBtn){oxxoBtn.style.display=permitePago?'inline-block':'none';oxxoBtn.disabled=false;oxxoBtn.textContent='🏪 Generar ticket OXXO · 24 h';}
+  if(mpMsg){mpMsg.style.display='none';mpMsg.textContent='';}
+  confirmWhatsAppClicked=false;
+  document.getElementById('modalClose')?.classList.add('locked-close');
+  document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
+  waConfirm.onclick=()=>{
+    if(confirmWhatsAppClicked)return false;
+    confirmWhatsAppClicked=true;
+
+    solicitudPendiente=false;
+    sel.clear();
+    update();
+    bloquearNuevaSeleccion(false);
+
+    modal.classList.remove('open');
+    confirmation.classList.remove('show');
+    formView.style.display='';
+    nombre.value='';
+    whatsapp.value='';
+
+    waConfirm.style.pointerEvents='';
+    waConfirm.style.opacity='';
+    waConfirm.textContent='📲 Enviar solicitud por WhatsApp';
+    document.getElementById('modalClose')?.classList.remove('locked-close');
+    document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
+
+    try{localStorage.removeItem('rifando_pendiente_whatsapp');localStorage.removeItem('rifando_modo_agregar')}catch(e){}
+    confirmWhatsAppClicked=false;
+
+    // Refrescar los estados reales sin recargar la página.
+    setTimeout(()=>cargarRifa().catch(()=>{}),100);
+  };
+  formView.style.display='none';
+  confirmation.classList.add('show');
+  sel.clear();
+  btn.disabled=false;
+  btn.textContent='Solicitar apartado';
+  await cargarRifa();
+}
+
+// Cambio rápido entre sorteos: conserva la página viva y evita una recarga completa.
+async function cambiarRifaRapido(id){
+  const next=String(id||'');
+  if(!next)return;
+  const actual=String(rifa?.id||new URLSearchParams(window.location.search).get('rifa')||'');
+  if(next===actual)return;
+  const url=new URL(window.location.href);
+  url.searchParams.set('rifa',next);
+  url.hash='';
+  history.pushState({rifa:next},'',url.href);
+  document.querySelectorAll('.modal.open,.draw-public.open').forEach(x=>x.classList.remove('open'));
+  document.querySelectorAll('.raffle-link[data-rifa]').forEach(a=>a.classList.toggle('loading',String(a.dataset.rifa)===next));
+  await cargarRifa();
+  document.querySelectorAll('.raffle-link[data-rifa]').forEach(a=>a.classList.remove('loading'));
+}
+
+// Navegación entre rifas: los enlaces usan navegación nativa para evitar que un fallo
+// de JavaScript impida cambiar de sorteo. Al cargar la nueva rifa, cargarRifa()
+// marca automáticamente el sorteo activo en verde.
+document.querySelectorAll('.raffle-link[data-rifa]').forEach(link=>{
+  link.addEventListener('click',()=>{
+    document.querySelectorAll('.raffle-link[data-rifa]').forEach(x=>x.classList.remove('loading'));
+    link.classList.add('loading');
+  });
+});
+window.addEventListener('popstate',()=>cargarRifa().catch(()=>{}));
+
+const topRaffles=document.getElementById('topRaffles');
+const ordenRifas=window.__ordenRifasActuales?.length
+  ? window.__ordenRifasActuales
+  : ['4b23f516-7973-4a04-bff6-9b9b5cb90f4d','60f9a81d-bdd6-4e28-b330-dc92cfe4d113','9a9bca1f-3f22-4a1a-8813-70c7f5914f65','af9945a6-fe0d-4f53-a147-d8e332e39b59'];
+topRaffles?.addEventListener('click',e=>{
+  e.preventDefault();
+  e.stopPropagation();
+  document.querySelectorAll('.modal.open,.draw-public.open').forEach(x=>x.classList.remove('open'));
+  const actual=String(rifa?.id||new URLSearchParams(window.location.search).get('rifa')||'');
+  const orden=window.__ordenRifasActuales?.length?window.__ordenRifasActuales:ordenRifas;
+  const indice=orden.indexOf(actual);
+  const siguiente=orden[(indice+1+orden.length)%orden.length];
+  cambiarRifaRapido(siguiente).catch(()=>{});
+});
+document.getElementById('topContinue')?.addEventListener('click',e=>{
+  e.preventDefault();
+  if(sel.size){abrirFormulario();return}
+  const target=document.getElementById('numeros');
+  if(!target)return;
+  history.replaceState(null,'','#numeros');
+  target.scrollIntoView({behavior:'smooth',block:'start'});
+});
+document.getElementById('shareRaffle')?.addEventListener('click',compartirRifa);
+modal.addEventListener('click',e=>{
+  if(e.target===modal) cerrarFormulario();
+});
+cargarRifa().then(()=>{
+  actualizarBotonRecuperar();
+  // Precalentar los números de los otros sorteos para que el primer cambio sea inmediato.
+  setTimeout(()=>{
+    const ids=Object.values(window.__rifasActuales||{}).filter(Boolean);
+    Promise.all(ids.map(id=>cargarNumerosPublico(id,false))).catch(()=>{});
+  },900);
+}).catch(()=>{
+  raffleName.textContent='No se pudo cargar el sorteo';
+  priceEl.textContent='Intenta actualizar la página';
+  tickets.innerHTML='<p style="color:#aaa">No se pudieron cargar los números. Actualiza la página para intentar de nuevo.</p>';
+});
+mostrarGanadorPublico().catch(()=>{});
+function ejecutarActualizacionesEnSegundoPlano(){
+  if(document.visibilityState!=='visible')return;
+  revisarPruebaPersistente().catch(()=>{});
+  revisarSorteoRealPersistente().catch(()=>{});
+}
+let segundoPlanoTimer=null;
+let loteriaTimer=null;
+let ganadorTimer=null;
+let loteriaEnVuelo=false;
+let ultimaInfoLoteriaConsulta=0;
+function iniciarActualizacionesEnSegundoPlano(){
+  if(segundoPlanoTimer)clearInterval(segundoPlanoTimer);
+  if(loteriaTimer)clearInterval(loteriaTimer);
+  if(ganadorTimer)clearInterval(ganadorTimer);
+  segundoPlanoTimer=setInterval(ejecutarActualizacionesEnSegundoPlano,2000);
+  loteriaTimer=setInterval(()=>{
+    if(document.visibilityState==='visible'&&rifa&&!loteriaEnVuelo&&Date.now()-ultimaInfoLoteriaConsulta>=30000){
+      loteriaEnVuelo=true;
+      ultimaInfoLoteriaConsulta=Date.now();
+      actualizarInfoLoteria(rifa).catch(()=>{}).finally(()=>{loteriaEnVuelo=false});
+    }
+  },30000);
+  ganadorTimer=setInterval(()=>{if(document.visibilityState==='visible')mostrarGanadorPublico().catch(()=>{})},30000);
+}
+function detenerActualizacionesEnSegundoPlano(){
+  if(segundoPlanoTimer){clearInterval(segundoPlanoTimer);segundoPlanoTimer=null}
+  if(loteriaTimer){clearInterval(loteriaTimer);loteriaTimer=null}
+  if(ganadorTimer){clearInterval(ganadorTimer);ganadorTimer=null}
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'){
+    ejecutarActualizacionesEnSegundoPlano();
+    iniciarActualizacionesEnSegundoPlano();
+setTimeout(()=>procesarRetornoMercadoPago().catch(()=>{}),700);
+  }else{
+    detenerActualizacionesEnSegundoPlano();
+  }
+});
+iniciarActualizacionesEnSegundoPlano();
+</script>
+
+<script id="site-visitor-counter-script">
+(async function registrarVisitanteUnico(){
+  const out=document.getElementById('siteVisitorNumber');
+  if(!out) return;
+  try{
+    const storageKey='rifando_ando_unique_visitor_v1';
+    let visitorId=localStorage.getItem(storageKey);
+    if(!visitorId){
+      if(window.crypto && typeof crypto.randomUUID==='function') visitorId=crypto.randomUUID();
+      else visitorId='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(ch){const r=Math.random()*16|0;return(ch==='x'?r:(r&3|8)).toString(16)});
+      localStorage.setItem(storageKey,visitorId);
+    }
+    const url=String(SUPABASE_URL).replace(/\/$/,'')+'/rest/v1/rpc/register_site_visit';
+    const response=await fetch(url,{
+      method:'POST',
+      cache:'no-store',
+      headers:{'apikey':SUPABASE_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_visitor_id:visitorId})
+    });
+    if(!response.ok) throw new Error('No se pudo consultar el contador');
+    const count=await response.json();
+    const value=Number(count);
+    if(Number.isFinite(value)&&value>=0) out.textContent=new Intl.NumberFormat('es-MX').format(value);
+  }catch(error){
+    out.textContent='—';
+    console.warn('Contador de visitantes no disponible:',error);
+  }
+})();
+</script>
+</body>
+</html>
++total.toLocaleString('es-MX')+' MXN'):'Pago recibido y registrado correctamente.';
+  }
+  panel.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+document.getElementById('psViewTickets')?.addEventListener('click',()=>{
+  document.getElementById('paymentSuccess')?.classList.remove('open');
+  document.body.style.overflow='';
+  const target=document.getElementById('numeros');
+  if(target)target.scrollIntoView({behavior:'smooth',block:'start'});
+});
+
 async function procesarRetornoMercadoPago(){
   const params=new URLSearchParams(window.location.search);
   const retorno=params.get('mp_return');
@@ -1615,7 +1965,7 @@ async function procesarRetornoMercadoPago(){
       if(intento<7)await new Promise(resolve=>setTimeout(resolve,2500));
     }
     if(estado==='confirmado'){
-      alert('✅ ¡Pago confirmado! Tus números ya quedaron registrados como vendidos.');
+      mostrarConfirmacionPago();
     }else if(estado==='rechazado'||estado==='rejected'||estado==='cancelled'||estado==='expired'||retorno==='failure'){
       alert('El pago no fue aprobado. Revisa el estado en Mercado Pago antes de volver a intentarlo.');
     }else if(falloConsulta){
