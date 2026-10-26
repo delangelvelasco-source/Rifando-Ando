@@ -151,14 +151,22 @@ function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&l
 function estado(x){if(x.estado==='vendido')return'vendido';if(x.estado==='apartado'&&x.apartado_hasta&&new Date(x.apartado_hasta)>new Date())return'apartado';return'disponible'}
 function numerosActuales(pid){return nGlobal.filter(z=>z.participante_id===pid&&(z.estado==='apartado'||z.estado==='vendido'))}
 async function entrar(){
-  $('msg').textContent='Conectando...';
-  const ok=await initDb(); if(!ok)return;
+  const boton=document.querySelector('#login button');
+  const mensaje=$('msg');
+  if(boton){boton.disabled=true;boton.textContent='Entrando...'}
+  mensaje.textContent='Verificando acceso...';
+  const ok=await initDb();
+  if(!ok){if(boton){boton.disabled=false;boton.textContent='Entrar'}return}
   try{
-    const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('pass').value});
-    if(error){$('msg').innerHTML='<span class="error">⚠️ '+esc(error.message)+'</span>';return}
-    $('msg').textContent='✅ Acceso correcto. Cargando...';
-    await sesion();
-  }catch(e){$('msg').innerHTML='<span class="error">⚠️ '+esc(e?.message||e)+'</span>'}
+    const {data,error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('pass').value});
+    if(error){mensaje.innerHTML='<span class="error">⚠️ '+esc(error.message)+'</span>';return}
+    currentAdmin=data?.user||data?.session?.user||null;
+    $('login').classList.add('hidden');
+    $('app').classList.remove('hidden');
+    mensaje.textContent='';
+    try{await cargar()}catch(loadError){console.error('Error al cargar el panel:',loadError);$('status').textContent='Acceso correcto; hubo un problema cargando el panel. Recarga para intentar de nuevo.'}
+  }catch(e){mensaje.innerHTML='<span class="error">⚠️ '+esc(e?.message||e)+'</span>'}
+  finally{if(boton){boton.disabled=false;boton.textContent='Entrar'}}
 }
 async function salir(){await db.auth.signOut();mostrarLogin()}
 function mostrarLogin(){$('app').classList.add('hidden');$('login').classList.remove('hidden')}
