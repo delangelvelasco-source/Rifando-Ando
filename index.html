@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080808">
 <link rel="manifest" href="manifest.json"><meta name="version" content="2026-10-10-1915-mp-all-active-raffles">
-<title>Sorteo Económico Regio | Rifas en Monterrey y Nuevo León</title>
-<meta name="description" content="Sorteo Económico Regio: conoce nuestros sorteos en línea, premios, costo de boletos, reglas y resultados. Participa desde Monterrey y Nuevo León en rifasmty.lol.">
+<title>Sorteo Regio | Sorteos en Monterrey y Nuevo León</title>
+<meta name="description" content="Sorteo Regio en Monterrey y Nuevo León: conoce el premio, los boletos, las reglas y los resultados. Información de Sorteo Económico Regio en rifasmty.lol.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://iaviafijfdqinehcfebr.supabase.co" crossorigin>
@@ -14,9 +14,9 @@
 <link rel="dns-prefetch" href="//iaviafijfdqinehcfebr.supabase.co">
 <link rel="canonical" href="https://rifasmty.lol/">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Sorteo Económico Regio">
-<meta property="og:title" content="Sorteo Económico Regio | Rifas en Monterrey y Nuevo León">
-<meta property="og:description" content="Conoce los sorteos de Sorteo Económico Regio, sus premios, boletos, reglas y resultados.">
+<meta property="og:site_name" content="Sorteo Regio">
+<meta property="og:title" content="Sorteo Regio | Sorteos en Monterrey y Nuevo León">
+<meta property="og:description" content="Sorteo Regio: consulta los premios, boletos, reglas y resultados de Sorteo Económico Regio en Monterrey y Nuevo León.">
 <meta property="og:url" content="https://rifasmty.lol/">
 <meta property="og:image" content="https://rifasmty.lol/sorteo-regio-share.png?v=7">
 <meta property="og:image:secure_url" content="https://rifasmty.lol/sorteo-regio-share.png?v=7">
@@ -24,16 +24,17 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:image" content="https://rifasmty.lol/sorteo-regio-share.png?v=7">
-<meta name="twitter:card" content="summary_large_image">\n<meta name="twitter:site" content="@">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@">
 <meta name="twitter:title" content="Sorteo Económico Regio | Rifas en Monterrey y Nuevo León">
 <meta name="twitter:description" content="Conoce los sorteos de Sorteo Económico Regio, sus premios, boletos, reglas y resultados.">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
   "@type":"WebSite",
-  "name":"Sorteo Económico Regio",
+  "name":"Sorteo Regio",
   "url":"https://rifasmty.lol/",
-  "description":"Sorteo Económico Regio: sorteos en línea, premios, costo de boletos, reglas y resultados para participantes de Monterrey y Nuevo León.",
+  "description":"Sorteo Regio: información de sorteos, premios, boletos, reglas y resultados para Monterrey y Nuevo León.",
   "inLanguage":"es-MX"
 }
 </script>
@@ -69,7 +70,8 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 .numbers{font-weight:900;color:#d9a936;word-break:break-word;font-size:19px}
 @media(max-width:760px){.grand-prize{max-width:330px;padding:11px 10px 10px}.grand-prize .prize{height:110px;font-size:58px}.grand-amount{font-size:50px}.nav{align-items:flex-start}.logo{font-size:18px}.nav .btn{padding:11px 12px;font-size:13px}.hero{grid-template-columns:1fr;padding-top:42px}.tickets{grid-template-columns:repeat(5,1fr)}.how{grid-template-columns:1fr}.summary{flex-direction:row;gap:12px;text-align:left;padding:20px 16px;min-height:82px}.summary>div{font-size:19px;line-height:1.4;font-weight:700}.summary .btn{min-width:150px;min-height:56px;padding:15px 22px;font-size:17px;border-radius:14px}}
 @media(max-width:760px){.modal-box{width:calc(100% - 12px);padding:28px 24px;border-radius:24px}.modal-box h2{font-size:29px}.modal-box .field label{font-size:22px}.modal-box .field input{font-size:23px;min-height:64px;padding:17px;border-width:2px;box-shadow:0 0 0 3px #d9a93612}.modal-box .field input:focus{box-shadow:0 0 0 4px #d9a93622}.modal-box .notice{font-size:19px;padding:16px}.modal-box form>p{font-size:20px}.modal-box .field label{display:flex;align-items:center;gap:8px}.modal-box .field input::placeholder{color:#777;opacity:1}.modal-box form .btn{min-height:64px;font-size:20px}}
-@media(prefers-reduced-motion:reduce){.grand-prize *{animation:none!important}}\n
+@media(prefers-reduced-motion:reduce){.grand-prize *{animation:none!important}}
+
 /* Confirmación de pago: Sorteo Económico Regio */
 #paymentSuccess{position:fixed;inset:0;z-index:30000;display:none;overflow:auto;background:#f5f8f6;color:#263238;padding:18px 14px 28px}
 #paymentSuccess.open{display:block}
@@ -1519,10 +1521,12 @@ async function compartirRifa(){
   const data=obtenerDatosCompartir();
   try{
     if(navigator.share && (!navigator.canShare || navigator.canShare({title:data.title,text:data.text,url:data.url}))){await navigator.share(data);return;}
-    window.location.href='https://wa.me/?text='+encodeURIComponent(data.text+'\n'+data.url);
+    window.location.href='https://wa.me/?text='+encodeURIComponent(data.text+'
+'+data.url);
   }catch(e){
     if(e?.name==='AbortError')return;
-    try{window.location.href='https://wa.me/?text='+encodeURIComponent(data.text+'\n'+data.url)}catch(_e){}
+    try{window.location.href='https://wa.me/?text='+encodeURIComponent(data.text+'
+'+data.url)}catch(_e){}
   }
 }
 function continuarNavegacion(){
@@ -1578,7 +1582,18 @@ function construirMensajeSolicitudes(lista){
   const nombre=lista?.[lista.length-1]?.name||'';
   const displayNumbers=numeros.map(n=>String(n).padStart(2,'0')).join(', ');
   const money=String.fromCharCode(36);
-  return '🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado:\n\n🎫 '+rifaNombre+'\n👤 Nombre: '+nombre+'\n🔢 Números: '+displayNumbers+'\n💰 Total: '+money+total.toLocaleString('es-MX')+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
+  return '🎟️✨ RIFANDO ANDO 🏆
+
+👋 Hola, confirmo mi apartado:
+
+🎫 '+rifaNombre+'
+👤 Nombre: '+nombre+'
+🔢 Números: '+displayNumbers+'
+💰 Total: '+money+total.toLocaleString('es-MX')+'
+
+✅ Quedo atento para continuar con mi participación.
+
+Gracias';
 }
 function cerrarFormulario(){
   if(confirmation.classList.contains('show')&&!confirmWhatsAppClicked)return;
