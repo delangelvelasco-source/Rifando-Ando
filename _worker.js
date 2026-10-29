@@ -67,10 +67,10 @@ export default {
         '<link rel="canonical" href="https://rifasmty.com/">'
       ].join("\n");
       // Remove upstream social tags first; duplicate og:image tags can make WhatsApp use the wrong preview.
-      html = html.replace(/<title[^>]*>[\\s\\S]*?<\\/title>/i, "");
-      html = html.replace(/<meta\\s+(?:property|name)=["'](?:og:[^"']+|twitter:[^"']+)["'][^>]*>/gi, "");
-      html = html.replace(/<link\\s+rel=["']canonical["'][^>]*>/gi, "");
-      if (/<head[^>]*>/i.test(html)) html = html.replace(/<head[^>]*>/i, match => match + "\\n" + tags + "\\n");
+      html = html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, "");
+      html = html.replace(/<meta\s+(?:property|name)=["'](?:og:[^"']+|twitter:[^"']+)["'][^>]*>/gi, "");
+      html = html.replace(/<link\s+rel=["']canonical["'][^>]*>/gi, "");
+      if (/<head[^>]*>/i.test(html)) html = html.replace(/<head[^>]*>/i, match => match + "\n" + tags + "\n");
       outHeaders.delete("Content-Length");
       outHeaders.delete("ETag");
       outHeaders.set("Cache-Control", "public, max-age=300");
