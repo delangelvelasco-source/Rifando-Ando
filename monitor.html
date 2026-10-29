@@ -74,39 +74,58 @@ async function entrar(){
  }catch(e){$('msg').textContent=e.message||'No se pudo iniciar sesión.'}
  finally{b.disabled=false;b.textContent='Entrar al monitor'}
 }
-async function leerTodos(tabla,columnas,orden='id',asc=true){
- const salida=[],lote=1000;
- for(let desde=0;desde<1000000;desde+=lote){
-  const {data,error}=await db.from(tabla).select(columnas).order(orden,{ascending:asc}).range(desde,desde+lote-1);
-  if(error)throw error;
-  const filas=data||[];salida.push(...filas);
-  if(filas.length<lote)break;
- }
- return salida;
+async function contar(tabla, preparar){
+ let q=db.from(tabla).select('id',{count:'exact',head:true});
+ if(preparar)q=preparar(q);
+ const {count,error}=await q;
+ if(error)throw error;
+ return count||0;
+}
+async function recientes(tabla,columnas,orden='created_at',limite=100){
+ const {data,error}=await db.from(tabla).select(columnas).order(orden,{ascending:false}).limit(limite);
+ if(error)throw error;
+ return data||[];
 }
 async function cargar(){
- if(!db||busy)return;busy=true;$('status').textContent='Actualizando y leyendo todos los registros por bloques…';
+ if(!db||busy)return;busy=true;$('status').textContent='Consultando totales por sorteo…';
  try{
-  const [rifas,nums,people,payments]=await Promise.all([
-   leerTodos('rifas','id,nombre,codigo_sorteo,estado,precio_numero,created_at','created_at',false),
-   leerTodos('numeros','id,rifa_id,numero,estado,apartado_hasta,participante_id,vendido_at','id',true),
-   leerTodos('participantes','id,nombre,whatsapp,created_at','created_at',false),
-   leerTodos('pagos','id,rifa_id,participante_id,monto,estado,metodo,created_at,confirmado_at','created_at',false)
+  const {data:rifas,error:er}=await db.from('rifas').select('id,nombre,codigo_sorteo,estado,precio_numero,created_at').order('created_at',{ascending:false});
+  if(er)throw er;
+  const lista=rifas||[];
+  $('mRifas').textContent=fmt(lista.length);
+  $('raffleRows').innerHTML=lista.map(r=>'<tr><td><b>'+esc(r.nombre||'Sorteo')+'</b><br><small class="muted">'+esc(r.codigo_sorteo||String(r.id).slice(0,8))+'</small></td><td>…</td><td>…</td><td>…</td><td>'+esc(r.estado||'Sin estado')+'</td></tr>').join('')||'<tr><td colspan="5">No hay sorteos registrados.</td></tr>';
+  $('status').textContent='Sorteos encontrados: '+lista.length+'. Calculando boletos por sorteo…';
+  const stats=await Promise.all(lista.map(async r=>{
+   const filter=q=>q.eq('rifa_id',r.id);
+   const [total,vendidos,apartados]=await Promise.all([
+    contar('numeros',filter),
+    contar('numeros',q=>filter(q).eq('estado','vendido')),
+    contar('numeros',q=>filter(q).eq('estado','apartado'))
+   ]);
+   return {r,total,vendidos,apartados,disponibles:Math.max(0,total-vendidos-apartados)};
+  }));
+  const total=stats.reduce((s,x)=>s+x.total,0),vendidos=stats.reduce((s,x)=>s+x.vendidos,0),apartados=stats.reduce((s,x)=>s+x.apartados,0),disponibles=stats.reduce((s,x)=>s+x.disponibles,0);
+  $('mVendidos').textContent=fmt(vendidos);$('mApartados').textContent=fmt(apartados);$('mDisponibles').textContent=fmt(disponibles);
+  const pct=total?Math.round(vendidos/total*100):0;$('mPct').textContent=pct+'% de los boletos registrados ('+fmt(total)+')';$('salesBar').style.width=pct+'%';
+  $('raffleRows').innerHTML=stats.map(s=>{
+   const state=s.r.estado==='activa'?'<span class="pill">Activa</span>':s.r.estado==='cerrada'?'<span class="pill red">Cerrada</span>':s.r.estado==='sorteada'?'<span class="pill gold">Sorteada</span>':'<span class="pill">'+esc(s.r.estado||'Sin estado')+'</span>';
+   return '<tr><td><b>'+esc(s.r.nombre||'Sorteo')+'</b><br><small class="muted">'+esc(s.r.codigo_sorteo||String(s.r.id).slice(0,8))+'</small><br><small class="muted">Registrados: '+fmt(s.total)+'</small></td><td>'+fmt(s.vendidos)+'</td><td>'+fmt(s.apartados)+'</td><td>'+fmt(s.disponibles)+'</td><td>'+state+'</td></tr>';
+  }).join('')||'<tr><td colspan="5">No hay sorteos registrados.</td></tr>';
+  $('status').textContent='🟢 Conteos calculados directamente desde la base de datos · '+lista.length+' sorteos.';
+  const [people,payments]=await Promise.all([
+   recientes('participantes','id,nombre,whatsapp,created_at','created_at',100),
+   recientes('pagos','id,rifa_id,participante_id,monto,estado,metodo,created_at,confirmado_at','created_at',200)
   ]);
-  const byRifa=new Map(rifas.map(r=>[r.id,{rifa:r,vendidos:0,apartados:0,disponibles:0,total:0}]));
-  nums.forEach(n=>{const s=byRifa.get(n.rifa_id);if(!s)return;s.total++;s[estadoBoleto(n)==='vendido'?'vendidos':estadoBoleto(n)==='apartado'?'apartados':'disponibles']++});
-  const total=nums.length,vendidos=nums.filter(n=>estadoBoleto(n)==='vendido').length,apartados=nums.filter(n=>estadoBoleto(n)==='apartado').length,disponibles=nums.filter(n=>estadoBoleto(n)==='disponible').length;
-  const pending=payments.filter(p=>p.estado==='pendiente'),confirmed=payments.filter(p=>p.estado==='confirmado');
-  $('mRifas').textContent=fmt(rifas.length);$('mVendidos').textContent=fmt(vendidos);$('mApartados').textContent=fmt(apartados);$('mDisponibles').textContent=fmt(disponibles);$('mPeople').textContent=fmt(people.length);$('mPending').textContent=fmt(pending.length);$('mPendingMoney').textContent=money(pending.reduce((s,p)=>s+Number(p.monto||0),0));$('mPaid').textContent=fmt(confirmed.length);$('mPaidMoney').textContent=money(confirmed.reduce((s,p)=>s+Number(p.monto||0),0));
-  const pct=total?Math.round(vendidos/total*100):0;$('mPct').textContent=pct+'% de los boletos cargados ('+fmt(total)+')';$('salesBar').style.width=pct+'%';$('mUpdated').textContent=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  $('raffleRows').innerHTML=rifas.map(r=>{const s=byRifa.get(r.id);const state=r.estado==='activa'?'<span class="pill">Activa</span>':r.estado==='cerrada'?'<span class="pill red">Cerrada</span>':r.estado==='sorteada'?'<span class="pill gold">Sorteada</span>':'<span class="pill">'+esc(r.estado||'Sin estado')+'</span>';return '<tr><td><b>'+esc(r.nombre||'Sorteo')+'</b><br><small class="muted">'+esc(r.codigo_sorteo||r.id.slice(0,8))+'</small></td><td>'+fmt(s.vendidos)+'</td><td>'+fmt(s.apartados)+'</td><td>'+fmt(s.disponibles)+'</td><td>'+state+'</td></tr>'}).join('')||'<tr><td colspan="5">No hay sorteos registrados.</td></tr>';
+  const pending=payments.filter(p=>String(p.estado||'').toLowerCase()==='pendiente'),confirmed=payments.filter(p=>String(p.estado||'').toLowerCase()==='confirmado');
+  $('mPeople').textContent=fmt(await contar('participantes'));
+  $('mPending').textContent=fmt(pending.length);$('mPendingMoney').textContent=money(pending.reduce((s,p)=>s+Number(p.monto||0),0))+(payments.length===200?' · últimos 200 registros':'');
+  $('mPaid').textContent=fmt(confirmed.length);$('mPaidMoney').textContent=money(confirmed.reduce((s,p)=>s+Number(p.monto||0),0))+(payments.length===200?' · últimos 200 registros':'');
+  $('mUpdated').textContent=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   const recent=[];
   people.slice(0,8).forEach(p=>recent.push({at:p.created_at,type:'Participante',title:p.nombre||'Participante nuevo',detail:p.whatsapp||'Sin WhatsApp'}));
-  payments.slice(0,12).forEach(p=>recent.push({at:p.created_at,type:p.estado==='confirmado'?'Pago confirmado':p.estado==='pendiente'?'Pago pendiente':'Pago',title:money(p.monto),detail:p.metodo||p.estado||'Pago registrado'}));
-  nums.filter(n=>n.estado==='vendido').sort((a,b)=>new Date(b.vendido_at||0)-new Date(a.vendido_at||0)).slice(0,8).forEach(n=>recent.push({at:n.vendido_at,type:'Boleto vendido',title:'#'+String(n.numero).padStart(5,'0'),detail:rifas.find(r=>r.id===n.rifa_id)?.nombre||'Sorteo'}));
+  payments.slice(0,20).forEach(p=>recent.push({at:p.created_at,type:p.estado==='confirmado'?'Pago confirmado':p.estado==='pendiente'?'Pago pendiente':'Pago',title:money(p.monto),detail:p.metodo||p.estado||'Pago registrado'}));
   recent.sort((a,b)=>new Date(b.at||0)-new Date(a.at||0));
   $('recent').innerHTML=recent.slice(0,20).map(e=>'<div style="padding:10px 0;border-bottom:1px solid #1c4830"><span class="pill">'+esc(e.type)+'</span><div style="font-weight:800;margin-top:5px">'+esc(e.title)+'</div><div class="muted small">'+esc(e.detail)+' · '+(e.at?new Date(e.at).toLocaleString('es-MX'):'Fecha no disponible')+'</div></div>').join('')||'Todavía no hay actividad registrada.';
-  $('status').textContent='🟢 Datos actualizados · '+rifas.length+' sorteos · tiempo real habilitado cuando la suscripción esté activa.';
  }catch(e){$('status').innerHTML='<span class="error">No se pudo actualizar: '+esc(e.message||e)+'</span>'}
  finally{busy=false}
 }
