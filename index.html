@@ -632,7 +632,7 @@ body{padding-top:158px!important}
 <path d="M170 454H350V488H170Z" fill="url(#blackBase)" stroke="#b7790d" stroke-width="5"/>
 <path d="M150 488H370V507H150Z" fill="url(#goldEdge)" stroke="#f8d66d" stroke-width="4"/>
 <rect x="202" y="458" width="116" height="22" rx="3" fill="#090909" stroke="#d9a936" stroke-width="2"/>
-<text x="260" y="474" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="900" letter-spacing="2" fill="#f5d36a">RIFANDO</text>
+<text x="260" y="474" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="900" letter-spacing="2" fill="#f5d36a">SORTEO</text>
 </svg>
 <div class="diamond-field" aria-hidden="true"><i class="diamond d1"></i><i class="diamond d2"></i><i class="diamond d3"></i><i class="diamond d4"></i><i class="diamond d5"></i><i class="diamond d6"></i><i class="diamond d7"></i></div>
 </span></div>
@@ -670,7 +670,7 @@ body{padding-top:158px!important}
     if(price)price.textContent='$180.00'; if(count)count.textContent='250';
     if(name)name.textContent='iPhone 18 Pro Max 256 GB'; if(per)per.textContent='$180.00 por número';
   }else if(id===especial){
-    if(img){img.src='copa.PNG';img.alt='Copa dorada Rifando Ando'}
+    if(img){img.src='copa.PNG';img.alt='Premio destacado de Sorteo Regio'}
     if(amount){amount.style.display='';amount.innerHTML='$6,000<span class="decimals">.00</span>'}
     if(price)price.textContent='$100.00'; if(count)count.textContent='100';
     if(name)name.textContent='Sorteo Especial'; if(per)per.textContent='$100.00 por número';
@@ -1582,7 +1582,7 @@ function construirMensajeSolicitudes(lista){
   const nombre=lista?.[lista.length-1]?.name||'';
   const displayNumbers=numeros.map(n=>String(n).padStart(2,'0')).join(', ');
   const money=String.fromCharCode(36);
-  return '🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado:\n\n🎫 '+rifaNombre+'\n👤 Nombre: '+nombre+'\n🔢 Números: '+displayNumbers+'\n💰 Total: '+money+total.toLocaleString('es-MX')+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
+  return '🎟️✨ SORTEO REGIO 🏆\n\n👋 Hola, confirmo mi apartado:\n\n🎫 '+rifaNombre+'\n👤 Nombre: '+nombre+'\n🔢 Números: '+displayNumbers+'\n💰 Total: '+money+total.toLocaleString('es-MX')+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
 }
 function cerrarFormulario(){
   if(confirmation.classList.contains('show')&&!confirmWhatsAppClicked)return;
