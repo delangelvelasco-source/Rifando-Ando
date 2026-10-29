@@ -5,13 +5,20 @@ export default {
   async fetch(request, env) {
     const incoming = new URL(request.url);
 
-    // Keep the Rifa Regia catalog and its share image on this Pages project.
-    if (incoming.pathname === "/" || incoming.pathname === "/og-sorteo-regio.svg") {
+    // Keep the catalog available at /catalogo, and the social image on this project.
+    if (incoming.pathname === "/og-sorteo-regio.svg") {
       return env.ASSETS.fetch(request);
     }
+    if (incoming.pathname === "/catalogo" || incoming.pathname === "/catalogo/") {
+      const catalogUrl = new URL("/", incoming);
+      return env.ASSETS.fetch(new Request(catalogUrl, request));
+    }
 
-    // Proxy the original raffle under the branded path.
-    const upstream = new URL(incoming.pathname + incoming.search, ORIGIN);
+    // The domain root opens Sorteo Regio directly. The explicit route remains an alias.
+    const upstreamPath = incoming.pathname === "/" || incoming.pathname === "/sorteo-regio" || incoming.pathname === "/sorteo-regio/"
+      ? "/sorteo-regio"
+      : incoming.pathname;
+    const upstream = new URL(upstreamPath + incoming.search, ORIGIN);
     const headers = new Headers(request.headers);
     headers.set("X-Forwarded-Host", incoming.host);
     headers.set("X-Forwarded-Proto", incoming.protocol.replace(":", ""));
@@ -37,9 +44,8 @@ export default {
     }
 
     const contentType = outHeaders.get("Content-Type") || "";
-    if (incoming.pathname.replace(/\/$/, "") === "/sorteo-regio" &&
-        request.method === "GET" &&
-        contentType.includes("text/html")) {
+    if ((incoming.pathname === "/" || incoming.pathname.replace(/\/$/, "") === "/sorteo-regio") &&
+        request.method === "GET" && contentType.includes("text/html")) {
       let html = await response.text();
       const tags = [
         '<title>Sorteo Regio | Rifa Regia</title>',
@@ -57,9 +63,7 @@ export default {
         '<meta name="twitter:image" content="' + SHARE_IMAGE + '">',
         '<link rel="canonical" href="https://rifasmty.com/sorteo-regio">'
       ].join("\n");
-      if (/<head[^>]*>/i.test(html)) {
-        html = html.replace(/<head[^>]*>/i, match => match + "\n" + tags + "\n");
-      }
+      if (/<head[^>]*>/i.test(html)) html = html.replace(/<head[^>]*>/i, match => match + "\n" + tags + "\n");
       outHeaders.delete("Content-Length");
       outHeaders.delete("ETag");
       outHeaders.set("Cache-Control", "public, max-age=300");
