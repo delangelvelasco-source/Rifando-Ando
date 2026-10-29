@@ -5,8 +5,8 @@ export default {
   async fetch(request, env) {
     const incoming = new URL(request.url);
 
-    // Keep the catalog available at /catalogo, and the social image on this project.
-    if (incoming.pathname === "/og-sorteo-regio.svg") {
+    // Serve this project's static SEO and social assets locally, not through the raffle proxy.
+    if (["/robots.txt", "/sitemap.xml", "/og-sorteo-regio.svg"].includes(incoming.pathname)) {
       return env.ASSETS.fetch(request);
     }
     if (incoming.pathname === "/catalogo" || incoming.pathname === "/catalogo/") {
