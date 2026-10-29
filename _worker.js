@@ -64,6 +64,10 @@ export default {
     if ((incoming.pathname === "/" || incoming.pathname.replace(/\/$/, "") === "/sorteo-regio") &&
         request.method === "GET" && contentType.includes("text/html")) {
       let html = await response.text();
+      // Normalizar los enlaces antiguos que todavía pueda entregar el upstream.
+      html = html
+        .replaceAll("https://rifasmty.lol/sorteo-regio", "https://rifasmty.com/sorteo-regio")
+        .replaceAll("http://rifasmty.lol/sorteo-regio", "https://rifasmty.com/sorteo-regio");
       const tags = [
         '<title>Sorteo Regio | Premio de $50,000 MXN</title>',
         '<meta property="og:site_name" content="Sorteo Regio">',
