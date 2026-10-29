@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#052a1b">
+<title>Monitor en tiempo real · Rifando Ando</title>
+<style>
+:root{color-scheme:dark;--bg:#04170f;--panel:#0b261a;--panel2:#103624;--line:#22543a;--green:#67e58a;--muted:#a9c8b4;--text:#f2fff5;--gold:#f3c85a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -10%,#145b37 0,transparent 55%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;padding:18px}.wrap{max-width:1280px;margin:auto}.hidden{display:none!important}.panel{background:linear-gradient(145deg,#0d2d1e,#071d13);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 12px 30px #0003}.login{max-width:420px;margin:12vh auto}.field{margin:12px 0}.field input,.field select{width:100%;padding:13px;border-radius:10px;border:1px solid var(--line);background:#04170f;color:var(--text);font:inherit}.btn{border:1px solid #39754f;border-radius:10px;padding:10px 14px;background:var(--green);color:#052014;font-weight:800;cursor:pointer;text-decoration:none;display:inline-block}.secondary{background:#123b28;color:var(--text)}.header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}.header h1{margin:0;font-size:clamp(23px,4vw,34px)}.muted{color:var(--muted)}.status{padding:10px 13px;background:#082116;border:1px solid var(--line);border-radius:10px;margin:10px 0 16px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}.metric{background:#0b291b;border:1px solid var(--line);border-radius:15px;padding:16px;min-height:110px}.metric label{display:block;color:var(--muted);font-size:13px}.metric strong{display:block;font-size:clamp(25px,4vw,36px);margin-top:8px;line-height:1.1}.metric small{color:var(--muted)}.columns{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}.scroll{overflow:auto;max-height:470px}table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid #1c4830;vertical-align:top}th{color:var(--muted);font-weight:700;position:sticky;top:0;background:#0b291b}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#153e29;color:#a9ffbd;font-size:12px;font-weight:800}.pill.gold{background:#493b16;color:#ffe08a}.pill.red{background:#4c2424;color:#ffb4b4}.bar{height:8px;border-radius:10px;background:#183b29;overflow:hidden;margin-top:10px}.bar span{display:block;height:100%;background:var(--green);width:0}.note{border:1px dashed #3b7651;background:#082116;padding:13px;border-radius:12px;line-height:1.5}.error{color:#ffaaaa}.small{font-size:12px}.foot{margin-top:14px;color:var(--muted);font-size:12px}@media(max-width:760px){body{padding:9px}.panel{padding:13px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.metric{padding:12px;min-height:95px}.columns{grid-template-columns:1fr}.scroll{max-height:360px}table{font-size:12px}th,td{padding:9px 6px}.header .btn{padding:9px 10px}}
+</style>
+</head>
+<body>
+<div id="login" class="panel login">
+<h1>🟢 Monitor <span style="color:var(--green)">Rifando Ando</span></h1>
+<p class="muted">Acceso privado para administración.</p>
+<div class="field"><label for="email">Correo de administrador</label><input id="email" type="email" autocomplete="username" placeholder="admin@tudominio.com"></div>
+<div class="field"><label for="pass">Contraseña</label><input id="pass" type="password" autocomplete="current-password" placeholder="Contraseña"></div>
+<button id="loginBtn" class="btn" style="width:100%" onclick="entrar()">Entrar al monitor</button>
+<p id="msg" class="error"></p>
+</div>
+<div id="app" class="wrap hidden">
+<header class="header">
+<div><h1>MONITOR <span style="color:var(--green)">EN TIEMPO REAL</span></h1><div class="muted">Boletos · Ventas · Participantes · Actividad</div></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn secondary" href="admin.html">Panel administrador</a><button class="btn secondary" onclick="cargar()">Actualizar</button><button class="btn" onclick="salir()">Salir</button></div>
+</header>
+<div id="status" class="status">Conectando…</div>
+<div class="grid">
+<div class="metric"><label>Sorteos registrados</label><strong id="mRifas">—</strong><small>En la base de datos</small></div>
+<div class="metric"><label>Boletos vendidos</label><strong id="mVendidos">—</strong><small id="mPct">Calculando porcentaje</small><div class="bar"><span id="salesBar"></span></div></div>
+<div class="metric"><label>Boletos apartados</label><strong id="mApartados">—</strong><small>Reservas no liberadas</small></div>
+<div class="metric"><label>Boletos disponibles</label><strong id="mDisponibles">—</strong><small>Disponibles según estatus</small></div>
+<div class="metric"><label>Participantes registrados</label><strong id="mPeople">—</strong><small>Registros de participantes</small></div>
+<div class="metric"><label>Pagos pendientes</label><strong id="mPending">—</strong><small id="mPendingMoney">Importe por calcular</small></div>
+<div class="metric"><label>Pagos confirmados</label><strong id="mPaid">—</strong><small id="mPaidMoney">Importe por calcular</small></div>
+<div class="metric"><label>Última actualización</label><strong id="mUpdated" style="font-size:20px">—</strong><small>Se actualiza al recibir eventos</small></div>
+</div>
+<div class="columns">
+<section class="panel">
+<h2 style="margin-top:0">Estado por sorteo</h2>
+<div class="scroll"><table><thead><tr><th>Sorteo</th><th>Vendidos</th><th>Apartados</th><th>Disponibles</th><th>Estado</th></tr></thead><tbody id="raffleRows"><tr><td colspan="5" class="muted">Cargando…</td></tr></tbody></table></div>
+</section>
+<section class="panel">
+<h2 style="margin-top:0">Registros recientes</h2>
+<div id="recent" class="scroll muted">Cargando actividad…</div>
+</section>
+</div>
+<section class="panel" style="margin-top:14px">
+<h2 style="margin-top:0">Visitas a la página</h2>
+<div class="note"><b>Seguimiento de visitas pendiente de conectar.</b><br>La base actual consultada contiene rifas, números, participantes y pagos, pero no encontré una tabla de analítica de visitas. Para mostrar visitas reales, páginas vistas y visitantes por fecha, hay que habilitar un registro de analítica y conectar el sitio público a ese registro. No mostraré cifras inventadas.</div>
+</section>
+<p class="foot">Monitor de solo lectura: no cambia estatus de boletos, pagos ni sorteos. Los datos dependen de los permisos de tu sesión administrativa y de las políticas de la base de datos.</p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script>
+<script>
+let db=null,channel=null,refreshTimer=null,busy=false;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+const fmt=n=>Number(n||0).toLocaleString('es-MX');
+const money=n=>Number(n||0).toLocaleString('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:2});
+function estadoBoleto(n){if(n.estado==='vendido')return'vendido';if(n.estado==='apartado'&&(!n.apartado_hasta||new Date(n.apartado_hasta)>new Date()))return'apartado';return'disponible'}
+async function entrar(){
+ const b=$('loginBtn');b.disabled=true;b.textContent='Verificando…';$('msg').textContent='';
+ try{
+  if(!window.supabase||!window.SUPABASE_URL||!window.SUPABASE_KEY)throw new Error('No se pudo cargar la configuración de la base de datos.');
+  db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  const {data,error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('pass').value});
+  if(error)throw error;
+  $('login').classList.add('hidden');$('app').classList.remove('hidden');
+  await cargar();suscribir();
+ }catch(e){$('msg').textContent=e.message||'No se pudo iniciar sesión.'}
+ finally{b.disabled=false;b.textContent='Entrar al monitor'}
+}
+async function cargar(){
+ if(!db||busy)return;busy=true;$('status').textContent='Actualizando datos…';
+ try{
+  const [rr,nn,pp,pay]=await Promise.all([
+   db.from('rifas').select('id,nombre,codigo_sorteo,estado,precio_numero,created_at').order('created_at',{ascending:false}),
+   db.from('numeros').select('id,rifa_id,numero,estado,apartado_hasta,participante_id,vendido_at').order('numero').limit(100000),
+   db.from('participantes').select('id,nombre,whatsapp,created_at').order('created_at',{ascending:false}).limit(5000),
+   db.from('pagos').select('id,rifa_id,participante_id,monto,estado,metodo,created_at,confirmado_at').order('created_at',{ascending:false}).limit(10000)
+  ]);
+  const errors=[rr,nn,pp,pay].filter(x=>x.error);
+  if(errors.length)throw new Error(errors.map(x=>x.error.message).join(' · '));
+  const rifas=rr.data||[],nums=nn.data||[],people=pp.data||[],payments=pay.data||[];
+  const byRifa=new Map(rifas.map(r=>[r.id,{rifa:r,vendidos:0,apartados:0,disponibles:0,total:0}]));
+  nums.forEach(n=>{const s=byRifa.get(n.rifa_id);if(!s)return;s.total++;s[estadoBoleto(n)==='vendido'?'vendidos':estadoBoleto(n)==='apartado'?'apartados':'disponibles']++});
+  const total=nums.length,vendidos=nums.filter(n=>estadoBoleto(n)==='vendido').length,apartados=nums.filter(n=>estadoBoleto(n)==='apartado').length,disponibles=nums.filter(n=>estadoBoleto(n)==='disponible').length;
+  const pending=payments.filter(p=>p.estado==='pendiente'),confirmed=payments.filter(p=>p.estado==='confirmado');
+  $('mRifas').textContent=fmt(rifas.length);$('mVendidos').textContent=fmt(vendidos);$('mApartados').textContent=fmt(apartados);$('mDisponibles').textContent=fmt(disponibles);$('mPeople').textContent=fmt(people.length);$('mPending').textContent=fmt(pending.length);$('mPendingMoney').textContent=money(pending.reduce((s,p)=>s+Number(p.monto||0),0));$('mPaid').textContent=fmt(confirmed.length);$('mPaidMoney').textContent=money(confirmed.reduce((s,p)=>s+Number(p.monto||0),0));
+  const pct=total?Math.round(vendidos/total*100):0;$('mPct').textContent=pct+'% de los boletos cargados ('+fmt(total)+')';$('salesBar').style.width=pct+'%';$('mUpdated').textContent=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  $('raffleRows').innerHTML=rifas.map(r=>{const s=byRifa.get(r.id);const state=r.estado==='activa'?'<span class="pill">Activa</span>':r.estado==='cerrada'?'<span class="pill red">Cerrada</span>':r.estado==='sorteada'?'<span class="pill gold">Sorteada</span>':'<span class="pill">'+esc(r.estado||'Sin estado')+'</span>';return '<tr><td><b>'+esc(r.nombre||'Sorteo')+'</b><br><small class="muted">'+esc(r.codigo_sorteo||r.id.slice(0,8))+'</small></td><td>'+fmt(s.vendidos)+'</td><td>'+fmt(s.apartados)+'</td><td>'+fmt(s.disponibles)+'</td><td>'+state+'</td></tr>'}).join('')||'<tr><td colspan="5">No hay sorteos registrados.</td></tr>';
+  const recent=[];
+  people.slice(0,8).forEach(p=>recent.push({at:p.created_at,type:'Participante',title:p.nombre||'Participante nuevo',detail:p.whatsapp||'Sin WhatsApp'}));
+  payments.slice(0,12).forEach(p=>recent.push({at:p.created_at,type:p.estado==='confirmado'?'Pago confirmado':p.estado==='pendiente'?'Pago pendiente':'Pago',title:money(p.monto),detail:p.metodo||p.estado||'Pago registrado'}));
+  nums.filter(n=>n.estado==='vendido').sort((a,b)=>new Date(b.vendido_at||0)-new Date(a.vendido_at||0)).slice(0,8).forEach(n=>recent.push({at:n.vendido_at,type:'Boleto vendido',title:'#'+String(n.numero).padStart(5,'0'),detail:rifas.find(r=>r.id===n.rifa_id)?.nombre||'Sorteo'}));
+  recent.sort((a,b)=>new Date(b.at||0)-new Date(a.at||0));
+  $('recent').innerHTML=recent.slice(0,20).map(e=>'<div style="padding:10px 0;border-bottom:1px solid #1c4830"><span class="pill">'+esc(e.type)+'</span><div style="font-weight:800;margin-top:5px">'+esc(e.title)+'</div><div class="muted small">'+esc(e.detail)+' · '+(e.at?new Date(e.at).toLocaleString('es-MX'):'Fecha no disponible')+'</div></div>').join('')||'Todavía no hay actividad registrada.';
+  $('status').textContent='🟢 Datos actualizados · '+rifas.length+' sorteos · tiempo real habilitado cuando la suscripción esté activa.';
+ }catch(e){$('status').innerHTML='<span class="error">No se pudo actualizar: '+esc(e.message||e)+'</span>'}
+ finally{busy=false}
+}
+function suscribir(){
+ if(!db)return;if(channel)db.removeChannel(channel).catch(()=>{});
+ channel=db.channel('monitor-rifas-and-ando')
+ .on('postgres_changes',{event:'*',schema:'public',table:'rifas'},()=>programar())
+ .on('postgres_changes',{event:'*',schema:'public',table:'numeros'},()=>programar())
+ .on('postgres_changes',{event:'*',schema:'public',table:'participantes'},()=>programar())
+ .on('postgres_changes',{event:'*',schema:'public',table:'pagos'},()=>programar())
+ .subscribe(s=>{$('status').textContent=s==='SUBSCRIBED'?'🟢 Conexión en tiempo real activa.':'Conectando a tiempo real…';});
+ if(refreshTimer)clearInterval(refreshTimer);refreshTimer=setInterval(cargar,30000);
+}
+let debounce=null;function programar(){clearTimeout(debounce);debounce=setTimeout(cargar,600)}
+async function salir(){if(channel)await db.removeChannel(channel);if(refreshTimer)clearInterval(refreshTimer);await db.auth.signOut();db=null;$('app').classList.add('hidden');$('login').classList.remove('hidden')}
+</script>
+</body></html>
