@@ -8,7 +8,7 @@ export default {
     // Serve SEO files directly so the raffle proxy can never corrupt or replace them.
     if (incoming.pathname === "/robots.txt") {
       return new Response(
-        "User-agent: *\\nAllow: /\\n\\nSitemap: https://rifasmty.com/sitemap.xml\\n",
+        "User-agent: *\nAllow: /\n\nSitemap: https://rifasmty.com/sitemap.xml\n",
         { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" } }
       );
     }
