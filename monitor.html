@@ -50,7 +50,11 @@
 </section>
 <p class="foot">Monitor de solo lectura: no cambia estatus de boletos, pagos ni sorteos. Los datos dependen de los permisos de tu sesión administrativa y de las políticas de la base de datos.</p>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
+/* Configuración pública de Supabase, igual que config.js del proyecto. La seguridad depende de Auth y RLS. */
+const SUPABASE_URL = 'https://iaviafijfdqinehcfebr.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_OOyCaQno11jdZhXkmZvd3w_Wl6PjmES';
+</script>
 <script>
 let db=null,channel=null,refreshTimer=null,busy=false;
 const $=id=>document.getElementById(id);
