@@ -1,5 +1,5 @@
 const ORIGIN = "https://rifando-ando-mx.pages.dev";
-const SHARE_IMAGE = "https://rifasmty.com/og-sorteo-regio.svg";
+const SHARE_IMAGE = "https://rifasmty.com/og-sorteo-regio.svg?v=3";
 
 export default {
   async fetch(request, env) {
@@ -53,10 +53,13 @@ export default {
         '<meta property="og:type" content="website">',
         '<meta property="og:title" content="Sorteo Regio | Premio de $50,000 MXN">',
         '<meta property="og:description" content="Premio de $50,000 MXN. Cada boleto cuesta $2 MXN. ¡Échale número, compa!">',
-        '<meta property="og:url" content="https://rifasmty.com/sorteo-regio">',
+        '<meta property="og:url" content="https://rifasmty.com/">',
+        '<meta property="og:image:width" content="1200">',
+        '<meta property="og:image:height" content="630">',
         '<meta property="og:image" content="' + SHARE_IMAGE + '">',
         '<meta property="og:image:secure_url" content="' + SHARE_IMAGE + '">',
         '<meta property="og:image:type" content="image/svg+xml">',
+        '<meta property="og:image:alt" content="Sorteo Regio: premio de $50,000 MXN y boleto de $2 MXN">',
         '<meta name="twitter:card" content="summary_large_image">',
         '<meta name="twitter:title" content="Sorteo Regio | Premio de $50,000 MXN">',
         '<meta name="twitter:description" content="Premio de $50,000 MXN. Cada boleto cuesta $2 MXN.">',
