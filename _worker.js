@@ -65,7 +65,7 @@ export default {
         '<meta name="twitter:description" content="Premio de $50,000 MXN. Cada boleto cuesta $2 MXN.">',
         '<meta name="twitter:image" content="' + SHARE_IMAGE + '">',
         '<link rel="canonical" href="https://rifasmty.com/">'
-      ].join("\\n");
+      ].join("\n");
       // Remove upstream social tags first; duplicate og:image tags can make WhatsApp use the wrong preview.
       html = html.replace(/<title[^>]*>[\\s\\S]*?<\\/title>/i, "");
       html = html.replace(/<meta\\s+(?:property|name)=["'](?:og:[^"']+|twitter:[^"']+)["'][^>]*>/gi, "");
