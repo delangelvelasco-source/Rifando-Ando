@@ -5,8 +5,25 @@ export default {
   async fetch(request, env) {
     const incoming = new URL(request.url);
 
-    // Serve this project's static SEO and social assets locally, not through the raffle proxy.
-    if (["/robots.txt", "/sitemap.xml", "/og-sorteo-regio.svg"].includes(incoming.pathname)) {
+    // Serve SEO files directly so the raffle proxy can never corrupt or replace them.
+    if (incoming.pathname === "/robots.txt") {
+      return new Response(
+        "User-agent: *\\nAllow: /\\n\\nSitemap: https://rifasmty.com/sitemap.xml\\n",
+        { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" } }
+      );
+    }
+    if (incoming.pathname === "/sitemap.xml") {
+      const sitemap = '<?xml version="1.0" encoding="UTF-8"?>' +
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
+        '<url><loc>https://rifasmty.com/</loc></url>' +
+        '<url><loc>https://rifasmty.com/sorteo-regio</loc></url>' +
+        '<url><loc>https://rifasmty.com/catalogo</loc></url>' +
+        '</urlset>';
+      return new Response(sitemap, {
+        headers: { "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "no-store" }
+      });
+    }
+    if (incoming.pathname === "/og-sorteo-regio.svg") {
       return env.ASSETS.fetch(request);
     }
     if (incoming.pathname === "/catalogo" || incoming.pathname === "/catalogo/") {
