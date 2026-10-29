@@ -1478,6 +1478,10 @@ async function cargarHistorialGanadores(){
 function obtenerDatosCompartir(){
   const nombre=obtenerNombrePublicoRifa(rifa);
   const url=new URL(window.location.href);
+  // Los enlaces compartidos deben usar el dominio vigente de Rifa Regia.
+  if(url.hostname==="rifasmty.lol" || url.hostname==="www.rifasmty.lol"){
+    url.hostname="rifasmty.com";
+  }
   const rutasPorGrupo={regular:'regular/',especial:'especial/',iphone:'iphone/',express:'express/'};
   const grupo=String(rifa?.grupo_rifa||'').toLowerCase();
   const ruta=rutasPorGrupo[grupo];
