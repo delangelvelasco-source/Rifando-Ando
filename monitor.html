@@ -74,18 +74,25 @@ async function entrar(){
  }catch(e){$('msg').textContent=e.message||'No se pudo iniciar sesión.'}
  finally{b.disabled=false;b.textContent='Entrar al monitor'}
 }
+async function leerTodos(tabla,columnas,orden='id',asc=true){
+ const salida=[],lote=1000;
+ for(let desde=0;desde<1000000;desde+=lote){
+  const {data,error}=await db.from(tabla).select(columnas).order(orden,{ascending:asc}).range(desde,desde+lote-1);
+  if(error)throw error;
+  const filas=data||[];salida.push(...filas);
+  if(filas.length<lote)break;
+ }
+ return salida;
+}
 async function cargar(){
- if(!db||busy)return;busy=true;$('status').textContent='Actualizando datos…';
+ if(!db||busy)return;busy=true;$('status').textContent='Actualizando y leyendo todos los registros por bloques…';
  try{
-  const [rr,nn,pp,pay]=await Promise.all([
-   db.from('rifas').select('id,nombre,codigo_sorteo,estado,precio_numero,created_at').order('created_at',{ascending:false}),
-   db.from('numeros').select('id,rifa_id,numero,estado,apartado_hasta,participante_id,vendido_at').order('numero').limit(100000),
-   db.from('participantes').select('id,nombre,whatsapp,created_at').order('created_at',{ascending:false}).limit(5000),
-   db.from('pagos').select('id,rifa_id,participante_id,monto,estado,metodo,created_at,confirmado_at').order('created_at',{ascending:false}).limit(10000)
+  const [rifas,nums,people,payments]=await Promise.all([
+   leerTodos('rifas','id,nombre,codigo_sorteo,estado,precio_numero,created_at','created_at',false),
+   leerTodos('numeros','id,rifa_id,numero,estado,apartado_hasta,participante_id,vendido_at','id',true),
+   leerTodos('participantes','id,nombre,whatsapp,created_at','created_at',false),
+   leerTodos('pagos','id,rifa_id,participante_id,monto,estado,metodo,created_at,confirmado_at','created_at',false)
   ]);
-  const errors=[rr,nn,pp,pay].filter(x=>x.error);
-  if(errors.length)throw new Error(errors.map(x=>x.error.message).join(' · '));
-  const rifas=rr.data||[],nums=nn.data||[],people=pp.data||[],payments=pay.data||[];
   const byRifa=new Map(rifas.map(r=>[r.id,{rifa:r,vendidos:0,apartados:0,disponibles:0,total:0}]));
   nums.forEach(n=>{const s=byRifa.get(n.rifa_id);if(!s)return;s.total++;s[estadoBoleto(n)==='vendido'?'vendidos':estadoBoleto(n)==='apartado'?'apartados':'disponibles']++});
   const total=nums.length,vendidos=nums.filter(n=>estadoBoleto(n)==='vendido').length,apartados=nums.filter(n=>estadoBoleto(n)==='apartado').length,disponibles=nums.filter(n=>estadoBoleto(n)==='disponible').length;
