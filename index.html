@@ -651,7 +651,7 @@ body{padding-top:158px!important}
 (function(){
   const regular='4b23f516-7973-4a04-bff6-9b9b5cb90f4d';
   const especial='60f9a81d-bdd6-4e28-b330-dc92cfe4d113';  const iphone='9a9bca1f-3f22-4a1a-8813-70c7f5914f65';
-  const express='af9945a6-fe0d-4f53-a147-d8e332e39b59';
+  const express='7b590439-69dc-4dc4-9a88-f0a5711d9c4a';
   const ruta=window.location.pathname.replace(/\/+$/,'').split('/').pop().toLowerCase();
   const rutasRifa={regular:regular,especial:especial,iphone:iphone,express:express};
   const id=new URLSearchParams(window.location.search).get('rifa')||rutasRifa[ruta]||regular;
@@ -660,10 +660,10 @@ body{padding-top:158px!important}
   const price=document.getElementById('ticketInfoPrice'), count=document.getElementById('ticketInfoCount');
   const name=document.getElementById('raffleName'), per=document.getElementById('price');
   if(id===express){
-    if(img){img.src='copa.PNG';img.alt='Copa dorada Rifando Ando'}
-    if(amount){amount.style.display='';amount.innerHTML='$500<span class="decimals">.00</span>'}
-    if(price)price.textContent='$25.00'; if(count)count.textContent='30';
-    if(name)name.textContent='Sorteo Express'; if(per)per.textContent='$25.00 por número';
+    if(img){img.src='copa.PNG';img.alt='Premio del Sorteo Express'}
+    if(amount){amount.style.display='';amount.innerHTML='$650<span class="decimals">.00</span>'}
+    if(price)price.textContent='$30.00'; if(count)count.textContent='30';
+    if(name)name.textContent='Sorteo Express'; if(per)per.textContent='$30.00 por número';
   }else if(id===iphone){
     if(img){img.src='IMG_5128.jpeg';img.alt='iPhone 18 Pro Max de 256 GB'}
     if(amount)amount.style.display='none';
