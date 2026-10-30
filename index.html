@@ -1589,15 +1589,26 @@ async function iniciarPagoMercadoPago(paymentMethod='mercado_pago'){
   const labels={mercado_pago:'Conectando con Mercado Pago…',oxxo:'Generando ticket OXXO…',spei:'Generando instrucciones SPEI…'};
   if(btn){btn.disabled=true;btn.textContent=labels[paymentMethod]||labels.mercado_pago;}
   [oxxoBtn,speiBtn].forEach(b=>{if(b)b.disabled=true;});
-  if(msg){msg.style.display='block';msg.textContent=paymentMethod==='oxxo'?'Estamos generando tu ticket OXXO con vencimiento de 24 horas…':paymentMethod==='spei'?'Estamos generando tu CLABE e instrucciones para transferir. El apartado se conservará hasta 24 horas después de generar el pago…':'Estamos verificando tu reserva y preparando el pago seguro.';}
+  if(msg){msg.style.display='block';msg.textContent=paymentMethod==='oxxo'?'Generaremos tu ticket OXXO. Se abrirá en otra pestaña para que puedas volver a Rifando Ando.':paymentMethod==='spei'?'Generaremos tu CLABE SPEI. Se abrirá en otra pestaña; esta página de Rifando Ando quedará abierta para que regreses y consultes el pago.':'Estamos verificando tu reserva y preparando el pago seguro.';}
+  // Abrir la pestaña durante el toque del usuario. Safari puede bloquear ventanas
+  // abiertas después de una espera de red; por eso se reserva aquí, antes del await.
+  let checkoutTab=null;
+  try{checkoutTab=window.open('about:blank','_blank');}catch(e){}
+  if(checkoutTab){try{checkoutTab.document.title='Rifando Ando · Abriendo pago';checkoutTab.document.body.innerHTML='<main style="font-family:system-ui;padding:28px;text-align:center"><h2>Conectando con Mercado Pago…</h2><p>Tu página de Rifando Ando seguirá abierta en la pestaña anterior.</p></main>';}catch(e){}}
   try{
     const {data,error}=await db.functions.invoke('mercado-pago',{body:{payment_id:pagoId,payment_token:paymentToken,payment_method:paymentMethod,payer_email:payerEmail}});
     if(error)throw new Error(error.message||'No se pudo iniciar el pago.');
     if(data?.error)throw new Error(data.detail||data.error);
     if(!data?.checkout_url)throw new Error('Mercado Pago no devolvió un enlace de pago.');
-    if(msg)msg.textContent=paymentMethod==='oxxo'?'Ticket OXXO generado. Abriendo instrucciones de pago…':paymentMethod==='spei'?'Instrucciones SPEI generadas. Abriendo CLABE y referencia de pago…':'Reserva validada. Te estamos enviando a Mercado Pago…';
-    window.location.assign(data.checkout_url);
+    if(checkoutTab&&!checkoutTab.closed){
+      if(msg)msg.textContent=paymentMethod==='spei'?'La CLABE y referencia están abiertas en otra pestaña. Cuando termines, vuelve a esta pestaña de Rifando Ando; aquí podrás consultar el estado del pago.':'El pago está abierto en otra pestaña. Puedes volver a Rifando Ando cuando termines.';
+      checkoutTab.location.href=data.checkout_url;
+    }else{
+      if(msg)msg.textContent='Safari no permitió abrir otra pestaña. Abriendo Mercado Pago aquí; usa el botón Atrás del navegador para volver a Rifando Ando.';
+      window.location.assign(data.checkout_url);
+    }
   }catch(err){
+    try{if(checkoutTab&&!checkoutTab.closed)checkoutTab.close();}catch(e){}
     if(msg){msg.style.display='block';msg.textContent='No pudimos iniciar el pago: '+String(err?.message||err)+'. Tus números no se marcarán como vendidos hasta confirmar el pago.';}
     if(btn){btn.disabled=false;btn.textContent=paymentMethod==='oxxo'?'💳 Otros métodos de pago':'💳 Reintentar pago con Mercado Pago';}
     if(oxxoBtn){oxxoBtn.disabled=false;oxxoBtn.textContent='🏪 Reintentar ticket OXXO · 24 h';}
@@ -1843,11 +1854,36 @@ async function procesarRetornoMercadoPago(){
   }
 }
 
+let consultaPagoEnVuelo=false;
+async function consultarPagoAlRegresar(){
+  const pendiente=window.rifandoPagoPendiente;
+  if(!pendiente?.paymentId||!pendiente?.paymentToken||consultaPagoEnVuelo)return;
+  consultaPagoEnVuelo=true;
+  try{
+    const {data,error}=await db.functions.invoke('mercado-pago',{body:{action:'status',payment_id:pendiente.paymentId,payment_token:pendiente.paymentToken}});
+    if(error)throw error;
+    const msg=document.getElementById('mercadoPagoMsg');
+    if(data?.estado==='confirmado'){
+      if(msg){msg.style.display='block';msg.textContent='¡Pago confirmado! Tus boletos ya quedaron registrados. Puedes cerrar esta ventana o consultar tus números.';}
+      window.rifandoPagoPendiente=null;
+      await cargarRifa().catch(()=>{});
+    }else if(['rechazado','rejected','cancelled','expired'].includes(String(data?.estado||''))){
+      if(msg){msg.style.display='block';msg.textContent='Mercado Pago indica que el pago no fue aprobado. Tus números no se marcarán como vendidos. Revisa el estado antes de intentar pagar otra vez.';}
+      await cargarRifa().catch(()=>{});
+    }else if(msg){
+      msg.style.display='block';
+      msg.textContent='Tu pago sigue pendiente. Si ya hiciste la transferencia, espera la confirmación bancaria; no necesitas volver a pagar. Esta página permanece abierta.';
+    }
+  }catch(e){
+    const msg=document.getElementById('mercadoPagoMsg');
+    if(msg){msg.style.display='block';msg.textContent='No pudimos consultar el pago en este momento. Tu reserva sigue sujeta al vencimiento indicado; vuelve a consultar en unos minutos.';}
+  }finally{consultaPagoEnVuelo=false;}
+}
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='visible'){
     ejecutarActualizacionesEnSegundoPlano();
     iniciarActualizacionesEnSegundoPlano();
-setTimeout(()=>procesarRetornoMercadoPago().catch(()=>{}),700);
+    setTimeout(()=>{procesarRetornoMercadoPago().catch(()=>{});consultarPagoAlRegresar().catch(()=>{});},700);
   }else{
     detenerActualizacionesEnSegundoPlano();
   }
