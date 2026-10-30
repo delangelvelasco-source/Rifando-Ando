@@ -2,49 +2,10 @@
 <html lang="es">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#07552f"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>Mis boletos | Sorteo Regio</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#f3f7f4;color:#263238;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.hero{padding:25px 16px;background:linear-gradient(135deg,#064e2e,#07834b);color:white;text-align:center}.hero h1{margin:0;font-size:clamp(26px,6vw,38px)}.hero p{margin:7px 0 0;color:#d9fbe4}.wrap{max-width:760px;margin:20px auto;padding:0 14px 36px}.card{background:white;border:1px solid #dfeae2;border-radius:20px;padding:20px;margin:14px 0;box-shadow:0 8px 25px #0b412010}.state{display:inline-block;padding:6px 10px;border-radius:20px;background:#e4f6e9;color:#087443;font-size:13px;font-weight:800}.state.pending{background:#fff2d8;color:#8a5200}.numbers{display:grid;grid-template-columns:repeat(auto-fill,minmax(94px,1fr));gap:9px;margin:14px 0}.num{border:1px solid #dce8df;background:#f7fbf8;border-radius:12px;text-align:center;padding:12px 5px;font-weight:900;color:#087443}.num small{display:block;font-size:11px;font-weight:700;margin-top:4px}.num.pending{color:#865a08;background:#fff9eb;border-color:#f0dfb7}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:15px}.metric{background:#f2f8f3;border-radius:12px;padding:12px}.metric small{display:block;color:#5b6a61}.metric strong{display:block;font-size:18px;margin-top:3px}.btn{border:0;border-radius:13px;padding:14px 17px;background:#087b49;color:white;font-weight:850;font-size:16px;cursor:pointer;width:100%;margin-top:10px}.btn.secondary{background:white;border:1px solid #087b49;color:#087b49}.muted{color:#637168;font-size:13px;line-height:1.5}.error{padding:18px;background:#fff0ef;border-radius:14px;color:#9b2424}footer{text-align:center;color:#64746a;font-size:12px;padding:18px}@media(max-width:480px){.summary{grid-template-columns:1fr}.card{padding:16px}}
-</style>
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="refresh" content="0;url=/verificador-sorteo-regio.html">
+<title>Verificar mis boletos | Sorteo Regio</title>
+<script>location.replace('/verificador-sorteo-regio.html'+location.search+location.hash);</script>
 </head>
-<body>
-<header class="hero"><h1>🎟️ SORTEO REGIO</h1><p>Consulta privada de tus boletos</p></header>
-<main class="wrap"><div id="content" class="card"><p>Verificando tu enlace seguro…</p></div><footer>Este enlace es privado. No lo compartas públicamente.</footer></main>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-<script>
-const API='https://iaviafijfdqinehcfebr.supabase.co';
-const KEY='sb_publishable_OOyCaQno11jdZhXkmZvd3w_Wl6PjmES';
-const token=new URLSearchParams(location.search).get('token')||'';
-const el=document.getElementById('content');
-const money=n=>new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN'}).format(Number(n||0));
-const date=s=>s?new Date(s).toLocaleString('es-MX'):'—';
-function safe(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-async function load(){
- if(!token){el.innerHTML='<h2>Consulta tus boletos</h2><p class="muted">Para proteger tus datos, necesitas tu enlace privado de consulta. Ábrelo desde el mensaje que recibiste o pega aquí el token privado que te compartieron.</p><form id="tokenForm"><label for="privateToken"><b>Token privado</b></label><input id="privateToken" autocomplete="off" required placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" style="width:100%;padding:14px;margin:10px 0;border:1px solid #b8cbbd;border-radius:12px;font-size:15px"><button class="btn" type="submit">Consultar mis boletos</button></form>';document.getElementById('tokenForm').addEventListener('submit',e=>{e.preventDefault();const t=document.getElementById('privateToken').value.trim();location.href='/mis-boletos.html?token='+encodeURIComponent(t)});return}
- try{
-  const res=await fetch(API+'/functions/v1/consulta-boletos',{method:'POST',headers:{'Content-Type':'application/json','apikey':KEY},body:JSON.stringify({token}),cache:'no-store'});
-  const data=await res.json();
-  if(!res.ok)throw new Error(data.error||'No se pudo consultar la participación.');
-  let out='<h2>Hola, '+safe(data.participant.name)+' 👋</h2><p class="muted">Última consulta: '+date(data.updated_at)+'</p>';
-  if(!data.raffles?.length){out+='<p>No encontramos boletos asociados a este enlace.</p>';el.innerHTML=out;return}
-  data.raffles.forEach((r,i)=>{
-   out+='<section class="card" id="raffle-'+i+'"><h2>'+safe(r.raffle)+'</h2><p><b>'+safe(r.code)+'</b>　<span class="state '+(r.balance>0?'pending':'')+'">'+safe(r.status)+'</span></p><div class="numbers">'+r.numbers.map(n=>'<div class="num '+(n.status==='Pagado'?'':'pending')+'">'+String(n.number).padStart(5,'0')+'<small>'+safe(n.status)+'</small></div>').join('')+'</div><div class="summary"><div class="metric"><small>Total</small><strong>'+money(r.total)+'</strong></div><div class="metric"><small>Pagado</small><strong>'+money(r.paid)+'</strong></div><div class="metric"><small>Saldo</small><strong>'+money(r.balance)+'</strong></div></div>';
-   if(r.payments.length)out+='<h3>Pagos confirmados</h3>'+r.payments.map(p=>'<p class="muted">✓ '+money(p.amount)+' · '+safe(p.method)+' · '+date(p.date)+'</p>').join('');
-   out+='<button class="btn" onclick="downloadPdf('+i+')">⬇ Descargar comprobante PDF</button></section>';
-  });
-  out+='<button class="btn secondary" onclick="location.reload()">↻ Actualizar estado</button><p class="muted">Solo se consideran pagos cuyo estado está confirmado. Si existe un abono, el saldo pendiente se muestra por separado.</p>';
-  el.innerHTML=out;window.raffleData=data.raffles;
- }catch(e){el.innerHTML='<div class="error">'+safe(e.message||'Error de consulta')+'</div><p class="muted">Por seguridad, no mostramos datos si no se puede validar el enlace.</p>'}
-}
-window.downloadPdf=function(i){
- const r=window.raffleData?.[i];if(!r||!window.jspdf?.jsPDF){alert('No se pudo generar el PDF. Actualiza la página e inténtalo de nuevo.');return}
- const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'});let y=18;
- doc.setFillColor(7,91,51);doc.rect(0,0,210,35,'F');doc.setTextColor(255,255,255);doc.setFontSize(19);doc.setFont(undefined,'bold');doc.text('SORTEO REGIO',105,16,{align:'center'});doc.setFontSize(10);doc.text('COMPROBANTE DE PARTICIPACIÓN',105,25,{align:'center'});
- doc.setTextColor(35,48,40);y=48;doc.setFontSize(14);doc.text(String(r.raffle||'Sorteo'),15,y);y+=9;doc.setFontSize(10);doc.text('Folio: '+(r.code||'—'),15,y);y+=8;doc.text('Estado: '+r.status,15,y);y+=12;doc.setFont(undefined,'bold');doc.text('NÚMEROS Y ESTADO',15,y);y+=7;doc.setFont(undefined,'normal');
- r.numbers.forEach(n=>{if(y>270){doc.addPage();y=18}doc.text(String(n.number).padStart(5,'0'),18,y);doc.text(n.status,65,y);y+=7});
- y+=8;if(y>255){doc.addPage();y=18}doc.setFont(undefined,'bold');doc.text('RESUMEN DE PAGO',15,y);y+=8;doc.setFont(undefined,'normal');doc.text('Total: '+money(r.total),15,y);y+=7;doc.text('Pagado confirmado: '+money(r.paid),15,y);y+=7;doc.text('Saldo pendiente: '+money(r.balance),15,y);y+=12;
- if(r.payments.length){doc.setFont(undefined,'bold');doc.text('MOVIMIENTOS CONFIRMADOS',15,y);y+=7;doc.setFont(undefined,'normal');r.payments.forEach(p=>{if(y>275){doc.addPage();y=18}doc.text(money(p.amount)+' · '+p.method+' · '+date(p.date),15,y);y+=6})}
- doc.setFontSize(8);doc.setTextColor(100,110,104);doc.text('Comprobante informativo generado desde la consulta privada. El estado depende de los pagos confirmados en el sistema.',15,287,{maxWidth:180});doc.save('Sorteo-Regio-'+String(r.code||'boletos').replace(/[^a-z0-9-]/gi,'-')+'.pdf');
-};
-load();
-</script></body></html>
+<body><p>Abriendo el verificador de Sorteo Regio… <a href="/verificador-sorteo-regio.html">Continuar</a></p></body>
+</html>
