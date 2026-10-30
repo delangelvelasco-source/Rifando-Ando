@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080808">
 <link rel="manifest" href="manifest.json"><meta name="version" content="2026-10-10-1915-mp-all-active-raffles">
-<title>Rifando Ando | Rifas en línea y sorteos</title>
+<title>Sorteo Regio | Rifas y números en línea</title>
 <meta name="description" content="Rifas en línea entre compas. Elige tus números, participa en nuestros sorteos y conoce las reglas para participar.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -31,7 +31,7 @@
 {
   "@context":"https://schema.org",
   "@type":"WebSite",
-  "name":"Rifando Ando",
+  "name":"Sorteo Regio",
   "url":"https://rifasmty.com/",
   "description":"Rifas en línea entre compas. Elige tus números, participa en nuestros sorteos y conoce las reglas para participar.",
   "inLanguage":"es-MX"
@@ -557,23 +557,36 @@ body{padding-top:158px!important}
 }
 
 </style>
-<script>
-(function(){
-  var p=new URLSearchParams(window.location.search);
-  if(p.has('mp_return') && p.has('pago_id') && p.has('payment_token')){
-    window.location.replace('/pago-confirmado.html'+window.location.search+window.location.hash);
-  }
-})();
-</script>
+<script>/* Mercado Pago se verifica en segundo plano sobre la página del sorteo. */</script>
+
+<style id="sorteo-regio-theme">
+:root{color-scheme:dark;--sr-gold:#f5c343;--sr-green:#9af044;--sr-bg:#070907;--sr-panel:#101710}
+html{background:#070907}
+body{background:radial-gradient(ellipse at 50% -18%,#1b2a15 0%,#0b110a 42%,#050605 100%)!important;color:#fff}
+header{background:rgba(7,12,7,.96)!important;border-bottom:1px solid #53652b!important;box-shadow:0 8px 30px #0008}
+.logo span,.gold,.eyebrow,.official,.grand-amount,.winner-text,.raffle-id b{color:var(--sr-gold)!important}
+.btn,.help-btn,.lottery-badge,.grand-label{background:linear-gradient(135deg,#f5c343,#d99b1d)!important;color:#101308!important;border:1px solid #ffe08a!important;box-shadow:0 5px 18px #d6a52b26}
+.card,.quick-card,.step,.summary,.modal-box{background:linear-gradient(145deg,#121a10,#0b100a)!important;border-color:#394b27!important}
+.prize{background:radial-gradient(circle,#344522,#10170d 68%)!important}
+.grand-prize{background:radial-gradient(circle at 50% 35%,#35451d 0%,#11180d 48%,#090d08 100%)!important;border-color:#f5c343!important;box-shadow:0 0 25px #9af04422,inset 0 0 35px #f5c34312!important}
+.ticket.available{background:#185d2c!important;border-color:#55c96b!important}
+.ticket.selected{background:#f5c343!important;color:#111!important;border-color:#ffe08a!important}
+.raffle-link.active{background:#9af044!important;color:#101308!important;border-color:#c6ff86!important}
+.rules-box,.lottery-info,.winner-head{background:linear-gradient(135deg,#182313,#0b100a)!important;border-color:#53652b!important}
+#raffle-payment-notice{background:linear-gradient(110deg,#172313,#0a1009)!important;border-color:#f5c343!important;color:#fff!important}
+.share-raffle,.recover-btn{background:#11190e!important;border-color:#687d35!important;color:#f5c343!important}
+.foot{border-color:#29351f!important}
+</style>
+<link rel="stylesheet" href="sorteo-regio-theme.css?v=1">
 </head>
 <body>
 
-<!-- La confirmación de pago vive en pago-confirmado.html; no mostrarla como modal en la página pública. -->
+<!-- El pago se verifica en segundo plano y el participante permanece en la página del sorteo. -->
 
 <header>
 <div id="raffle-payment-notice" role="note" aria-label="Condición de realización de sorteos"><span class="notice-icon" aria-hidden="true">📣</span><span class="notice-copy">Cada sorteo tiene su propia modalidad, fecha y condiciones. <strong>Consulta las reglas del sorteo seleccionado.</strong></span><span class="notice-icon notice-calendar" aria-hidden="true">▣</span></div>
 <div class="nav">
-<div class="logo">RIFANDO <span>ANDO</span> 🎟️</div>
+<div class="logo">SORTEO <span>REGIO</span> 🏆</div>
 <div style="display:flex;gap:8px;align-items:center">
 <a class="btn" href="#numeros">Elegir números</a>
 <a class="btn" href="#ultimo-ganador">🏆 Último ganador</a>
@@ -585,9 +598,9 @@ body{padding-top:158px!important}
 <div id="publicDraw" class="draw-public" role="dialog" aria-modal="true" aria-labelledby="publicDrawStatus" onclick="cerrarSorteoPublico(event)"><div class="draw-public-box"><button class="draw-public-close" type="button" onclick="cerrarSorteoPublico(event)" aria-label="Cerrar animación del sorteo" title="Cerrar">×</button><div style="font-size:46px">🎲</div><div class="official">SORTEO EN VIVO</div><h2 id="publicDrawStatus">Preparando selección...</h2><div id="publicDrawNumber" class="draw-public-number">--</div><div id="publicDrawGrid" class="draw-public-grid"></div><div id="publicDrawResult" class="draw-public-result"><div style="font-size:28px;color:#f5d36a;font-weight:1000">🏆 ¡TENEMOS GANADOR!</div><div id="publicDrawWinnerNumber" style="font-size:72px;font-weight:1000;color:#d9a936"></div><div id="publicDrawWinnerName" style="font-size:26px;font-weight:900"></div></div></div></div><main>
 <div class="hero">
 <div>
-<div class="eyebrow">La rifa entre compas</div>
-<h1>¡Échale número, <span class="gold">compa!</span></h1>
-<p>Participa en nuestras rifas, elige tus números y cruza los dedos.</p>
+<div class="eyebrow">Sorteo Regio · Participa y gana</div>
+<h1>¡Tu número puede ser el <span class="gold">ganador!</span></h1>
+<p>Bienvenido a Sorteo Regio. Consulta los sorteos disponibles, revisa sus reglas y elige tus números.</p>
 <a class="btn" href="#numeros">Quiero participar</a>
 <nav class="raffle-links" id="rifas" aria-label="Nuestros sorteos">
 <div class="raffle-links-title">🎟️ Nuestros sorteos</div>
@@ -605,7 +618,7 @@ body{padding-top:158px!important}
 <div class="card grand-prize">
 <div class="sparkles" aria-hidden="true">✦ ✨ ✦ ✨ ✦</div>
 <div class="prize iphone-prize" id="prizeVisual">
-<img id="prizeImage" src="copa.PNG" alt="Copa dorada Rifando Ando" decoding="async" fetchpriority="high">
+<img id="prizeImage" src="copa.PNG" alt="Copa dorada Sorteo Regio" decoding="async" fetchpriority="high">
 
 <span id="prizeEmoji" class="trophy-stage" style="display:none" aria-hidden="true">
 <svg class="trophy-art" viewBox="0 0 520 520" role="img" aria-label="Copa dorada">
@@ -670,12 +683,12 @@ body{padding-top:158px!important}
     if(price)price.textContent='$180.00'; if(count)count.textContent='250';
     if(name)name.textContent='iPhone 18 Pro Max 256 GB'; if(per)per.textContent='$180.00 por número';
   }else if(id===especial){
-    if(img){img.src='copa.PNG';img.alt='Copa dorada Rifando Ando'}
+    if(img){img.src='copa.PNG';img.alt='Copa dorada Sorteo Regio'}
     if(amount){amount.style.display='';amount.innerHTML='$6,000<span class="decimals">.00</span>'}
     if(price)price.textContent='$100.00'; if(count)count.textContent='100';
     if(name)name.textContent='Sorteo Especial'; if(per)per.textContent='$100.00 por número';
   }else{
-    if(img){img.src='copa.PNG';img.alt='Copa dorada Rifando Ando'}
+    if(img){img.src='copa.PNG';img.alt='Copa dorada Sorteo Regio'}
     if(amount){amount.style.display='';amount.innerHTML='$1,000<span class="decimals">.00</span>'}
     if(price)price.textContent='$15.00'; if(count)count.textContent='100';
     if(name)name.textContent='Sorteo Regular'; if(per)per.textContent='$15.00 por número';
@@ -728,7 +741,7 @@ body{padding-top:158px!important}
 <section class="section" id="historial-ganadores"><h2>🏆 Historial de Ganadores</h2><div id="winnerHistory" class="winner-history"><div class="winner-empty">Aún no hay ganadores registrados.</div></div></section>
 </main>
 
-<footer class="foot"><div style="margin-bottom:12px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;align-items:center"><a href="reglas.html" style="color:#d9a936;text-decoration:none;font-weight:1000;font-size:20px;line-height:1.35">📜 Reglas, Bases, Términos y Condiciones</a><span style="color:#555;font-size:20px">·</span><a href="aviso-privacidad.html" style="color:#d9a936;text-decoration:none;font-weight:1000;font-size:20px;line-height:1.35">🔒 Aviso de Privacidad</a></div><div>© 2026 Rifando Ando · La rifa entre compas</div></footer>
+<footer class="foot"><div style="margin-bottom:12px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;align-items:center"><a href="reglas.html" style="color:#d9a936;text-decoration:none;font-weight:1000;font-size:20px;line-height:1.35">📜 Reglas, Bases, Términos y Condiciones</a><span style="color:#555;font-size:20px">·</span><a href="aviso-privacidad.html" style="color:#d9a936;text-decoration:none;font-weight:1000;font-size:20px;line-height:1.35">🔒 Aviso de Privacidad</a></div><div>© 2026 Sorteo Regio · La rifa entre compas</div></footer>
 
 <div class="modal" id="modal">
 <div class="modal-box">
@@ -1323,7 +1336,7 @@ async function cargarRifa(){
   const grandAmount=document.getElementById('grandAmount');
   if(prizeImage){
     prizeImage.src=isIphone?'IMG_5128.jpeg':'copa.PNG';
-    prizeImage.alt=isIphone?'iPhone 18 Pro Max de 256 GB':'Copa dorada Rifando Ando';
+    prizeImage.alt=isIphone?'iPhone 18 Pro Max de 256 GB':'Copa dorada Sorteo Regio';
     prizeImage.style.display='block';
   }
   if(prizeEmoji) prizeEmoji.style.display='none';
@@ -1374,7 +1387,7 @@ async function cargarRifa(){
   const {data:n,error:ne}=await cargarNumerosPublico(r.id);
   if(loadSeq!==cargarRifaSeq || !rifa || String(rifa.id)!==String(r.id))return;
   if(ne){
-    console.error('Rifando Ando: error cargando números',ne);
+    console.error('Sorteo Regio: error cargando números',ne);
     tickets.innerHTML='<div style="grid-column:1/-1;padding:22px;text-align:center;border:1px solid #3a2d0d;border-radius:16px;background:#111"><b style="color:#d9a936">No se pudieron cargar los números.</b><p style="color:#aaa;margin:8px 0 0">Estamos intentando reconectar con el servidor. Actualiza la página en unos segundos.</p></div>';
     return;
   }
@@ -1510,9 +1523,9 @@ function obtenerDatosCompartir(){
   const tituloPromo=esOfrenda?'💀🌼 ¡ÉCHALE NÚMERO, COMPA! 🎟️🏆':'🎟️🏆 ¡PARTICIPA EN '+String(nombre).toUpperCase()+'!';
   const textoPromo=esOfrenda
     ?tituloPromo+nl+nl+'¡La ofrenda ya está lista y tú puedes participar!'+nl+nl+'✨ Participa en nuestro sorteo especial.'+nl+'🏆 Premio de '+premioTexto+'.'+nl+'🎟️ Entra, conoce los detalles y elige tus números.'+nl+nl+'👉 Participa aquí:'
-    :tituloPromo+nl+nl+'✨ ¡Participa en este sorteo de Rifando Ando!'+nl+'🏆 Premio: '+premioTexto+'.'+nl+'🎟️ Entra, conoce los detalles y elige tus números.'+nl+nl+'👉 Participa aquí:';
+    :tituloPromo+nl+nl+'✨ ¡Participa en este sorteo de Sorteo Regio!'+nl+'🏆 Premio: '+premioTexto+'.'+nl+'🎟️ Entra, conoce los detalles y elige tus números.'+nl+nl+'👉 Participa aquí:';
   return {
-    title:nombre+' | Rifando Ando',
+    title:nombre+' | Sorteo Regio',
     text:textoPromo,
     url:url.href
   };
@@ -1538,8 +1551,8 @@ function actualizarWhatsAppAyuda(){
   if(!link)return;
   const seleccion=nums();
   const message=seleccion.length
-    ? 'Hola Rifando Ando 👋, necesito ayuda o soporte con mi participación. Mis números seleccionados son: '+seleccion.join(', ')+'.'
-    : 'Hola Rifando Ando 👋, necesito ayuda o soporte con mi participación.';
+    ? 'Hola Sorteo Regio 👋, necesito ayuda o soporte con mi participación. Mis números seleccionados son: '+seleccion.join(', ')+'.'
+    : 'Hola Sorteo Regio 👋, necesito ayuda o soporte con mi participación.';
   link.href='https://wa.me/528123859824?text='+encodeURIComponent(message);
 }
 function abrirFormulario(){
@@ -1582,7 +1595,7 @@ function construirMensajeSolicitudes(lista){
   const nombre=lista?.[lista.length-1]?.name||'';
   const displayNumbers=numeros.map(n=>String(n).padStart(2,'0')).join(', ');
   const money=String.fromCharCode(36);
-  return '🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado:\n\n🎫 '+rifaNombre+'\n👤 Nombre: '+nombre+'\n🔢 Números: '+displayNumbers+'\n💰 Total: '+money+total.toLocaleString('es-MX')+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
+  return '🎟️✨ SORTEO REGIO 🏆\n\n👋 Hola, confirmo mi apartado:\n\n🎫 '+rifaNombre+'\n👤 Nombre: '+nombre+'\n🔢 Números: '+displayNumbers+'\n💰 Total: '+money+total.toLocaleString('es-MX')+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
 }
 function cerrarFormulario(){
   if(confirmation.classList.contains('show')&&!confirmWhatsAppClicked)return;
@@ -1640,14 +1653,7 @@ document.getElementById('psViewTickets')?.addEventListener('click',()=>{
 });
 
 function mostrarConfirmacionPago(){
-  const params=new URLSearchParams(window.location.search);
-  const pagoId=params.get('pago_id');
-  const token=params.get('payment_token');
-  if(!pagoId||!token){
-    console.warn('No se puede abrir la confirmación sin los datos de retorno de Mercado Pago.');
-    return;
-  }
-  window.location.replace('/pago-confirmado.html?mp_return=success&pago_id='+encodeURIComponent(pagoId)+'&payment_token='+encodeURIComponent(token));
+  procesarRetornoMercadoPago().catch(()=>{});
 }
 
 async function confirmar(e){
@@ -1857,41 +1863,26 @@ async function procesarRetornoMercadoPago(){
   const pagoId=params.get('pago_id');
   const token=params.get('payment_token');
   if(!pagoId||!token)return;
-  let estado='pendiente';
-  let falloConsulta=false;
-  let redirigiendoConfirmacion=false;
+  let estado='pendiente',falloConsulta=false;
   try{
-    // Reconsulta la orden varias veces: Mercado Pago puede tardar unos segundos
-    // en reflejar el pago aprobado y la función sincroniza el estado con la base.
     for(let intento=0;intento<8;intento++){
       try{
         const {data,error}=await db.functions.invoke('mercado-pago',{body:{action:'status',payment_id:pagoId,payment_token:token}});
         if(error)throw error;
         estado=String(data?.estado||'pendiente');
-        if(estado==='confirmado'||estado==='rejected'||estado==='cancelled'||estado==='expired'||estado==='rechazado')break;
-      }catch(e){
-        falloConsulta=true;
-      }
+        if(['confirmado','rejected','cancelled','expired','rechazado'].includes(estado))break;
+      }catch(e){falloConsulta=true;}
       if(intento<7)await new Promise(resolve=>setTimeout(resolve,2500));
     }
-    if(estado==='confirmado'){
-      redirigiendoConfirmacion=true;
-      window.location.replace('/pago-confirmado.html?mp_return=success&pago_id='+encodeURIComponent(pagoId)+'&payment_token='+encodeURIComponent(token));
-      return;
-    }else if(estado==='rechazado'||estado==='rejected'||estado==='cancelled'||estado==='expired'||retorno==='failure'){
-      alert('El pago no fue aprobado. Revisa el estado en Mercado Pago antes de volver a intentarlo.');
-    }else if(falloConsulta){
-      alert('No logramos consultar el pago automáticamente. No vuelvas a pagar; revisa Mis compras y contacta al administrador para verificarlo.');
-    }else{
-      alert('Tu pago sigue verificándose. No vuelvas a pagar: actualiza esta página en un momento para consultar el estado nuevamente.');
-    }
+    if(estado==='confirmado')alert('¡Pago confirmado! Tus boletos ya están registrados. Puedes consultarlos desde esta misma página.');
+    else if(['rechazado','rejected','cancelled','expired'].includes(estado)||retorno==='failure')alert('El pago no fue aprobado. Revisa el estado en Mercado Pago antes de volver a intentarlo.');
+    else if(falloConsulta)alert('No logramos consultar el pago automáticamente. No vuelvas a pagar; revisa Mis compras y contacta al administrador.');
+    else alert('Tu pago sigue verificándose. No vuelvas a pagar; actualiza esta página en un momento para consultar el estado.');
   }finally{
-    if(!redirigiendoConfirmacion){
-      params.delete('mp_return');params.delete('pago_id');params.delete('payment_token');params.delete('rifa');
-      const cleanUrl=window.location.pathname+(params.toString()?'?'+params.toString():'')+window.location.hash;
-      window.history.replaceState({},'',cleanUrl);
-      await cargarRifa().catch(()=>{});
-    }
+    params.delete('mp_return');params.delete('pago_id');params.delete('payment_token');
+    const cleanUrl=window.location.pathname+(params.toString()?'?'+params.toString():'')+window.location.hash;
+    window.history.replaceState({},'',cleanUrl);
+    await cargarRifa().catch(()=>{});
   }
 }
 
@@ -1905,6 +1896,7 @@ setTimeout(()=>procesarRetornoMercadoPago().catch(()=>{}),700);
   }
 });
 iniciarActualizacionesEnSegundoPlano();
+setTimeout(()=>procesarRetornoMercadoPago().catch(()=>{}),700);
 </script>
 
 <script id="site-visitor-counter-script">

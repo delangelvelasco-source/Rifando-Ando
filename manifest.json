@@ -1,11 +1,11 @@
 {
-  "name": "Rifando Ando",
-  "short_name": "Rifando Ando",
-  "description": "Rifas en línea entre compas.",
+  "name": "Sorteo Regio",
+  "short_name": "Sorteo Regio",
+  "description": "Sorteos y boletos en línea.",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#080808",
-  "theme_color": "#080808",
+  "background_color": "#07110b",
+  "theme_color": "#07110b",
   "lang": "es-MX",
   "icons": [
     {
