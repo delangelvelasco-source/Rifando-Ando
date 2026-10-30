@@ -6,51 +6,61 @@
 <title>Verificar mis boletos | Sorteo Regular</title>
 <meta name="description" content="Consulta tus boletos del Sorteo Regular RA-0002 de Rifando Ando.">
 <style>
-:root{color-scheme:dark;--bg:#061d15;--panel:#0d3023;--panel2:#143c2c;--lime:#9be653;--muted:#c3d6ca;--line:rgba(155,230,83,.55)}
+:root{color-scheme:dark;--bg:#071710;--surface:#10271d;--surface-2:#172f24;--accent:#a6e86a;--text:#f4f7f3;--muted:#a9b9ad;--stroke:#ffffff17}
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;padding:clamp(18px,4vw,42px) 16px;background:radial-gradient(ellipse at 50% -15%,#1b4932 0%,var(--bg) 58%);color:#f7fbf7;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-main{width:min(100%,620px);margin:clamp(12px,5vh,54px) auto;padding:clamp(22px,5vw,42px);background:linear-gradient(155deg,rgba(18,59,42,.98),rgba(8,39,28,.99));border:1px solid var(--line);border-radius:26px;box-shadow:0 24px 70px #0006, inset 0 1px 0 #ffffff12}
-.brand{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px;font-size:clamp(25px,6vw,34px);font-weight:900;letter-spacing:-1.2px}
-.brand-mark{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:#9be65318;border:1px solid #9be65355;font-size:23px}
-h1{margin:0;font-size:clamp(23px,5vw,30px);text-align:center;letter-spacing:-.6px}
-h2{margin:0 0 12px;text-align:center;font-size:15px;font-weight:700;color:var(--lime);letter-spacing:1.4px;text-transform:uppercase}
-.intro{text-align:center;margin:0 auto 26px;max-width:460px;color:var(--muted);line-height:1.65;font-size:15px}
-.raffle-tag{display:inline-flex;align-items:center;justify-content:center;gap:7px;margin:18px auto 0;padding:9px 14px;border:1px solid #ffffff20;border-radius:999px;background:#ffffff0b;color:#e5f2e8;font-size:13px;font-weight:700}
-.raffle-tag:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 12px var(--lime)}
-form{margin-top:26px}
-label{display:block;margin:0 0 9px;font-size:14px;font-weight:800;color:#f2f8f3}
-input,button{width:100%;min-height:56px;padding:15px 17px;border-radius:14px;font:inherit;font-size:16px}
-input{border:1px solid #ffffff50;background:#f8fbf8;color:#14251b;outline:none;box-shadow:0 2px 0 #0002}
-input:focus{border-color:var(--lime);box-shadow:0 0 0 4px #9be65325}
-input::placeholder{color:#78867d}
-button{margin-top:13px;background:linear-gradient(180deg,#a8ef68,#8bd941);border:0;color:#132411;font-weight:900;letter-spacing:.3px;cursor:pointer;box-shadow:0 7px 18px #0003;transition:transform .15s,filter .15s}
-button:active{transform:translateY(1px)}button:disabled{opacity:.65;cursor:wait}
-#result{margin-top:26px;line-height:1.55;overflow-wrap:anywhere}
+body{margin:0;min-height:100vh;padding:28px 16px 44px;background:radial-gradient(ellipse at 50% -25%,#244a32 0%,#0b2016 45%,var(--bg) 78%);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{width:min(100%,560px);margin:5vh auto 0;padding:clamp(24px,5vw,42px);background:linear-gradient(145deg,#142e22f5,#0d2118f7);border:1px solid #a6e86a55;border-radius:24px;box-shadow:0 28px 80px #0006,0 1px 0 #ffffff12 inset}
+.topline{display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:32px}
+.logo-mark{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:#a6e86a16;border:1px solid #a6e86a55;color:var(--accent);font-size:13px;font-weight:900;letter-spacing:-.5px}
+.brand{font-size:22px;font-weight:850;letter-spacing:1.3px}
+.eyebrow{text-align:center;color:var(--accent);font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin:0 0 10px}
+h1{margin:0;text-align:center;font-size:clamp(25px,5vw,32px);letter-spacing:-1px;font-weight:760}
+.raffle-card{display:flex;flex-direction:column;align-items:center;gap:7px;margin:23px 0 19px;padding:17px 14px;border:1px solid var(--stroke);border-radius:16px;background:#ffffff08;text-align:center}
+.raffle-name{font-size:14px;color:#e8f0e9;font-weight:700}
+.raffle-prize{font-size:13px;color:var(--muted)}
+.raffle-prize strong{color:var(--accent);font-size:17px;margin-left:4px}
+.intro{max-width:410px;margin:0 auto 27px;text-align:center;color:var(--muted);font-size:14px;line-height:1.7}
+.form-panel{padding:20px;border-radius:17px;background:#071a12a8;border:1px solid var(--stroke)}
+label{display:block;margin:0 0 10px;color:#e9f0ea;font-size:13px;font-weight:750}
+input{display:block;width:100%;height:56px;padding:0 16px;border:1px solid #d5ded7;border-radius:11px;background:#f7faf7;color:#14231a;font:inherit;font-size:16px;outline:none;transition:box-shadow .2s,border-color .2s}
+input::placeholder{color:#87948a}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 4px #a6e86a24}
+button{width:100%;height:54px;margin-top:12px;border:0;border-radius:11px;background:var(--accent);color:#13210f;font:inherit;font-size:13px;font-weight:900;letter-spacing:.7px;cursor:pointer;transition:filter .2s,transform .2s}
+button:hover{filter:brightness(1.06)}button:active{transform:translateY(1px)}button:disabled{opacity:.65;cursor:wait}
+.helper{margin:12px 0 0;color:#82968a;font-size:11px;line-height:1.5;text-align:center}
+#result{margin-top:25px;overflow-wrap:anywhere}
 #result:empty{display:none}
-#result h3{margin:0 0 8px;font-size:17px;letter-spacing:.3px}
-#result p{margin:0 0 14px;color:var(--muted);font-size:14px}
-.item{display:flex;align-items:center;gap:10px;padding:14px 15px;margin:9px 0;background:linear-gradient(110deg,#ffffff12,#ffffff08);border:1px solid #ffffff12;border-radius:13px;color:#f0f7f1;font-size:14px}
-.item:before{content:"";flex:0 0 8px;width:8px;height:8px;border-radius:50%;background:#f4c65e}
-.item:has-text(none){}
-a{display:inline-flex;margin-top:26px;color:#c8e88b;font-weight:700;text-decoration:none;border-bottom:1px solid #c8e88b80;padding-bottom:3px}
+#result h3{margin:0 0 6px;font-size:15px;letter-spacing:.6px}
+#result p{margin:0 0 13px;color:var(--muted);font-size:13px;line-height:1.6}
+.item{display:flex;align-items:center;gap:12px;padding:14px;margin:8px 0;border:1px solid var(--stroke);border-radius:12px;background:var(--surface-2);color:#edf4ee;font-size:13px;line-height:1.5}
+.item:before{content:"";flex:0 0 7px;width:7px;height:7px;border-radius:50%;background:#e6bd63;box-shadow:0 0 0 4px #e6bd6318}
+a{display:flex;justify-content:center;margin:25px auto 0;width:max-content;color:#c3e89d;font-size:13px;font-weight:700;text-decoration:none}
 a:hover{color:#fff}
-.footer-note{margin:22px 0 0!important;text-align:center;font-size:12px;color:#9bb5a3!important}
-@media(max-width:480px){body{padding:14px 12px}main{margin:12px auto;padding:24px 19px;border-radius:22px}.brand{margin-bottom:21px}.intro{font-size:14px}.item{font-size:13px}}
+.footer{display:flex;align-items:center;justify-content:center;gap:7px;margin:23px 0 0;color:#82968a;font-size:10px;letter-spacing:.35px}
+.footer:before{content:"";width:5px;height:5px;border-radius:50%;background:#83c95b}
+@media(max-width:480px){body{padding:15px 12px 30px}main{margin:12px auto 0;padding:25px 18px;border-radius:20px}.topline{margin-bottom:27px}.form-panel{padding:16px}}
 </style>
 </head>
 <body><main>
-<div class="brand"><span class="brand-mark">🎟️</span><span>RIFANDO ANDO</span></div>
-<h1>Verificador de boletos</h1>
-<div style="text-align:center"><span class="raffle-tag">Sorteo Regular · RA-0002 · Premio $1,000 MXN</span></div>
-<p class="intro">Consulta de forma rápida y segura el estado de tu boleto o todos los boletos asociados al celular que registraste al comprar.</p>
+<header class="topline"><span class="logo-mark">RA</span><span class="brand">RIFANDO ANDO</span></header>
+<p class="eyebrow">Centro de consulta</p>
+<h1>Verificación de boletos</h1>
+<section class="raffle-card" aria-label="Información del sorteo">
+<span class="raffle-name">Sorteo Regular <span style="color:#82968a">·</span> RA-0002</span>
+<span class="raffle-prize">Premio del sorteo <strong>$1,000 MXN</strong></span>
+</section>
+<p class="intro">Consulta el estado de tu boleto o localiza todos los boletos registrados con tu número de celular.</p>
+<div class="form-panel">
 <form id="checker">
-<label for="ticket">Número de boleto o celular</label>
-<input id="ticket" inputmode="numeric" autocomplete="off" maxlength="15" placeholder="Ej. 05 o tu celular" required>
-<button id="check" type="submit">VERIFICAR MIS BOLETOS</button>
+<label for="ticket">Número de boleto o celular registrado</label>
+<input id="ticket" inputmode="numeric" autocomplete="off" maxlength="15" placeholder="Ingresa tu boleto o celular" required>
+<button id="check" type="submit">CONSULTAR BOLETOS</button>
+<p class="helper">Boleto: 00–99 &nbsp;·&nbsp; Celular: 10 dígitos o más</p>
 </form>
+</div>
 <div id="result" role="status" aria-live="polite"></div>
-<a href="/">← Volver a Rifando Ando</a>
-<p class="footer-note">Consulta oficial del Sorteo Regular RA-0002</p>
+<a href="/">← Regresar al sitio principal</a>
+<p class="footer">Consulta oficial · Rifando Ando</p>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
