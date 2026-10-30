@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#062a1b">
+<title>Verificar mis boletos | Sorteo Regular</title>
+<meta name="description" content="Consulta tus boletos del Sorteo Regular RA-0002 de Rifando Ando.">
+<style>
+*{box-sizing:border-box}body{margin:0;padding:20px;background:#062a1b;color:#fff;font-family:system-ui,Arial,sans-serif}main{max-width:650px;margin:25px auto;padding:24px;background:#0b3525;border:2px solid #8ee64b;border-radius:22px}h1{text-align:center}p{color:#d6e6d8;line-height:1.5}label{display:block;margin:22px 0 8px;font-weight:800}input,button{width:100%;padding:15px;border-radius:12px;font-size:17px}input{border:2px solid #aaa;color:#111}button{margin-top:12px;background:#8ee64b;border:0;font-weight:900;color:#102010}#result{margin-top:20px;line-height:1.6;overflow-wrap:anywhere}.item{padding:12px;margin:8px 0;background:#ffffff12;border-radius:10px}.ok{color:#9af044}.pending{color:#ffd36a}.bad{color:#ff9a9a}a{color:#d9b34a}
+</style>
+</head>
+<body><main>
+<h1>🎟️ RIFANDO ANDO</h1>
+<h2 style="text-align:center">Verificador de boletos</h2>
+<p style="text-align:center">Sorteo Regular · RA-0002 · Premio $1,000 MXN</p>
+<p>Consulta el estado de tu boleto o todos los boletos asociados al celular que registraste al comprar.</p>
+<form id="checker">
+<label for="ticket">Número de boleto o celular</label>
+<input id="ticket" inputmode="numeric" autocomplete="off" maxlength="15" placeholder="Boleto (00–99) o celular" required>
+<button id="check" type="submit">VERIFICAR MIS BOLETOS</button>
+</form>
+<div id="result" role="status" aria-live="polite"></div>
+<p><a href="/">← Volver a Rifando Ando</a></p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+const URL='https://iaviafijfdqinehcfebr.supabase.co';
+const KEY='sb_publishable_OOyCaQno11jdZhXkmZvd3w_Wl6PjmES';
+const RIFA='4b23f516-7973-4a04-bff6-9b9b5cb90f4d';
+const form=document.getElementById('checker'),input=document.getElementById('ticket'),button=document.getElementById('check'),result=document.getElementById('result');
+const fmt=n=>String(n).padStart(2,'0');
+function show(t,m){result.textContent='';const h=document.createElement('h3');h.textContent=t;const p=document.createElement('p');p.textContent=m;result.append(h,p)}
+form.addEventListener('submit',async e=>{
+e.preventDefault();const digits=input.value.replace(/\D/g,'');if(!digits){show('Dato no válido','Escribe tu número de boleto o celular.');return}
+button.disabled=true;button.textContent='CONSULTANDO…';show('Consultando…','Buscando en el registro del Sorteo Regular RA-0002.');
+try{
+const db=window.supabase.createClient(URL,KEY);
+if(digits.length>=10){
+const {data,error}=await db.rpc('consultar_boletos_por_celular',{p_rifa_id:RIFA,p_celular:digits});if(error)throw error;
+if(!data?.length){show('SIN RESULTADOS','No encontramos boletos asociados a ese celular en el Sorteo Regular.');return}
+show('TUS BOLETOS','Se encontraron '+data.length+' boletos para este celular.');
+data.forEach(row=>{const el=document.createElement('div');el.className='item';const paid=String(row.estado||'').toLowerCase()==='vendido'&&String(row.estado_pago||'').toLowerCase()==='confirmado';el.textContent='Boleto '+fmt(row.numero)+' · '+(paid?'PAGADO / CONFIRMADO':String(row.estado_pago||row.estado||'En revisión').toUpperCase())+(row.nombre?' · '+row.nombre:'');result.append(el)});
+return;
+}
+if(digits.length>2){show('DATO NO VÁLIDO','Ingresa un boleto del 00 al 99 o un celular de 10 a 15 dígitos.');return}
+const n=Number(digits);if(n<0||n>99){show('FUERA DE RANGO','Los boletos del Sorteo Regular van del 00 al 99.');return}
+const {data,error}=await db.from('numeros').select('numero,estado,apartado_hasta,pago_id').eq('rifa_id',RIFA).eq('numero',n).maybeSingle();if(error)throw error;if(!data){show('NO ENCONTRADO','No existe ese boleto en el Sorteo Regular.');return}
+let status=String(data.estado||'').toLowerCase(),message='Estado: '+status.toUpperCase();
+if(status==='disponible')message='Este boleto aparece DISPONIBLE.';
+else if(status==='apartado')message='Este boleto aparece APARTADO. Revisa con atención al cliente si ya realizaste el pago.';
+else if(status==='vendido'&&data.pago_id){const {data:pay,error:pe}=await db.from('pagos').select('estado').eq('id',data.pago_id).maybeSingle();if(pe)throw pe;message=pay?.estado==='confirmado'?'COMPRA CONFIRMADA · PAGO REGISTRADO.':'PAGO POR CONFIRMAR. Conserva tu comprobante.'}
+else if(status==='vendido')message='El sistema registra el boleto como vendido. Conserva tu comprobante para validar el pago.';
+show('BOLETO '+fmt(data.numero),message);
+}catch(err){show('NO SE PUDO CONSULTAR',String(err?.message||err))}finally{button.disabled=false;button.textContent='VERIFICAR MIS BOLETOS'}
+});
+input.addEventListener('input',()=>{input.value=input.value.replace(/\D/g,'').slice(0,15)});
+})();
+</script>
+</body></html>
