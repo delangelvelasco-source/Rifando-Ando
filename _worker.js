@@ -31,13 +31,17 @@ export default {
       return env.ASSETS.fetch(new Request(catalogUrl, request));
     }
 
-    // Sorteo Regular RA-0002 is exposed on this domain through a stable, readable route.
+    // Sorteo Regular RA-0002 y Sorteo Express RA-0014 usan la página dinámica
+    // del sistema principal, seleccionada mediante el ID de la rifa.
     const isRegular = incoming.pathname === "/sorteo-regular" || incoming.pathname === "/sorteo-regular/";
-    const upstreamPath = isRegular ? "/" :
+    const isExpress = incoming.pathname === "/express" || incoming.pathname === "/express/";
+    const upstreamPath = (isRegular || isExpress) ? "/" :
       (incoming.pathname === "/sorteo-regio" || incoming.pathname === "/sorteo-regio/" ? "/sorteo-regio" : incoming.pathname);
     const upstreamSearch = isRegular
       ? "?rifa=4b23f516-7973-4a04-bff6-9b9b5cb90f4d"
-      : incoming.search;
+      : isExpress
+        ? "?rifa=7b590439-69dc-4dc4-9a88-f0a5711d9c4a"
+        : incoming.search;
     const upstream = new URL(upstreamPath + upstreamSearch, ORIGIN);
     const headers = new Headers(request.headers);
     headers.set("X-Forwarded-Host", incoming.host);
