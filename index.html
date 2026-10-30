@@ -705,7 +705,7 @@ body{padding-top:158px!important}
 
 <div class="modal" id="modal">
 <div class="modal-box">
-<button class="close" id="modalClose" onclick="cerrarFormulario()" aria-label="Cerrar" title="Primero envía la solicitud por WhatsApp">×</button>
+<button class="close" id="modalClose" onclick="cerrarFormulario()" aria-label="Cerrar" title="Puedes cerrar y recuperar tu solicitud después">×</button>
 <div id="formView">
 <h2>Confirma tus números 🎟️</h2>
 <div class="notice">Tu selección será una <b>solicitud de apartado</b>.</div>
@@ -725,7 +725,7 @@ body{padding-top:158px!important}
 <p>Tus números:</p>
 <div class="numbers" id="confirmNumbers"></div>
 <p>Total: <b class="gold" id="confirmTotal"></b></p>
-<a class="btn" id="waConfirm" href="#" target="_blank" rel="noopener" style="display:inline-block;margin:8px 4px">📲 Enviar solicitud por WhatsApp</a><br><button class="btn" id="mercadoPagoBtn" type="button" onclick="iniciarPagoMercadoPago('mercado_pago')" style="display:none;margin:8px 4px;background:#009ee3;color:#fff">💳 Otros métodos de pago</button><button class="btn" id="oxxoBtn" type="button" onclick="iniciarPagoMercadoPago('oxxo')" style="display:none;margin:8px 4px;background:#c62828;color:#fff">🏪 Generar ticket OXXO · 24 h</button><button class="btn" id="speiBtn" type="button" onclick="iniciarPagoMercadoPago('spei')" style="display:none;margin:8px 4px;background:#16835b;color:#fff">🏦 Pagar por transferencia SPEI · 24 h</button><div id="mercadoPagoMsg" role="status" style="display:none;margin:8px auto;padding:12px;border:1px solid #245c78;border-radius:12px;color:#cceeff;text-align:left"></div><br>
+<a class="btn" id="waConfirm" href="#" target="_blank" rel="noopener" style="display:inline-block;margin:8px 4px">📲 Enviar solicitud por WhatsApp (opcional)</a><br><button class="btn" id="mercadoPagoBtn" type="button" onclick="iniciarPagoMercadoPago('mercado_pago')" style="display:none;margin:8px 4px;background:#009ee3;color:#fff">💳 Otros métodos de pago</button><button class="btn" id="oxxoBtn" type="button" onclick="iniciarPagoMercadoPago('oxxo')" style="display:none;margin:8px 4px;background:#c62828;color:#fff">🏪 Generar ticket OXXO · 24 h</button><button class="btn" id="speiBtn" type="button" onclick="iniciarPagoMercadoPago('spei')" style="display:none;margin:8px 4px;background:#16835b;color:#fff">🏦 Pagar por transferencia SPEI · 24 h</button><div id="mercadoPagoMsg" role="status" style="display:none;margin:8px auto;padding:12px;border:1px solid #245c78;border-radius:12px;color:#cceeff;text-align:left"></div><br>
 <button class="btn" id="confirmCloseBtn" onclick="cerrarFormulario()" style="margin:8px 4px" title="Primero envía la solicitud por WhatsApp">Cerrar</button>
 </div>
 </div>
@@ -774,7 +774,7 @@ function limpiarBorradorCompra(){try{localStorage.removeItem(BORRADOR_KEY)}catch
 function obtenerPendienteActual(){try{const raw=localStorage.getItem('rifando_pendiente_whatsapp');if(!raw)return null;const parsed=JSON.parse(raw),lista=Array.isArray(parsed)?parsed:(parsed?[parsed]:[]),vigentes=lista.filter(p=>p&&p.timestamp&&Date.now()-Number(p.timestamp)<=30*60*1000);if(!vigentes.length){localStorage.removeItem('rifando_pendiente_whatsapp');return null}return vigentes[0]}catch(e){return null}}
 function actualizarBotonRecuperar(){const b=document.getElementById('recoverPurchaseBtn');if(!b)return;const p=obtenerPendienteActual(),d=leerBorrador(),id=rifa?.id?String(rifa.id):'',okp=p&&String(p.rifaId)===id,okd=d&&String(d.rifaId)===id&&d.numbers?.length;b.style.display=(okp||okd)?'inline-flex':'none';b.classList.toggle('has-draft',Boolean(okp||okd))}
 function aplicarNumerosDisponibles(numbers){const wanted=new Set((numbers||[]).map(Number).filter(Number.isFinite)),buttons=[...document.querySelectorAll('#tickets .ticket')],available=new Set();buttons.forEach(b=>{if(!b.disabled&&!b.classList.contains('sold')&&!b.classList.contains('pending')){const n=parseInt(b.textContent,10);if(Number.isFinite(n))available.add(n)}});const recover=[...wanted].filter(n=>available.has(n));sel.clear();buttons.forEach(b=>{const n=parseInt(b.textContent,10);if(recover.includes(n)){sel.add(n);b.classList.add('selected')}else b.classList.remove('selected')});update();return recover}
-function mostrarPendienteWhatsApp(p){if(!p||!rifa)return;const numsPend=String(p.numbers||'').split(',').map(x=>parseInt(x.trim(),10)).filter(Number.isFinite).sort((a,b)=>a-b),lista=[{rifaId:String(p.rifaId),numbers:numsPend.map(n=>String(n).padStart(2,'0')).join(', '),name:p.name||'',total:p.total||('$'+(numsPend.length*Number(rifa.precio_numero||0)).toLocaleString('es-MX')),timestamp:Number(p.timestamp)}],wa=document.getElementById('waConfirm');document.getElementById('confirmName').textContent=lista[0].name;document.getElementById('confirmNumbers').textContent=lista[0].numbers;document.getElementById('confirmTotal').textContent=lista[0].total;wa.href='https://wa.me/528123859824?text='+encodeURIComponent(construirMensajeSolicitudes(lista));confirmWhatsAppClicked=false;wa.onclick=()=>{if(confirmWhatsAppClicked)return false;confirmWhatsAppClicked=true;solicitudPendiente=false;sel.clear();update();bloquearNuevaSeleccion(false);modal.classList.remove('open');confirmation.classList.remove('show');formView.style.display='';nombre.value='';whatsapp.value='';try{localStorage.removeItem('rifando_pendiente_whatsapp');localStorage.removeItem('rifando_modo_agregar')}catch(e){};limpiarBorradorCompra();confirmWhatsAppClicked=false;setTimeout(()=>cargarRifa().catch(()=>{}),100)};formView.style.display='none';confirmation.classList.add('show');document.getElementById('modalClose')?.classList.add('locked-close');document.getElementById('confirmCloseBtn')?.classList.add('locked-close');modal.classList.add('open')}
+function mostrarPendienteWhatsApp(p){if(!p||!rifa)return;const numsPend=String(p.numbers||'').split(',').map(x=>parseInt(x.trim(),10)).filter(Number.isFinite).sort((a,b)=>a-b),lista=[{rifaId:String(p.rifaId),numbers:numsPend.map(n=>String(n).padStart(2,'0')).join(', '),name:p.name||'',total:p.total||('$'+(numsPend.length*Number(rifa.precio_numero||0)).toLocaleString('es-MX')),timestamp:Number(p.timestamp)}],wa=document.getElementById('waConfirm');document.getElementById('confirmName').textContent=lista[0].name;document.getElementById('confirmNumbers').textContent=lista[0].numbers;document.getElementById('confirmTotal').textContent=lista[0].total;wa.href='https://wa.me/528123859824?text='+encodeURIComponent(construirMensajeSolicitudes(lista));confirmWhatsAppClicked=false;wa.onclick=null;formView.style.display='none';confirmation.classList.add('show');document.getElementById('modalClose')?.classList.remove('locked-close');document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');modal.classList.add('open')}
 function recuperarCompra(){if(!rifa)return;const p=obtenerPendienteActual();if(p&&String(p.rifaId)===String(rifa.id)){mostrarPendienteWhatsApp(p);return}const d=leerBorrador();if(!d||String(d.rifaId)!==String(rifa.id)){alert('No hay una compra pendiente para recuperar en este dispositivo.');actualizarBotonRecuperar();return}if(d.name)nombre.value=d.name;if(d.phone)whatsapp.value=d.phone;const recover=aplicarNumerosDisponibles(d.numbers);if(!recover.length){alert('Los números guardados ya no están disponibles o la venta está cerrada.');return}guardarBorradorCompra();abrirFormulario()}
 
 function resetConfirmation(){
@@ -1558,7 +1558,7 @@ function construirMensajeSolicitudes(lista){
   return '🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado:\n\n🎫 '+rifaNombre+'\n👤 Nombre: '+nombre+'\n🔢 Números: '+displayNumbers+'\n💰 Total: '+money+total.toLocaleString('es-MX')+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
 }
 function cerrarFormulario(){
-  if(confirmation.classList.contains('show')&&!confirmWhatsAppClicked)return;
+  // WhatsApp es opcional; cerrar el modal conserva la solicitud para recuperarla.
   modal.classList.remove('open');
   confirmWhatsAppClicked=false;
   document.getElementById('modalClose')?.classList.remove('locked-close');
@@ -1693,35 +1693,13 @@ async function confirmar(e){
   if(speiBtn){speiBtn.style.display=permitePago?'inline-block':'none';speiBtn.disabled=false;speiBtn.textContent='🏦 Pagar por transferencia SPEI · 24 h';}
   if(mpMsg){mpMsg.style.display='none';mpMsg.textContent='';}
   confirmWhatsAppClicked=false;
-  document.getElementById('modalClose')?.classList.add('locked-close');
-  document.getElementById('confirmCloseBtn')?.classList.add('locked-close');
-  waConfirm.onclick=()=>{
-    if(confirmWhatsAppClicked)return false;
-    confirmWhatsAppClicked=true;
-
-    solicitudPendiente=false;
-    sel.clear();
-    update();
-    bloquearNuevaSeleccion(false);
-
-    modal.classList.remove('open');
-    confirmation.classList.remove('show');
-    formView.style.display='';
-    nombre.value='';
-    whatsapp.value='';
-
-    waConfirm.style.pointerEvents='';
-    waConfirm.style.opacity='';
-    waConfirm.textContent='📲 Enviar solicitud por WhatsApp';
-    document.getElementById('modalClose')?.classList.remove('locked-close');
-    document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
-
-    try{localStorage.removeItem('rifando_pendiente_whatsapp');localStorage.removeItem('rifando_modo_agregar')}catch(e){}
-    confirmWhatsAppClicked=false;
-
-    // Refrescar los estados reales sin recargar la página.
-    setTimeout(()=>cargarRifa().catch(()=>{}),100);
-  };
+  waConfirm.target='_blank';
+  waConfirm.rel='noopener';
+  waConfirm.onclick=null;
+  document.getElementById('modalClose')?.classList.remove('locked-close');
+  document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
+  const mpNote=document.getElementById('mercadoPagoMsg');
+  if(mpNote){mpNote.style.display='block';mpNote.textContent='WhatsApp es opcional. Puedes pagar directamente o cerrar esta ventana; tu solicitud quedará guardada temporalmente para recuperarla.';}
   formView.style.display='none';
   confirmation.classList.add('show');
   sel.clear();
