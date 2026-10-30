@@ -2,13 +2,13 @@
 <html lang="es">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#07552f"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>Mis boletos | Sorteo Regio</title>
+<meta name="theme-color" content="#07552f"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>Mis boletos | Sorteos Regios</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f3f7f4;color:#263238;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.hero{padding:25px 16px;background:linear-gradient(135deg,#064e2e,#07834b);color:white;text-align:center}.hero h1{margin:0;font-size:clamp(26px,6vw,38px)}.hero p{margin:7px 0 0;color:#d9fbe4}.wrap{max-width:760px;margin:20px auto;padding:0 14px 36px}.card{background:white;border:1px solid #dfeae2;border-radius:20px;padding:20px;margin:14px 0;box-shadow:0 8px 25px #0b412010}.state{display:inline-block;padding:6px 10px;border-radius:20px;background:#e4f6e9;color:#087443;font-size:13px;font-weight:800}.state.pending{background:#fff2d8;color:#8a5200}.numbers{display:grid;grid-template-columns:repeat(auto-fill,minmax(94px,1fr));gap:9px;margin:14px 0}.num{border:1px solid #dce8df;background:#f7fbf8;border-radius:12px;text-align:center;padding:12px 5px;font-weight:900;color:#087443}.num small{display:block;font-size:11px;font-weight:700;margin-top:4px}.num.pending{color:#865a08;background:#fff9eb;border-color:#f0dfb7}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:15px}.metric{background:#f2f8f3;border-radius:12px;padding:12px}.metric small{display:block;color:#5b6a61}.metric strong{display:block;font-size:18px;margin-top:3px}.btn{border:0;border-radius:13px;padding:14px 17px;background:#087b49;color:white;font-weight:850;font-size:16px;cursor:pointer;width:100%;margin-top:10px}.btn.secondary{background:white;border:1px solid #087b49;color:#087b49}.muted{color:#637168;font-size:13px;line-height:1.5}.error{padding:18px;background:#fff0ef;border-radius:14px;color:#9b2424}footer{text-align:center;color:#64746a;font-size:12px;padding:18px}@media(max-width:480px){.summary{grid-template-columns:1fr}.card{padding:16px}}
 </style>
 </head>
 <body>
-<header class="hero"><h1>🎟️ SORTEO REGIO</h1><p>Consulta privada de tus boletos</p></header>
+<header class="hero"><h1>🎟️ SORTEOS REGIOS</h1><p>Consulta privada de tus boletos</p></header>
 <main class="wrap"><div id="content" class="card"><p>Verificando tu enlace seguro…</p></div><footer>Este enlace es privado. No lo compartas públicamente.</footer></main>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 <script>
@@ -39,7 +39,7 @@ async function load(){
 window.downloadPdf=function(i){
  const r=window.raffleData?.[i];if(!r||!window.jspdf?.jsPDF){alert('No se pudo generar el PDF. Actualiza la página e inténtalo de nuevo.');return}
  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'});let y=18;
- doc.setFillColor(7,91,51);doc.rect(0,0,210,35,'F');doc.setTextColor(255,255,255);doc.setFontSize(19);doc.setFont(undefined,'bold');doc.text('SORTEO REGIO',105,16,{align:'center'});doc.setFontSize(10);doc.text('COMPROBANTE DE PARTICIPACIÓN',105,25,{align:'center'});
+ doc.setFillColor(7,91,51);doc.rect(0,0,210,35,'F');doc.setTextColor(255,255,255);doc.setFontSize(19);doc.setFont(undefined,'bold');doc.text('SORTEOS REGIOS',105,16,{align:'center'});doc.setFontSize(10);doc.text('COMPROBANTE DE PARTICIPACIÓN',105,25,{align:'center'});
  doc.setTextColor(35,48,40);y=48;doc.setFontSize(14);doc.text(String(r.raffle||'Sorteo'),15,y);y+=9;doc.setFontSize(10);doc.text('Folio: '+(r.code||'—'),15,y);y+=8;doc.text('Estado: '+r.status,15,y);y+=12;doc.setFont(undefined,'bold');doc.text('NÚMEROS Y ESTADO',15,y);y+=7;doc.setFont(undefined,'normal');
  r.numbers.forEach(n=>{if(y>270){doc.addPage();y=18}doc.text(String(n.number).padStart(5,'0'),18,y);doc.text(n.status,65,y);y+=7});
  y+=8;if(y>255){doc.addPage();y=18}doc.setFont(undefined,'bold');doc.text('RESUMEN DE PAGO',15,y);y+=8;doc.setFont(undefined,'normal');doc.text('Total: '+money(r.total),15,y);y+=7;doc.text('Pagado confirmado: '+money(r.paid),15,y);y+=7;doc.text('Saldo pendiente: '+money(r.balance),15,y);y+=12;
