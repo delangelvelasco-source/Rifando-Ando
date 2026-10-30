@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#062a1b">
-<title>Verificar mis boletos | Sorteo Regular</title>
-<meta name="description" content="Consulta tus boletos del Sorteo Regular RA-0002 de Rifando Ando.">
+<title>Verificador de boletos | Sorteo Regular</title>
+<meta name="description" content="Consulta tus boletos del Sorteo Regular RA-0002.">
 <style>
 :root{color-scheme:dark;--lime:#a4ee3f;--deep:#07150e;--panel:#0b1b11;--ink:#172018;--green:#285d1d}
 *{box-sizing:border-box}
@@ -55,7 +55,7 @@ a{display:flex;justify-content:center;margin:24px auto 0;width:max-content;color
 </style>
 </head>
 <body><main>
-<header class="topline"><span class="logo-mark">RA</span><span class="brand">RIFANDO ANDO</span></header>
+<header class="topline"><span class="brand">SORTEO REGULAR</span></header>
 <p class="eyebrow">Centro de consulta</p>
 <h1>Verificación de boletos</h1>
 <section class="raffle-card" aria-label="Información del sorteo">
@@ -73,7 +73,7 @@ a{display:flex;justify-content:center;margin:24px auto 0;width:max-content;color
 </div>
 <div id="result" role="status" aria-live="polite"></div>
 <a href="/">← Regresar al sitio principal</a>
-<p class="footer">Consulta oficial · Rifando Ando</p>
+<p class="footer">Consulta oficial · Sorteo Regular</p>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -101,7 +101,7 @@ const wrap=document.createElement('div');wrap.className='table-wrap';const table
 const tbody=document.createElement('tbody');
 rows.slice().sort((x,y)=>Number(x.numero)-Number(y.numero)).forEach(row=>{const tr=document.createElement('tr');const num=document.createElement('td');num.textContent=fmt(row.numero);const name=document.createElement('td');name.textContent=row.nombre||'—';const status=document.createElement('td');const isPaid=paidRows.includes(row);status.textContent=isPaid?'Pagado':String(row.estado_pago||row.estado||'En revisión').replaceAll('_',' ').replace(/\\b\\w/g,ch=>ch.toUpperCase());status.className=isPaid?'status-paid':pendingRows.includes(row)?'status-pending':'status-other';tr.append(num,name,status);tbody.append(tr)});
 table.append(tbody);wrap.append(table);shell.append(wrap);
-const note=document.createElement('p');note.className='result-note';note.textContent='Estados consultados en el registro del Sorteo Regular RA-0002. Si realizaste un pago reciente y aún no aparece confirmado, conserva tu comprobante y comunícate con atención al cliente.';shell.append(note);
+const note=document.createElement('p');note.className='result-note';note.textContent='Estados consultados en el registro oficial del Sorteo Regular RA-0002. Si realizaste un pago reciente y aún no aparece confirmado, conserva tu comprobante y comunícate con atención al cliente.';shell.append(note);
 const print=document.createElement('button');print.type='button';print.className='print-btn';print.textContent='IMPRIMIR COMPROBANTE DE BOLETOS PAGADOS';print.addEventListener('click',()=>window.print());shell.append(print);
 result.append(shell);
 }form.addEventListener('submit',async e=>{
