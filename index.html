@@ -45,6 +45,21 @@ h1{font-size:clamp(38px,7vw,68px);line-height:1.02;letter-spacing:-1.8px;margin:
 .featured .btn{background:linear-gradient(135deg,#ffe17a,#f5bd32);color:#251900;box-shadow:0 6px 18px #f5c84a30}
 .art{min-height:180px;display:grid;place-items:center;text-align:center;padding:24px;background:radial-gradient(circle at 50% 35%,#65e57225,transparent 55%),linear-gradient(135deg,#155b39,#08271b);border-bottom:1px solid var(--line)}
 .ticket{width:88px;height:88px;border:2px solid var(--gold);border-radius:24px;display:grid;place-items:center;font-size:43px;color:var(--gold);transform:rotate(-7deg);box-shadow:0 10px 30px #0003}
+/* Presentación destacada del Sorteo Regular de $1,000 MXN */
+.card.regular-card{border:1px solid #8de85e;background:linear-gradient(145deg,#10472d,#08271b 72%);box-shadow:0 0 0 3px #8de85e18,0 18px 45px #0005,0 0 30px #8de85e16}
+.regular-art{min-height:210px;background:radial-gradient(ellipse at 50% 42%,#a6f36a42,transparent 52%),linear-gradient(125deg,#174d2d,#0b3924 58%,#09271b);border-bottom:1px solid #58a94c}
+.regular-promo{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:230px;padding:15px 25px 17px;border:2px solid #b9f58b;border-radius:18px;background:linear-gradient(145deg,#0a2417ed,#164a29ed);box-shadow:0 10px 30px #0008,0 0 28px #9af04445;transform:rotate(-1.5deg)}
+.regular-kicker{color:#caff9b;font-size:11px;font-weight:1000;letter-spacing:3px}
+.regular-value{margin:1px 0;font-size:clamp(48px,9vw,68px);font-weight:1000;line-height:1;letter-spacing:-3px;color:#b6ff70;text-shadow:0 3px 0 #397b2a,0 0 24px #a4ee3f70}
+.regular-value small{font-size:.52em;vertical-align:top;letter-spacing:-1px}
+.regular-currency{color:#efffe2;font-size:12px;font-weight:950;letter-spacing:4px}
+.regular-pills{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:12px}
+.regular-pills span{padding:6px 10px;border:1px solid #b6f58b66;border-radius:999px;background:#a4ee3f15;color:#e8ffda;font-size:10px;font-weight:900;letter-spacing:.5px}
+.regular-card .tag{border-color:#8de85e;color:#c5ff9d;background:#8de85e12}
+.regular-card h3{color:#efffe9}
+.regular-card .regular-note{display:inline-flex;margin:0 0 12px;padding:8px 12px;border:1px solid #a4ee3f55;border-radius:10px;background:#a4ee3f14;color:#d6ffb8;font-size:14px;font-weight:950}
+.regular-card .btn{background:linear-gradient(135deg,#b8ff77,#68df63);color:#082015;box-shadow:0 6px 18px #8de85e30}
+
 .card-body{padding:22px}.tag{display:inline-block;border:1px solid #65e57270;color:var(--gold);border-radius:999px;padding:5px 10px;font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase}
 h3{font-size:25px;margin:12px 0 8px}.card p{color:var(--muted);line-height:1.6;margin:0 0 18px}.actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:12px;background:var(--gold);color:#062015;font-weight:900;padding:13px 18px;min-height:46px}.btn:hover{filter:brightness(1.07)}.small-note{font-size:12px;color:var(--muted)}
@@ -60,7 +75,7 @@ footer{border-top:1px solid #ffffff1a;color:var(--muted);font-size:12px;line-hei
 <section aria-labelledby="raffles-title"><div class="section-head"><h2 id="raffles-title">Sorteos destacados</h2><p>Catálogo seleccionado manualmente</p></div>
 <div class="grid">
 <article class="card featured"><div class="art prize-art"><div class="prize-burst"><span>PREMIO MAYOR</span><strong>$50,000</strong><small>PESOS MXN</small></div></div><div class="card-body"><span class="tag">★ Sorteo destacado · $50,000 MXN</span><h3>Sorteo Regio</h3><div class="prize-note">🏆 ¡VAMOS POR LOS 50 MIL!</div><p>Participa por un premio de <strong style="color:#ffe18a">$50,000 MXN</strong>. Consulta las bases, revisa los números disponibles y participa directamente en la página oficial.</p><div class="actions"><a class="btn" href="/sorteo-regio">QUIERO PARTICIPAR <span aria-hidden="true">&nbsp;→</span></a><span class="small-note">Consulta bases y disponibilidad</span></div></div></article>
-<article class="card"><div class="art"><div class="ticket" aria-hidden="true">🎟</div></div><div class="card-body"><span class="tag">Sorteo activo</span><h3>Sorteo Regular</h3><p>Participa en el Sorteo Regular RA-0002. Consulta los detalles, las reglas y los números disponibles en la plataforma oficial.</p><div class="actions"><a class="btn" href="/sorteo-regular">Ver Sorteo Regular <span aria-hidden="true">&nbsp;→</span></a><span class="small-note">Abre el sorteo oficial</span></div></div></article>
+<article class="card regular-card"><div class="art regular-art"><div class="regular-promo"><span class="regular-kicker">PREMIO DEL SORTEO</span><div class="regular-value"><small>$</small>1,000</div><span class="regular-currency">PESOS MXN</span><div class="regular-pills"><span>🎟 100 NÚMEROS</span><span>BOLETO $15</span></div></div></div><div class="card-body"><span class="tag">★ Sorteo Regular · RA-0002</span><h3>Sorteo Regular</h3><div class="regular-note">🏆 ¡GANA $1,000 MXN!</div><p>Participa por <strong style="color:#caff9b">$1,000 MXN</strong>. Elige entre 100 números disponibles; cada boleto cuesta <strong style="color:#caff9b">$15 MXN</strong>.</p><div class="actions"><a class="btn" href="/sorteo-regular">QUIERO PARTICIPAR <span aria-hidden="true">&nbsp;→</span></a><span class="small-note">Consulta bases y disponibilidad</span></div></div></article>
 <div class="empty"><strong style="display:block;color:var(--text);margin-bottom:6px">Próximamente más sorteos</strong>Agregaremos otros sorteos cuando confirmemos sus enlaces oficiales.</div>
 </div></section>
 </main>
