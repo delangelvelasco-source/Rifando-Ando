@@ -557,18 +557,11 @@ body{padding-top:158px!important}
 }
 
 </style>
-<script>
-(function(){
-  var p=new URLSearchParams(window.location.search);
-  if(p.has('mp_return') && p.has('pago_id') && p.has('payment_token')){
-    window.location.replace('/pago-confirmado.html'+window.location.search+window.location.hash);
-  }
-})();
-</script>
+<script>/* El retorno de Mercado Pago se verifica en la página del sorteo. */</script>
 </head>
 <body>
 
-<!-- La confirmación de pago vive en pago-confirmado.html; no mostrarla como modal en la página pública. -->
+<!-- El pago se verifica en segundo plano y el participante permanece en la página del sorteo. -->
 
 <header>
 <div id="raffle-payment-notice" role="note" aria-label="Condición de realización de sorteos"><span class="notice-icon" aria-hidden="true">📣</span><span class="notice-copy">Cada sorteo tiene su propia modalidad, fecha y condiciones. <strong>Consulta las reglas del sorteo seleccionado.</strong></span><span class="notice-icon notice-calendar" aria-hidden="true">▣</span></div>
@@ -1639,16 +1632,7 @@ document.getElementById('psViewTickets')?.addEventListener('click',()=>{
   if(target)target.scrollIntoView({behavior:'smooth',block:'start'});
 });
 
-function mostrarConfirmacionPago(){
-  const params=new URLSearchParams(window.location.search);
-  const pagoId=params.get('pago_id');
-  const token=params.get('payment_token');
-  if(!pagoId||!token){
-    console.warn('No se puede abrir la confirmación sin los datos de retorno de Mercado Pago.');
-    return;
-  }
-  window.location.replace('/pago-confirmado.html?mp_return=success&pago_id='+encodeURIComponent(pagoId)+'&payment_token='+encodeURIComponent(token));
-}
+function mostrarConfirmacionPago(){ procesarRetornoMercadoPago().catch(()=>{}); }
 
 async function confirmar(e){
   e.preventDefault();
@@ -1854,44 +1838,28 @@ async function procesarRetornoMercadoPago(){
   const params=new URLSearchParams(window.location.search);
   const retorno=params.get('mp_return');
   if(!retorno)return;
-  const pagoId=params.get('pago_id');
-  const token=params.get('payment_token');
+  const pagoId=params.get('pago_id'),token=params.get('payment_token');
   if(!pagoId||!token)return;
-  let estado='pendiente';
-  let falloConsulta=false;
-  let redirigiendoConfirmacion=false;
+  let estado='pendiente',falloConsulta=false;
   try{
-    // Reconsulta la orden varias veces: Mercado Pago puede tardar unos segundos
-    // en reflejar el pago aprobado y la función sincroniza el estado con la base.
     for(let intento=0;intento<8;intento++){
       try{
         const {data,error}=await db.functions.invoke('mercado-pago',{body:{action:'status',payment_id:pagoId,payment_token:token}});
         if(error)throw error;
         estado=String(data?.estado||'pendiente');
-        if(estado==='confirmado'||estado==='rejected'||estado==='cancelled'||estado==='expired'||estado==='rechazado')break;
-      }catch(e){
-        falloConsulta=true;
-      }
+        if(['confirmado','rejected','cancelled','expired','rechazado'].includes(estado))break;
+      }catch(e){falloConsulta=true;}
       if(intento<7)await new Promise(resolve=>setTimeout(resolve,2500));
     }
-    if(estado==='confirmado'){
-      redirigiendoConfirmacion=true;
-      window.location.replace('/pago-confirmado.html?mp_return=success&pago_id='+encodeURIComponent(pagoId)+'&payment_token='+encodeURIComponent(token));
-      return;
-    }else if(estado==='rechazado'||estado==='rejected'||estado==='cancelled'||estado==='expired'||retorno==='failure'){
-      alert('El pago no fue aprobado. Revisa el estado en Mercado Pago antes de volver a intentarlo.');
-    }else if(falloConsulta){
-      alert('No logramos consultar el pago automáticamente. No vuelvas a pagar; revisa Mis compras y contacta al administrador para verificarlo.');
-    }else{
-      alert('Tu pago sigue verificándose. No vuelvas a pagar: actualiza esta página en un momento para consultar el estado nuevamente.');
-    }
+    if(estado==='confirmado')alert('¡Pago confirmado! Tus boletos ya están registrados. Puedes consultarlos desde esta misma página.');
+    else if(['rechazado','rejected','cancelled','expired'].includes(estado)||retorno==='failure')alert('El pago no fue aprobado. Revisa el estado en Mercado Pago antes de volver a intentarlo.');
+    else if(falloConsulta)alert('No logramos consultar el pago automáticamente. No vuelvas a pagar; revisa Mis compras y contacta al administrador.');
+    else alert('Tu pago sigue verificándose. No vuelvas a pagar; actualiza esta página en un momento para consultar el estado.');
   }finally{
-    if(!redirigiendoConfirmacion){
-      params.delete('mp_return');params.delete('pago_id');params.delete('payment_token');params.delete('rifa');
-      const cleanUrl=window.location.pathname+(params.toString()?'?'+params.toString():'')+window.location.hash;
-      window.history.replaceState({},'',cleanUrl);
-      await cargarRifa().catch(()=>{});
-    }
+    params.delete('mp_return');params.delete('pago_id');params.delete('payment_token');
+    const cleanUrl=window.location.pathname+(params.toString()?'?'+params.toString():'')+window.location.hash;
+    window.history.replaceState({},'',cleanUrl);
+    await cargarRifa().catch(()=>{});
   }
 }
 
@@ -1905,6 +1873,7 @@ setTimeout(()=>procesarRetornoMercadoPago().catch(()=>{}),700);
   }
 });
 iniciarActualizacionesEnSegundoPlano();
+setTimeout(()=>procesarRetornoMercadoPago().catch(()=>{}),700);
 </script>
 
 <script id="site-visitor-counter-script">
