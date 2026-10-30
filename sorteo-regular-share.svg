@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<defs>
+ <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#06130b"/><stop offset="1" stop-color="#102d17"/></linearGradient>
+ <linearGradient id="gold" x2="0" y2="1"><stop stop-color="#ffe76a"/><stop offset="1" stop-color="#f5a900"/></linearGradient>
+ <linearGradient id="green" x2="1" y2="1"><stop stop-color="#a7ff42"/><stop offset="1" stop-color="#35c900"/></linearGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1200" height="630" rx="34" fill="url(#bg)"/>
+<rect x="15" y="15" width="1170" height="600" rx="28" fill="none" stroke="#68ed21" stroke-width="7"/>
+<path d="M16 126H1184" stroke="#68ed21" stroke-width="3"/>
+<text x="55" y="91" fill="#fff" font-family="Arial,sans-serif" font-size="62" font-weight="900">RIFANDO <tspan fill="#8df52f">ANDO</tspan></text>
+<rect x="920" y="42" width="220" height="65" rx="18" fill="#ffd52b"/>
+<text x="1030" y="86" fill="#101010" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" font-weight="900">RA-0002</text>
+<text x="62" y="205" fill="#ffdc35" font-family="Arial,sans-serif" font-size="38" font-weight="800">SORTEO REGULAR</text>
+<text x="55" y="365" fill="url(#gold)" font-family="Arial,sans-serif" font-size="150" font-weight="900" letter-spacing="-5">$1,000</text>
+<text x="690" y="365" fill="#ffcf31" font-family="Arial,sans-serif" font-size="58" font-weight="900">.00 MXN</text>
+<text x="68" y="423" fill="#fff" font-family="Arial,sans-serif" font-size="35" font-weight="700">¡Participa y gana!</text>
+<rect x="62" y="465" width="490" height="105" rx="22" fill="url(#green)" filter="url(#glow)"/>
+<text x="307" y="506" fill="#071006" text-anchor="middle" font-family="Arial,sans-serif" font-size="25" font-weight="800">CADA BOLETO</text>
+<text x="307" y="553" fill="#071006" text-anchor="middle" font-family="Arial,sans-serif" font-size="44" font-weight="900">$15.00 MXN</text>
+<g transform="translate(700 445)">
+ <circle cx="105" cy="5" r="86" fill="#164d1c" stroke="#8cff37" stroke-width="5"/>
+ <text x="105" y="28" text-anchor="middle" fill="#d8ffb7" font-family="Arial,sans-serif" font-size="76" font-weight="900">$</text>
+ <path d="M220 -42l34 34-34 34M260 -42l34 34-34 34" fill="none" stroke="#ffda36" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<text x="690" y="548" fill="#fff" font-family="Arial,sans-serif" font-size="28" font-weight="700">ELIGE TUS NÚMEROS EN LÍNEA</text>
+<text x="690" y="588" fill="#9cff50" font-family="Arial,sans-serif" font-size="26">rifasmty.com/sorteo-regular</text>
+</svg>
