@@ -624,7 +624,7 @@ header{background:rgba(7,12,7,.96)!important;border-bottom:1px solid #53652b!imp
 <div class="card grand-prize">
 <div class="sparkles" aria-hidden="true">✦ ✨ ✦ ✨ ✦</div>
 <div class="prize iphone-prize" id="prizeVisual">
-<img id="prizeImage" src="copa.PNG" alt="Copa dorada Rifando Ando" decoding="async" fetchpriority="high">
+<img id="prizeImage" src="copa.PNG" alt="Copa dorada Sorteo Regio" decoding="async" fetchpriority="high">
 
 <span id="prizeEmoji" class="trophy-stage" style="display:none" aria-hidden="true">
 <svg class="trophy-art" viewBox="0 0 520 520" role="img" aria-label="Copa dorada">
@@ -689,12 +689,12 @@ header{background:rgba(7,12,7,.96)!important;border-bottom:1px solid #53652b!imp
     if(price)price.textContent='$180.00'; if(count)count.textContent='250';
     if(name)name.textContent='iPhone 18 Pro Max 256 GB'; if(per)per.textContent='$180.00 por número';
   }else if(id===especial){
-    if(img){img.src='copa.PNG';img.alt='Copa dorada Rifando Ando'}
+    if(img){img.src='copa.PNG';img.alt='Copa dorada Sorteo Regio'}
     if(amount){amount.style.display='';amount.innerHTML='$6,000<span class="decimals">.00</span>'}
     if(price)price.textContent='$100.00'; if(count)count.textContent='100';
     if(name)name.textContent='Sorteo Especial'; if(per)per.textContent='$100.00 por número';
   }else{
-    if(img){img.src='copa.PNG';img.alt='Copa dorada Rifando Ando'}
+    if(img){img.src='copa.PNG';img.alt='Copa dorada Sorteo Regio'}
     if(amount){amount.style.display='';amount.innerHTML='$1,000<span class="decimals">.00</span>'}
     if(price)price.textContent='$15.00'; if(count)count.textContent='100';
     if(name)name.textContent='Sorteo Regular'; if(per)per.textContent='$15.00 por número';
@@ -747,7 +747,7 @@ header{background:rgba(7,12,7,.96)!important;border-bottom:1px solid #53652b!imp
 <section class="section" id="historial-ganadores"><h2>🏆 Historial de Ganadores</h2><div id="winnerHistory" class="winner-history"><div class="winner-empty">Aún no hay ganadores registrados.</div></div></section>
 </main>
 
-<footer class="foot"><div style="margin-bottom:12px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;align-items:center"><a href="reglas.html" style="color:#d9a936;text-decoration:none;font-weight:1000;font-size:20px;line-height:1.35">📜 Reglas, Bases, Términos y Condiciones</a><span style="color:#555;font-size:20px">·</span><a href="aviso-privacidad.html" style="color:#d9a936;text-decoration:none;font-weight:1000;font-size:20px;line-height:1.35">🔒 Aviso de Privacidad</a></div><div>© 2026 Rifando Ando · La rifa entre compas</div></footer>
+<footer class="foot"><div style="margin-bottom:12px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;align-items:center"><a href="reglas.html" style="color:#d9a936;text-decoration:none;font-weight:1000;font-size:20px;line-height:1.35">📜 Reglas, Bases, Términos y Condiciones</a><span style="color:#555;font-size:20px">·</span><a href="aviso-privacidad.html" style="color:#d9a936;text-decoration:none;font-weight:1000;font-size:20px;line-height:1.35">🔒 Aviso de Privacidad</a></div><div>© 2026 Sorteo Regio · La rifa entre compas</div></footer>
 
 <div class="modal" id="modal">
 <div class="modal-box">
@@ -1342,7 +1342,7 @@ async function cargarRifa(){
   const grandAmount=document.getElementById('grandAmount');
   if(prizeImage){
     prizeImage.src=isIphone?'IMG_5128.jpeg':'copa.PNG';
-    prizeImage.alt=isIphone?'iPhone 18 Pro Max de 256 GB':'Copa dorada Rifando Ando';
+    prizeImage.alt=isIphone?'iPhone 18 Pro Max de 256 GB':'Copa dorada Sorteo Regio';
     prizeImage.style.display='block';
   }
   if(prizeEmoji) prizeEmoji.style.display='none';
@@ -1393,7 +1393,7 @@ async function cargarRifa(){
   const {data:n,error:ne}=await cargarNumerosPublico(r.id);
   if(loadSeq!==cargarRifaSeq || !rifa || String(rifa.id)!==String(r.id))return;
   if(ne){
-    console.error('Rifando Ando: error cargando números',ne);
+    console.error('Sorteo Regio: error cargando números',ne);
     tickets.innerHTML='<div style="grid-column:1/-1;padding:22px;text-align:center;border:1px solid #3a2d0d;border-radius:16px;background:#111"><b style="color:#d9a936">No se pudieron cargar los números.</b><p style="color:#aaa;margin:8px 0 0">Estamos intentando reconectar con el servidor. Actualiza la página en unos segundos.</p></div>';
     return;
   }
@@ -1529,9 +1529,9 @@ function obtenerDatosCompartir(){
   const tituloPromo=esOfrenda?'💀🌼 ¡ÉCHALE NÚMERO, COMPA! 🎟️🏆':'🎟️🏆 ¡PARTICIPA EN '+String(nombre).toUpperCase()+'!';
   const textoPromo=esOfrenda
     ?tituloPromo+nl+nl+'¡La ofrenda ya está lista y tú puedes participar!'+nl+nl+'✨ Participa en nuestro sorteo especial.'+nl+'🏆 Premio de '+premioTexto+'.'+nl+'🎟️ Entra, conoce los detalles y elige tus números.'+nl+nl+'👉 Participa aquí:'
-    :tituloPromo+nl+nl+'✨ ¡Participa en este sorteo de Rifando Ando!'+nl+'🏆 Premio: '+premioTexto+'.'+nl+'🎟️ Entra, conoce los detalles y elige tus números.'+nl+nl+'👉 Participa aquí:';
+    :tituloPromo+nl+nl+'✨ ¡Participa en este sorteo de Sorteo Regio!'+nl+'🏆 Premio: '+premioTexto+'.'+nl+'🎟️ Entra, conoce los detalles y elige tus números.'+nl+nl+'👉 Participa aquí:';
   return {
-    title:nombre+' | Rifando Ando',
+    title:nombre+' | Sorteo Regio',
     text:textoPromo,
     url:url.href
   };
@@ -1557,8 +1557,8 @@ function actualizarWhatsAppAyuda(){
   if(!link)return;
   const seleccion=nums();
   const message=seleccion.length
-    ? 'Hola Rifando Ando 👋, necesito ayuda o soporte con mi participación. Mis números seleccionados son: '+seleccion.join(', ')+'.'
-    : 'Hola Rifando Ando 👋, necesito ayuda o soporte con mi participación.';
+    ? 'Hola Sorteo Regio 👋, necesito ayuda o soporte con mi participación. Mis números seleccionados son: '+seleccion.join(', ')+'.'
+    : 'Hola Sorteo Regio 👋, necesito ayuda o soporte con mi participación.';
   link.href='https://wa.me/528123859824?text='+encodeURIComponent(message);
 }
 function abrirFormulario(){
@@ -1601,7 +1601,7 @@ function construirMensajeSolicitudes(lista){
   const nombre=lista?.[lista.length-1]?.name||'';
   const displayNumbers=numeros.map(n=>String(n).padStart(2,'0')).join(', ');
   const money=String.fromCharCode(36);
-  return '🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado:\n\n🎫 '+rifaNombre+'\n👤 Nombre: '+nombre+'\n🔢 Números: '+displayNumbers+'\n💰 Total: '+money+total.toLocaleString('es-MX')+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
+  return '🎟️✨ SORTEO REGIO 🏆\n\n👋 Hola, confirmo mi apartado:\n\n🎫 '+rifaNombre+'\n👤 Nombre: '+nombre+'\n🔢 Números: '+displayNumbers+'\n💰 Total: '+money+total.toLocaleString('es-MX')+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
 }
 function cerrarFormulario(){
   if(confirmation.classList.contains('show')&&!confirmWhatsAppClicked)return;
