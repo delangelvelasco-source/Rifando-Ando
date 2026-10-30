@@ -69,6 +69,33 @@ export default {
 
     const contentType = outHeaders.get("Content-Type") || "";
 
+    // Vista previa independiente para Sorteo Regular RA-0002 ($1,000 MXN).
+    // Evita que WhatsApp reutilice la imagen y el premio del Sorteo Regio.
+    if (isRegular && request.method === "GET" && contentType.includes("text/html")) {
+      let html = await response.text();
+      const tags = [
+        '<title>Sorteo Regular RA-0002 | Gana $1,000 MXN</title>',
+        '<meta name="description" content="Participa en el Sorteo Regular RA-0002 y gana $1,000 MXN. Boleto de $15 MXN. Consulta disponibilidad y bases oficiales.">',
+        '<meta property="og:type" content="website">',
+        '<meta property="og:site_name" content="Sorteos Regios">',
+        '<meta property="og:title" content="Sorteo Regular RA-0002 | Gana $1,000 MXN">',
+        '<meta property="og:description" content="Premio de $1,000 MXN · Boleto de $15 MXN · Sorteo Regular RA-0002. ¡Elige tus números!">',
+        '<meta property="og:url" content="https://rifasmty.com/sorteo-regular">',
+        '<meta name="twitter:card" content="summary">',
+        '<meta name="twitter:title" content="Sorteo Regular RA-0002 | Gana $1,000 MXN">',
+        '<meta name="twitter:description" content="Premio de $1,000 MXN. Boleto de $15 MXN. Consulta disponibilidad y bases oficiales.">',
+        '<link rel="canonical" href="https://rifasmty.com/sorteo-regular">'
+      ].join("\\n");
+      html = html.replace(/<title[^>]*>[\\s\\S]*?<\\/title>/i, "");
+      html = html.replace(/<meta\\s+(?:property|name)=["'](?:og:[^"']+|twitter:[^"']+|description)["'][^>]*>/gi, "");
+      html = html.replace(/<link\\s+rel=["']canonical["'][^>]*>/gi, "");
+      if (/<head[^>]*>/i.test(html)) html = html.replace(/<head[^>]*>/i, match => match + "\\n" + tags + "\\n");
+      outHeaders.delete("Content-Length");
+      outHeaders.delete("ETag");
+      outHeaders.set("Cache-Control", "no-store");
+      return new Response(html, { status: response.status, statusText: response.statusText, headers: outHeaders });
+    }
+
     // En las rutas de participación, llevar al usuario directamente a la selección
     // de números después de que el HTML del sorteo termine de cargarse.
     if ((isRegular || isExpress) && request.method === "GET" && contentType.includes("text/html")) {
