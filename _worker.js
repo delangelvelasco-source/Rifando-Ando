@@ -26,16 +26,19 @@ export default {
     if (incoming.pathname === "/og-sorteo-regio.svg") {
       return env.ASSETS.fetch(request);
     }
-    if (incoming.pathname === "/catalogo" || incoming.pathname === "/catalogo/") {
+    if (incoming.pathname === "/" || incoming.pathname === "/catalogo" || incoming.pathname === "/catalogo/") {
       const catalogUrl = new URL("/", incoming);
       return env.ASSETS.fetch(new Request(catalogUrl, request));
     }
 
-    // The domain root opens Sorteo Regio directly. The explicit route remains an alias.
-    const upstreamPath = incoming.pathname === "/" || incoming.pathname === "/sorteo-regio" || incoming.pathname === "/sorteo-regio/"
-      ? "/sorteo-regio"
-      : incoming.pathname;
-    const upstream = new URL(upstreamPath + incoming.search, ORIGIN);
+    // Sorteo Regular RA-0002 is exposed on this domain through a stable, readable route.
+    const isRegular = incoming.pathname === "/sorteo-regular" || incoming.pathname === "/sorteo-regular/";
+    const upstreamPath = isRegular ? "/" :
+      (incoming.pathname === "/sorteo-regio" || incoming.pathname === "/sorteo-regio/" ? "/sorteo-regio" : incoming.pathname);
+    const upstreamSearch = isRegular
+      ? "?rifa=4b23f516-7973-4a04-bff6-9b9b5cb90f4d"
+      : incoming.search;
+    const upstream = new URL(upstreamPath + upstreamSearch, ORIGIN);
     const headers = new Headers(request.headers);
     headers.set("X-Forwarded-Host", incoming.host);
     headers.set("X-Forwarded-Proto", incoming.protocol.replace(":", ""));
