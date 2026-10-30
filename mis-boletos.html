@@ -20,7 +20,7 @@ const money=n=>new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN'}).
 const date=s=>s?new Date(s).toLocaleString('es-MX'):'—';
 function safe(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 async function load(){
- if(!token){el.innerHTML='<div class="error">El enlace no es válido. Solicita al administrador tu enlace privado.</div>';return}
+ if(!token){el.innerHTML='<h2>Consulta tus boletos</h2><p class="muted">Para proteger tus datos, necesitas tu enlace privado de consulta. Ábrelo desde el mensaje que recibiste o pega aquí el token privado que te compartieron.</p><form id="tokenForm"><label for="privateToken"><b>Token privado</b></label><input id="privateToken" autocomplete="off" required placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" style="width:100%;padding:14px;margin:10px 0;border:1px solid #b8cbbd;border-radius:12px;font-size:15px"><button class="btn" type="submit">Consultar mis boletos</button></form>';document.getElementById('tokenForm').addEventListener('submit',e=>{e.preventDefault();const t=document.getElementById('privateToken').value.trim();location.href='/mis-boletos.html?token='+encodeURIComponent(t)});return}
  try{
   const res=await fetch(API+'/functions/v1/consulta-boletos',{method:'POST',headers:{'Content-Type':'application/json','apikey':KEY},body:JSON.stringify({token}),cache:'no-store'});
   const data=await res.json();
