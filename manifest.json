@@ -1,7 +1,7 @@
 {
-  "name": "Rifando Ando",
-  "short_name": "Rifando Ando",
-  "description": "Rifas en línea entre compas.",
+  "name": "Sorteos Regios",
+  "short_name": "Sorteos Regios",
+  "description": "Sorteos y rifas en línea de Nuevo León.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#080808",
