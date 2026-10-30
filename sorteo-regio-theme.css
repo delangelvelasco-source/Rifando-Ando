@@ -1,0 +1,55 @@
+/* Sorteo Regio — sistema visual compartido. Solo presentación; no altera lógica ni datos. */
+:root{
+  color-scheme:dark;
+  --sr-bg:#07110b;
+  --sr-bg-2:#0b1a10;
+  --sr-panel:#102317;
+  --sr-panel-2:#142d1d;
+  --sr-line:#31543a;
+  --sr-green:#39d66f;
+  --sr-green-soft:#9af044;
+  --sr-gold:#f5c343;
+  --sr-text:#f6f8f3;
+  --sr-muted:#b6c5b8;
+  --sr-danger:#e45a5a;
+}
+html{scroll-behavior:smooth}
+body{
+  background-color:var(--sr-bg)!important;
+  color:var(--sr-text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+header,.header,.topbar,.navbar,.nav{
+  border-color:var(--sr-line)!important;
+}
+h1,h2,h3{letter-spacing:-.025em}
+a{color:var(--sr-green-soft)}
+button,.btn,[role="button"],input[type="submit"]{
+  transition:transform .16s ease,filter .16s ease,box-shadow .16s ease;
+}
+button:not(:disabled):active,.btn:active{transform:translateY(1px)}
+button:focus-visible,.btn:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--sr-green-soft)!important;
+  outline-offset:3px;
+}
+.btn,.button,.primary,button.primary{
+  border-radius:12px;
+  font-weight:800;
+}
+.card,.box,.panel,.metric,.modalbox,.modal-box,.ticket-card,.raffle-card{
+  border-color:var(--sr-line)!important;
+  border-radius:18px!important;
+  box-shadow:0 12px 30px #0003;
+}
+input,select,textarea{
+  border-color:var(--sr-line)!important;
+  border-radius:11px!important;
+}
+table th{color:var(--sr-green-soft)}
+.badge,.pill{border-radius:999px}
+footer{color:var(--sr-muted)}
+@media(max-width:700px){
+  body{overflow-x:hidden}
+  button,.btn{min-height:42px}
+  input,select,textarea{font-size:16px}
+}
