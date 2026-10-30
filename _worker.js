@@ -72,10 +72,10 @@ export default {
         .replaceAll("https://rifasmty.lol/sorteo-regio", "https://rifasmty.com/sorteo-regio")
         .replaceAll("http://rifasmty.lol/sorteo-regio", "https://rifasmty.com/sorteo-regio");
       const tags = [
-        '<title>Sorteo Regio | Premio de $50,000 MXN</title>',
-        '<meta property="og:site_name" content="Sorteo Regio">',
+        '<title>Sorteos Regios | Sorteo Regio · Premio de $50,000 MXN</title>',
+        '<meta property="og:site_name" content="Sorteos Regios">',
         '<meta property="og:type" content="website">',
-        '<meta property="og:title" content="Sorteo Regio | Premio de $50,000 MXN">',
+        '<meta property="og:title" content="Sorteos Regios | Sorteo Regio · Premio de $50,000 MXN">',
         '<meta property="og:description" content="Premio de $50,000 MXN. Cada boleto cuesta $2 MXN. ¡Échale número, compa!">',
         '<meta property="og:url" content="https://rifasmty.com/">',
         '<meta property="og:image" content="' + SHARE_IMAGE + '">',
@@ -85,7 +85,7 @@ export default {
         '<meta property="og:image:height" content="630">',
         '<meta property="og:image:alt" content="Sorteo Regio: premio de $50,000 MXN y boleto de $2 MXN">',
         '<meta name="twitter:card" content="summary_large_image">',
-        '<meta name="twitter:title" content="Sorteo Regio | Premio de $50,000 MXN">',
+        '<meta name="twitter:title" content="Sorteos Regios | Sorteo Regio · Premio de $50,000 MXN">',
         '<meta name="twitter:description" content="Premio de $50,000 MXN. Cada boleto cuesta $2 MXN.">',
         '<meta name="twitter:image" content="' + SHARE_IMAGE + '">',
         '<link rel="canonical" href="https://rifasmty.com/">'
