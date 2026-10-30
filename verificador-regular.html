@@ -6,39 +6,52 @@
 <title>Verificar mis boletos | Sorteo Regular</title>
 <meta name="description" content="Consulta tus boletos del Sorteo Regular RA-0002 de Rifando Ando.">
 <style>
-:root{color-scheme:dark;--bg:#071710;--surface:#10271d;--surface-2:#172f24;--accent:#a6e86a;--text:#f4f7f3;--muted:#a9b9ad;--stroke:#ffffff17}
+:root{color-scheme:dark;--lime:#a4ee3f;--deep:#07150e;--panel:#0b1b11;--ink:#172018;--green:#285d1d}
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;padding:28px 16px 44px;background:radial-gradient(ellipse at 50% -25%,#244a32 0%,#0b2016 45%,var(--bg) 78%);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-main{width:min(100%,560px);margin:5vh auto 0;padding:clamp(24px,5vw,42px);background:linear-gradient(145deg,#142e22f5,#0d2118f7);border:1px solid #a6e86a55;border-radius:24px;box-shadow:0 28px 80px #0006,0 1px 0 #ffffff12 inset}
-.topline{display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:32px}
-.logo-mark{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:#a6e86a16;border:1px solid #a6e86a55;color:var(--accent);font-size:13px;font-weight:900;letter-spacing:-.5px}
-.brand{font-size:22px;font-weight:850;letter-spacing:1.3px}
-.eyebrow{text-align:center;color:var(--accent);font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin:0 0 10px}
-h1{margin:0;text-align:center;font-size:clamp(25px,5vw,32px);letter-spacing:-1px;font-weight:760}
-.raffle-card{display:flex;flex-direction:column;align-items:center;gap:7px;margin:23px 0 19px;padding:17px 14px;border:1px solid var(--stroke);border-radius:16px;background:#ffffff08;text-align:center}
-.raffle-name{font-size:14px;color:#e8f0e9;font-weight:700}
-.raffle-prize{font-size:13px;color:var(--muted)}
-.raffle-prize strong{color:var(--accent);font-size:17px;margin-left:4px}
-.intro{max-width:410px;margin:0 auto 27px;text-align:center;color:var(--muted);font-size:14px;line-height:1.7}
-.form-panel{padding:20px;border-radius:17px;background:#071a12a8;border:1px solid var(--stroke)}
-label{display:block;margin:0 0 10px;color:#e9f0ea;font-size:13px;font-weight:750}
-input{display:block;width:100%;height:56px;padding:0 16px;border:1px solid #d5ded7;border-radius:11px;background:#f7faf7;color:#14231a;font:inherit;font-size:16px;outline:none;transition:box-shadow .2s,border-color .2s}
-input::placeholder{color:#87948a}
-input:focus{border-color:var(--accent);box-shadow:0 0 0 4px #a6e86a24}
-button{width:100%;height:54px;margin-top:12px;border:0;border-radius:11px;background:var(--accent);color:#13210f;font:inherit;font-size:13px;font-weight:900;letter-spacing:.7px;cursor:pointer;transition:filter .2s,transform .2s}
-button:hover{filter:brightness(1.06)}button:active{transform:translateY(1px)}button:disabled{opacity:.65;cursor:wait}
-.helper{margin:12px 0 0;color:#82968a;font-size:11px;line-height:1.5;text-align:center}
-#result{margin-top:25px;overflow-wrap:anywhere}
+body{margin:0;padding:22px 14px 44px;background:radial-gradient(ellipse at 50% -15%,#203c1e 0%,#101d12 48%,#070e09 100%);color:#f7faf5;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{width:min(100%,820px);margin:18px auto;padding:clamp(22px,4vw,38px);background:linear-gradient(145deg,#142315,#0b150e);border:1px solid #9be63d;border-radius:25px;box-shadow:0 24px 70px #0008}
+.topline{display:flex;justify-content:center;align-items:center;gap:11px;margin-bottom:24px}
+.logo-mark{display:grid;place-items:center;width:39px;height:39px;border:1px solid #a4ee3f80;border-radius:11px;color:var(--lime);font-size:13px;font-weight:950}
+.brand{font-size:22px;font-weight:900;letter-spacing:1.2px}
+.eyebrow{margin:0 0 8px;text-align:center;color:var(--lime);font-size:11px;font-weight:850;letter-spacing:2px;text-transform:uppercase}
+h1{margin:0;text-align:center;font-size:clamp(25px,4vw,32px);letter-spacing:-.7px}
+.raffle-card{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:10px 20px;margin:19px 0;padding:15px;border:1px solid #ffffff20;border-radius:13px;background:#ffffff08}
+.raffle-name{font-size:14px;font-weight:800}
+.raffle-prize{color:#c3d0c4;font-size:13px}.raffle-prize strong{color:var(--lime);font-size:17px}
+.intro{max-width:680px;margin:0 auto 23px;text-align:center;color:#b9c4b9;font-size:14px;line-height:1.65}
+.form-panel{padding:20px;border-radius:16px;background:#08120b;border:1px solid #a4ee3f}
+label{display:block;margin:0 0 10px;font-size:14px;font-weight:850}
+input{width:100%;height:58px;padding:0 17px;border:1px solid #aab4a9;border-radius:13px;background:#f7f9f5;color:#171d18;font:inherit;font-size:19px;font-weight:750;outline:none}
+input:focus{border-color:var(--lime);box-shadow:0 0 0 4px #a4ee3f25}
+input::placeholder{color:#7b867b;font-size:15px;font-weight:500}
+button{width:100%;min-height:57px;margin-top:13px;padding:12px 16px;border:1px solid #d2ff9a;border-radius:13px;background:linear-gradient(#b4ff56,#85db24);color:#14210e;font:inherit;font-size:16px;font-weight:950;letter-spacing:.4px;cursor:pointer;box-shadow:0 7px 0 #477b21}
+button:disabled{opacity:.65;cursor:wait}
+.helper{margin:18px 0 0;text-align:center;color:#c0c9c0;font-size:13px;line-height:1.6}
+#result{margin-top:24px;overflow-wrap:anywhere}
 #result:empty{display:none}
-#result h3{margin:0 0 6px;font-size:15px;letter-spacing:.6px}
-#result p{margin:0 0 13px;color:var(--muted);font-size:13px;line-height:1.6}
-.item{display:flex;align-items:center;gap:12px;padding:14px;margin:8px 0;border:1px solid var(--stroke);border-radius:12px;background:var(--surface-2);color:#edf4ee;font-size:13px;line-height:1.5}
-.item:before{content:"";flex:0 0 7px;width:7px;height:7px;border-radius:50%;background:#e6bd63;box-shadow:0 0 0 4px #e6bd6318}
-a{display:flex;justify-content:center;margin:25px auto 0;width:max-content;color:#c3e89d;font-size:13px;font-weight:700;text-decoration:none}
-a:hover{color:#fff}
-.footer{display:flex;align-items:center;justify-content:center;gap:7px;margin:23px 0 0;color:#82968a;font-size:10px;letter-spacing:.35px}
-.footer:before{content:"";width:5px;height:5px;border-radius:50%;background:#83c95b}
-@media(max-width:480px){body{padding:15px 12px 30px}main{margin:12px auto 0;padding:25px 18px;border-radius:20px}.topline{margin-bottom:27px}.form-panel{padding:16px}}
+.result-shell{padding:20px;border:1px solid var(--lime);border-radius:20px;background:linear-gradient(145deg,#102016,#0b120d)}
+.result-identity{padding:15px 18px;border-radius:13px;background:#f5f8f1;color:#202820;box-shadow:0 5px 0 #739b54;font-size:15px;line-height:1.8}
+.result-identity strong{color:#315e22}
+.stats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:20px 0}
+.stat{min-width:105px;padding:12px 16px;border:1px solid #b9dc9a;border-radius:13px;background:#f5f8ef;color:#315e22;text-align:center;box-shadow:0 4px 0 #829f65}
+.stat span{display:block;font-size:11px;font-weight:900;letter-spacing:.5px}
+.stat strong{display:block;margin-top:3px;font-size:23px}
+.table-wrap{overflow-x:auto;border:1px solid #6c786e;border-radius:14px;background:#fff}
+table{width:100%;min-width:530px;border-collapse:collapse;color:#202420;font-size:14px}
+thead{background:linear-gradient(#1d241e,#080c09);color:white}
+th,td{padding:13px 12px;text-align:left;white-space:nowrap;border-bottom:1px solid #d9ded9}
+th{font-size:13px;font-weight:850}
+tbody tr:nth-child(even){background:#f0f1ef}
+tbody tr:last-child td{border-bottom:0}
+td:first-child{font-weight:900}
+.status-paid{color:#286c20;font-weight:900}.status-pending{color:#986a12;font-weight:900}.status-other{color:#555f56;font-weight:800}
+.result-note{margin:18px 0 0!important;color:#aeb9ae!important;font-size:12px!important;line-height:1.7!important}
+.print-btn{margin-top:17px;background:transparent;color:var(--lime);border:1px solid var(--lime);box-shadow:none}
+a{display:flex;justify-content:center;margin:24px auto 0;width:max-content;color:#c8e99e;font-size:13px;font-weight:750;text-decoration:none}
+.footer{margin:20px 0 0;text-align:center;color:#829184;font-size:10px;letter-spacing:.4px}
+.error-title{color:#ffd28a}
+@media(max-width:540px){body{padding:12px 8px 28px}main{padding:20px 13px;border-radius:18px}.form-panel{padding:14px}.result-shell{padding:12px}.result-identity{font-size:13px}.stat{min-width:88px;padding:10px 12px}.stat span{font-size:10px}.stat strong{font-size:20px}table{font-size:12px}th,td{padding:11px 10px}}
+@media print{body{padding:0;background:#fff;color:#111}main{width:100%;margin:0;padding:0;border:0;box-shadow:none;background:#fff;color:#111}.topline,.eyebrow,h1,.raffle-card,.intro,.form-panel,a,.footer,.print-btn{display:none!important}#result{margin:0}.result-shell{padding:0;border:0;background:#fff;color:#111}.result-identity{box-shadow:none;border:1px solid #bbb}.result-note{color:#555!important}thead{print-color-adjust:exact;-webkit-print-color-adjust:exact}.stats{break-inside:avoid}}
 </style>
 </head>
 <body><main>
@@ -71,7 +84,27 @@ const RIFA='4b23f516-7973-4a04-bff6-9b9b5cb90f4d';
 const form=document.getElementById('checker'),input=document.getElementById('ticket'),button=document.getElementById('check'),result=document.getElementById('result');
 const fmt=n=>String(n).padStart(2,'0');
 function show(t,m){result.textContent='';const h=document.createElement('h3');h.textContent=t;const p=document.createElement('p');p.textContent=m;result.append(h,p)}
-form.addEventListener('submit',async e=>{
+function renderResults(rows,phone){
+result.textContent='';
+const shell=document.createElement('section');shell.className='result-shell';
+const identity=document.createElement('div');identity.className='result-identity';
+const idLine=document.createElement('div');const idLabel=document.createElement('strong');idLabel.textContent='ID / Celular: ';idLine.append(idLabel,document.createTextNode(phone));
+const nameLine=document.createElement('div');const nameLabel=document.createElement('strong');nameLabel.textContent='Nombre completo: ';const firstName=rows.find(x=>x.nombre)?.nombre||'No disponible';nameLine.append(nameLabel,document.createTextNode(firstName));
+identity.append(idLine,nameLine);shell.append(identity);
+const paidRows=rows.filter(row=>String(row.estado||'').toLowerCase()==='vendido'&&String(row.estado_pago||'').toLowerCase()==='confirmado');
+const pendingRows=rows.filter(row=>!paidRows.includes(row));
+const stats=document.createElement('div');stats.className='stats';
+[['PAGADOS',paidRows.length],['EN REVISIÓN',pendingRows.length],['TOTAL',rows.length]].forEach(([label,value])=>{const card=document.createElement('div');card.className='stat';const span=document.createElement('span');span.textContent=label;const strong=document.createElement('strong');strong.textContent=value;card.append(span,strong);stats.append(card)});
+shell.append(stats);
+const wrap=document.createElement('div');wrap.className='table-wrap';const table=document.createElement('table');const thead=document.createElement('thead');const hr=document.createElement('tr');
+['Número','Nombre','Status'].forEach(label=>{const th=document.createElement('th');th.textContent=label;hr.append(th)});thead.append(hr);table.append(thead);
+const tbody=document.createElement('tbody');
+rows.slice().sort((x,y)=>Number(x.numero)-Number(y.numero)).forEach(row=>{const tr=document.createElement('tr');const num=document.createElement('td');num.textContent=fmt(row.numero);const name=document.createElement('td');name.textContent=row.nombre||'—';const status=document.createElement('td');const isPaid=paidRows.includes(row);status.textContent=isPaid?'Pagado':String(row.estado_pago||row.estado||'En revisión').replaceAll('_',' ').replace(/\\b\\w/g,ch=>ch.toUpperCase());status.className=isPaid?'status-paid':pendingRows.includes(row)?'status-pending':'status-other';tr.append(num,name,status);tbody.append(tr)});
+table.append(tbody);wrap.append(table);shell.append(wrap);
+const note=document.createElement('p');note.className='result-note';note.textContent='Estados consultados en el registro del Sorteo Regular RA-0002. Si realizaste un pago reciente y aún no aparece confirmado, conserva tu comprobante y comunícate con atención al cliente.';shell.append(note);
+const print=document.createElement('button');print.type='button';print.className='print-btn';print.textContent='IMPRIMIR COMPROBANTE DE BOLETOS PAGADOS';print.addEventListener('click',()=>window.print());shell.append(print);
+result.append(shell);
+}form.addEventListener('submit',async e=>{
 e.preventDefault();const digits=input.value.replace(/\D/g,'');if(!digits){show('Dato no válido','Escribe tu número de boleto o celular.');return}
 button.disabled=true;button.textContent='CONSULTANDO…';show('Consultando…','Buscando en el registro del Sorteo Regular RA-0002.');
 try{
@@ -79,8 +112,7 @@ const db=window.supabase.createClient(URL,KEY);
 if(digits.length>=10){
 const {data,error}=await db.rpc('consultar_boletos_por_celular',{p_rifa_id:RIFA,p_celular:digits});if(error)throw error;
 if(!data?.length){show('SIN RESULTADOS','No encontramos boletos asociados a ese celular en el Sorteo Regular.');return}
-show('TUS BOLETOS','Se encontraron '+data.length+' boletos para este celular.');
-data.forEach(row=>{const el=document.createElement('div');el.className='item';const paid=String(row.estado||'').toLowerCase()==='vendido'&&String(row.estado_pago||'').toLowerCase()==='confirmado';el.textContent='Boleto '+fmt(row.numero)+' · '+(paid?'PAGADO / CONFIRMADO':String(row.estado_pago||row.estado||'En revisión').toUpperCase())+(row.nombre?' · '+row.nombre:'');result.append(el)});
+renderResults(data,digits);
 return;
 }
 if(digits.length>2){show('DATO NO VÁLIDO','Ingresa un boleto del 00 al 99 o un celular de 10 a 15 dígitos.');return}
