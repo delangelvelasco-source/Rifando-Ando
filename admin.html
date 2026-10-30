@@ -655,10 +655,11 @@ async function iniciarAdmin(){
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!$('app').classList.contains('hidden'))programarCargaAdmin()});
   window.addEventListener('focus',()=>{if(!$('app').classList.contains('hidden'))programarCargaAdmin()});
 }
+async function guardarMovimientoMP(pagoId){const input=document.getElementById('mpmove-'+pagoId);const value=String(input?.value||'').trim();if(!input)return;if(value&&!/^[A-Za-z0-9-]{6,80}$/.test(value)){alert('Número de movimiento no válido.');return}const {error}=await db.from('pagos').update({mercado_pago_movement_id:value||null,updated_at:new Date().toISOString()}).eq('id',pagoId).eq('estado','pendiente');if(error){alert('No se pudo guardar: '+error.message);return}alert(value?'Número de movimiento relacionado correctamente.':'Número de movimiento eliminado.');await cargarPagosPendientes()}
 async function cargarPagosPendientes(){
   const el=$('pendingPayments'); if(!el||!rifa)return;
   el.innerHTML='Consultando pagos pendientes...';
-  const {data:all,error}=await db.from('pagos').select('id,participante_id,monto,estado,metodo,mercado_pago_order_id,checkout_url,created_at').eq('rifa_id',rifa.id).eq('estado','pendiente').order('created_at',{ascending:false});
+  const {data:all,error}=await db.from('pagos').select('id,participante_id,monto,estado,metodo,mercado_pago_order_id,mercado_pago_movement_id,checkout_url,created_at').eq('rifa_id',rifa.id).eq('estado','pendiente').order('created_at',{ascending:false});
   if(error){el.innerHTML='<span class="error">No se pudieron consultar los pagos: '+esc(error.message)+'</span>';return}
   if(!all||!all.length){el.innerHTML='<div class="muted">No hay pagos pendientes en este sorteo.</div>';return}
   const ids=[...new Set(all.map(x=>x.participante_id).filter(Boolean))];
@@ -673,7 +674,7 @@ async function cargarPagosPendientes(){
     const ns=linkedNs.map(x=>x.num+' ('+(x.state==='disponible'?'liberado':x.state==='apartado'&&x.until&&new Date(x.until)<=new Date()?'apartado vencido':x.state)+')');
     const hasRef=!!(pay.mercado_pago_order_id||pay.checkout_url);
     const date=pay.created_at?new Date(pay.created_at).toLocaleString('es-MX'):'Fecha no disponible';
-    return '<div class="row" style="border:1px solid #383838;border-radius:12px;padding:12px;margin:10px 0"><b>'+esc(person.nombre||'Participante sin nombre')+'</b><br><span>'+esc(person.whatsapp||'Sin WhatsApp')+'</span><br><span class="gold">Importe de esta orden: $'+Number(pay.monto||0).toLocaleString('es-MX')+'</span><br><span>Abono aplicado a esta orden: <b>No conciliado</b></span><br><span>Saldo de esta orden: <b>$'+Number(pay.monto||0).toLocaleString('es-MX')+'</b></span><br><span>Referencia Mercado Pago: '+(hasRef?'registrada':'no disponible')+'</span><br><span>Números de esta orden: '+(ns.length?esc(ns.join(', ')):'<b style="color:#f0a35a">Ninguno; revisar registro</b>')+'</span><br><small>'+esc(date)+'</small></div>';
+    return '<div class="row" style="border:1px solid #383838;border-radius:12px;padding:12px;margin:10px 0"><b>'+esc(person.nombre||'Participante sin nombre')+'</b><br><span>'+esc(person.whatsapp||'Sin WhatsApp')+'</span><br><span class="gold">Importe de esta orden: $'+Number(pay.monto||0).toLocaleString('es-MX')+'</span><br><span>Abono aplicado a esta orden: <b>No conciliado</b></span><br><span>Saldo de esta orden: <b>$'+Number(pay.monto||0).toLocaleString('es-MX')+'</b></span><br><span>Referencia Mercado Pago: '+(hasRef?'registrada':'no disponible')+'</span><br><span>Números de esta orden: '+(ns.length?esc(ns.join(', ')):'<b style="color:#f0a35a">Ninguno; revisar registro</b>')+'</span><br><label style="display:block;margin-top:10px">N.º de movimiento Mercado Pago</label><div style="display:flex;gap:8px;align-items:center;margin-top:5px"><input id="mpmove-'+pay.id+'" value="'+esc(pay.mercado_pago_movement_id||'')+'" placeholder="Ej. B33HK6S69BBMSNSJS" style="min-width:0;flex:1;background:#202020;color:white;border:1px solid #555;border-radius:8px;padding:9px"><button type="button" onclick="guardarMovimientoMP(\''+pay.id+'\')" style="background:#d9ad38;color:#111;border:0;border-radius:8px;padding:9px 12px;font-weight:700">Guardar</button></div><br><small>'+esc(date)+'</small></div>';
   }).join('');
 }
 iniciarAdmin();
