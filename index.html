@@ -400,32 +400,20 @@ header{background:rgba(12,7,5,.88)!important;border-bottom-color:#6b3c12!importa
 
 
 <style id="ofrenda-background-final">
-/* Fondo ilustrado de ofrenda para la portada; no altera funciones de rifas ni pagos. */
-html{background:#100704}
-body{
- background-color:#100704!important;
- background-image:linear-gradient(90deg,rgba(8,5,5,.30),rgba(8,5,5,.18) 48%,rgba(8,5,5,.26)),url("./ofrenda-bg.svg?v=20261025")!important;
- background-position:center top!important;
- background-size:cover!important;
- background-repeat:no-repeat!important;
- background-attachment:fixed!important;
-}
+/* Fondo limpio inspirado en Sorteos Regios: verde profundo, sin ilustraciones ni patrones. */
+html{background:#041a12!important}
+body{background-color:#041a12!important;background-image:radial-gradient(ellipse at 50% -20%,#145b37 0,transparent 58%),linear-gradient(180deg,#062a1b 0%,#041a12 58%,#03130d 100%)!important;background-position:center top!important;background-size:cover!important;background-repeat:no-repeat!important;background-attachment:fixed!important;color:#f4fff6}
 body:before{content:none!important;display:none!important}
-header{background:rgba(8,5,5,.88)!important;border-bottom:1px solid rgba(255,173,35,.45)!important;backdrop-filter:blur(10px)}
+header{background:rgba(4,26,18,.94)!important;border-bottom:1px solid rgba(101,229,114,.28)!important;backdrop-filter:blur(12px)}
 .hero{max-width:1100px;min-height:590px;padding-top:58px;padding-bottom:55px;gap:36px}
-.hero h1{color:#fff;text-shadow:0 3px 18px rgba(0,0,0,.72)}
-.hero p{color:#fff;text-shadow:0 2px 10px #000}
-.eyebrow,.section h2,.grand-label{color:#ffd24a!important}
-.grand-prize{background:linear-gradient(155deg,rgba(13,7,5,.96),rgba(38,16,5,.91))!important;border:2px solid #f5ad28!important;box-shadow:0 0 0 1px #ffdb6a55,inset 0 0 30px #ff9c1c22,0 12px 45px #000b!important}
-.grand-prize .prize{background:radial-gradient(ellipse,rgba(255,163,28,.20),rgba(10,6,5,.25) 70%)!important}
-.btn,.nav .btn,.help-btn{background:linear-gradient(135deg,#ffdc45,#ffae00)!important;color:#211005!important;border:1px solid #ffe27a!important;box-shadow:0 5px 20px #ff9b002e}
+.hero h1{color:#fff;text-shadow:0 3px 18px rgba(0,0,0,.45)}
+.hero p{color:#d5e8da;text-shadow:0 2px 10px #000}
+.eyebrow,.section h2,.grand-label{color:#9af044!important}
+.grand-prize{background:linear-gradient(155deg,rgba(9,48,30,.96),rgba(5,28,19,.94))!important;border:2px solid #9af044!important;box-shadow:0 0 0 1px #9af04422,inset 0 0 30px #65e57212,0 12px 45px #0008!important}
+.grand-prize .prize{background:radial-gradient(ellipse,rgba(101,229,114,.16),rgba(4,26,18,.25) 70%)!important}
+.btn,.nav .btn,.help-btn{background:linear-gradient(135deg,#b7ff69,#65e572)!important;color:#082012!important;border:1px solid #d1ff9a!important;box-shadow:0 5px 20px #65e57222}
 .card,.quick-card,.step{backdrop-filter:blur(7px)}
-@media(max-width:760px){
- body{background-position:center top!important;background-size:auto 900px!important;background-attachment:scroll!important}
- .hero{min-height:0;padding-top:35px;padding-bottom:35px;gap:24px}
- .hero h1{font-size:clamp(45px,12vw,68px)}
- .grand-prize{background:linear-gradient(155deg,rgba(13,7,5,.97),rgba(38,16,5,.94))!important}
-}
+@media(max-width:760px){body{background-position:center top!important;background-size:cover!important;background-attachment:scroll!important}.hero{min-height:0;padding-top:35px;padding-bottom:35px;gap:24px}.hero h1{font-size:clamp(45px,12vw,68px)}.grand-prize{background:linear-gradient(155deg,rgba(9,48,30,.97),rgba(5,28,19,.95))!important}}
 @media(prefers-reduced-motion:reduce){body{background-attachment:scroll!important}}
 </style>
 
