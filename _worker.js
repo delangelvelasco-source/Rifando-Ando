@@ -68,6 +68,20 @@ export default {
     }
 
     const contentType = outHeaders.get("Content-Type") || "";
+
+    // En las rutas de participación, llevar al usuario directamente a la selección
+    // de números después de que el HTML del sorteo termine de cargarse.
+    if ((isRegular || isExpress) && request.method === "GET" && contentType.includes("text/html")) {
+      let html = await response.text();
+      const directEntryScript = '<script>(function(){function irANumeros(){var seccion=document.getElementById("numeros");if(!seccion)return false;seccion.style.scrollMarginTop="100px";seccion.scrollIntoView({behavior:"instant",block:"start"});return true;}if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){setTimeout(irANumeros,80);},{once:true});}else{setTimeout(irANumeros,80);}})();</script>';
+      const bodyClose = html.toLowerCase().lastIndexOf("</body>");
+      if (bodyClose >= 0) html = html.slice(0, bodyClose) + directEntryScript + html.slice(bodyClose);
+      else html += directEntryScript;
+      outHeaders.delete("Content-Length");
+      outHeaders.delete("ETag");
+      outHeaders.set("Cache-Control", "no-store");
+      return new Response(html, { status: response.status, statusText: response.statusText, headers: outHeaders });
+    }
     if ((incoming.pathname === "/" || incoming.pathname.replace(/\/$/, "") === "/sorteo-regio") &&
         request.method === "GET" && contentType.includes("text/html")) {
       let html = await response.text();
