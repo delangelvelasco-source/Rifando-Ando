@@ -664,21 +664,16 @@ async function cargarPagosPendientes(){
   const ids=[...new Set(all.map(x=>x.participante_id).filter(Boolean))];
   const {data:people,error:personError}=ids.length?await db.from('participantes').select('id,nombre,whatsapp,consulta_token').in('id',ids):{data:[],error:null};
   if(personError){el.innerHTML='<span class="error">No se pudieron consultar los participantes: '+esc(personError.message)+'</span>';return}
-  const {data:confirmed,error:confirmedError}=ids.length?await db.from('pagos').select('participante_id,monto,metodo,estado,confirmado_at').eq('rifa_id',rifa.id).eq('estado','confirmado').in('participante_id',ids):{data:[],error:null};
-  if(confirmedError){el.innerHTML='<span class="error">No se pudieron consultar los abonos: '+esc(confirmedError.message)+'</span>';return}
   const peopleById=new Map((people||[]).map(x=>[x.id,x]));
-  const paidById={};(confirmed||[]).forEach(p=>paidById[p.participante_id]=(paidById[p.participante_id]||0)+Number(p.monto||0));
   const recent=all.slice(0,20);
-  el.innerHTML='<p><b>'+all.length+' pago(s) pendiente(s)</b> · mostrando los '+recent.length+' más recientes.</p>'+recent.map(pay=>{
+  const activeCount=all.filter(pay=>(nGlobal||[]).some(n=>n.pago_id===pay.id&&n.estado==='apartado'&&n.apartado_hasta&&new Date(n.apartado_hasta)>new Date())).length;
+  el.innerHTML='<p><b>'+all.length+' pago(s) pendiente(s)</b> · '+activeCount+' con apartado vigente · mostrando los '+recent.length+' más recientes.</p>'+recent.map(pay=>{
     const person=peopleById.get(pay.participante_id)||{};
-    const activeNs=(nGlobal||[]).filter(n=>n.participante_id===pay.participante_id&&(n.estado==='apartado'||n.estado==='vendido')).map(n=>String(n.numero).padStart(2,'0'));
-    const linkedNs=(nGlobal||[]).filter(n=>n.pago_id===pay.id).map(n=>({num:String(n.numero).padStart(2,'0'),state:n.estado}));
-    const ns=activeNs.length?activeNs:linkedNs.map(x=>x.num+' ('+(x.state==='disponible'?'apartado vencido; número liberado':x.state)+')');
-    const paid=paidById[pay.participante_id]||0;
-    const saldo=Math.max(0,Number(pay.monto||0)-paid);
+    const linkedNs=(nGlobal||[]).filter(n=>n.pago_id===pay.id).map(n=>({num:String(n.numero).padStart(5,'0'),state:n.estado,until:n.apartado_hasta}));
+    const ns=linkedNs.map(x=>x.num+' ('+(x.state==='disponible'?'liberado':x.state==='apartado'&&x.until&&new Date(x.until)<=new Date()?'apartado vencido':x.state)+')');
     const hasRef=!!(pay.mercado_pago_order_id||pay.checkout_url);
     const date=pay.created_at?new Date(pay.created_at).toLocaleString('es-MX'):'Fecha no disponible';
-    return '<div class="row" style="border:1px solid #383838;border-radius:12px;padding:12px;margin:10px 0"><b>'+esc(person.nombre||'Participante sin nombre')+'</b><br><span>'+esc(person.whatsapp||'Sin WhatsApp')+'</span><br><span class="gold">Importe original: $'+Number(pay.monto||0).toLocaleString('es-MX')+'</span><br><span style="color:#82d39b">Abonado confirmado: $'+paid.toLocaleString('es-MX')+'</span><br><span>Saldo pendiente: <b>$'+saldo.toLocaleString('es-MX')+'</b></span><br><span>Referencia Mercado Pago: '+(hasRef?'registrada':'no disponible')+'</span><br><span>Números asociados: '+(ns.length?esc(ns.join(', ')):'<b style="color:#f0a35a">Ninguno; revisar registro</b>')+'</span><br><small>'+esc(date)+'</small></div>';
+    return '<div class="row" style="border:1px solid #383838;border-radius:12px;padding:12px;margin:10px 0"><b>'+esc(person.nombre||'Participante sin nombre')+'</b><br><span>'+esc(person.whatsapp||'Sin WhatsApp')+'</span><br><span class="gold">Importe de esta orden: $'+Number(pay.monto||0).toLocaleString('es-MX')+'</span><br><span>Abono aplicado a esta orden: <b>No conciliado</b></span><br><span>Saldo de esta orden: <b>$'+Number(pay.monto||0).toLocaleString('es-MX')+'</b></span><br><span>Referencia Mercado Pago: '+(hasRef?'registrada':'no disponible')+'</span><br><span>Números de esta orden: '+(ns.length?esc(ns.join(', ')):'<b style="color:#f0a35a">Ninguno; revisar registro</b>')+'</span><br><small>'+esc(date)+'</small></div>';
   }).join('');
 }
 iniciarAdmin();
