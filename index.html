@@ -752,7 +752,7 @@ body{padding-top:158px!important}
 <p>Tus números:</p>
 <div class="numbers" id="confirmNumbers"></div>
 <p>Total: <b class="gold" id="confirmTotal"></b></p>
-<a class="btn" id="waConfirm" href="#" target="_blank" rel="noopener" style="display:inline-block;margin:8px 4px">📲 Enviar solicitud por WhatsApp</a><br><button class="btn" id="mercadoPagoBtn" type="button" onclick="iniciarPagoMercadoPago('mercado_pago')" style="display:none;margin:8px 4px;background:#009ee3;color:#fff">💳 Otros métodos de pago</button><button class="btn" id="oxxoBtn" type="button" onclick="iniciarPagoMercadoPago('oxxo')" style="display:none;margin:8px 4px;background:#c62828;color:#fff">🏪 Generar ticket OXXO · 24 h</button><div id="mercadoPagoMsg" role="status" style="display:none;margin:8px auto;padding:12px;border:1px solid #245c78;border-radius:12px;color:#cceeff;text-align:left"></div><br>
+<a class="btn" id="waConfirm" href="#" target="_blank" rel="noopener" style="display:inline-block;margin:8px 4px">📲 Enviar solicitud por WhatsApp</a><br><button class="btn" id="mercadoPagoBtn" type="button" onclick="iniciarPagoMercadoPago('mercado_pago')" style="display:none;margin:8px 4px;background:#009ee3;color:#fff">💳 Otros métodos de pago</button><button class="btn" id="oxxoBtn" type="button" onclick="iniciarPagoMercadoPago('oxxo')" style="display:none;margin:8px 4px;background:#c62828;color:#fff">🏪 Generar ticket OXXO · 24 h</button><button class="btn" id="speiBtn" type="button" onclick="iniciarPagoMercadoPago('spei')" style="display:none;margin:8px 4px;background:#16835b;color:#fff">🏦 Pagar por transferencia SPEI · 72 h</button><div id="mercadoPagoMsg" role="status" style="display:none;margin:8px auto;padding:12px;border:1px solid #245c78;border-radius:12px;color:#cceeff;text-align:left"></div><br>
 <button class="btn" id="confirmCloseBtn" onclick="cerrarFormulario()" style="margin:8px 4px" title="Primero envía la solicitud por WhatsApp">Cerrar</button>
 </div>
 </div>
@@ -1597,9 +1597,10 @@ async function iniciarPagoMercadoPago(paymentMethod='mercado_pago'){
   const pagoId=window.rifandoPagoPendiente?.paymentId;
   const paymentToken=window.rifandoPagoPendiente?.paymentToken;
   let payerEmail=String(document.getElementById('correo')?.value||'').trim();
-  if(paymentMethod==='oxxo'&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payerEmail)){
-    payerEmail=String(window.prompt('Para generar tu ticket OXXO de 24 horas, escribe tu correo electrónico:',payerEmail)||'').trim();
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payerEmail)){if(msg){msg.style.display='block';msg.textContent='Necesitamos un correo válido para generar el ticket OXXO. No se ha creado ningún cobro.';}return;}
+  if((paymentMethod==='oxxo'||paymentMethod==='spei')&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payerEmail)){
+    const metodoTexto=paymentMethod==='oxxo'?'ticket OXXO de 24 horas':'transferencia SPEI';
+    payerEmail=String(window.prompt('Para generar tu '+metodoTexto+', escribe tu correo electrónico:',payerEmail)||'').trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payerEmail)){if(msg){msg.style.display='block';msg.textContent='Necesitamos un correo válido para generar las instrucciones de pago. No se ha creado ningún cobro.';}return;}
   }
   if(!pagoId||!paymentToken){
     if(msg){msg.style.display='block';msg.textContent='No encontramos el identificador seguro de esta reserva. Conserva tus números y contacta al administrador; no vuelvas a reservar todavía.';}
@@ -1611,23 +1612,25 @@ async function iniciarPagoMercadoPago(paymentMethod='mercado_pago'){
     return;
   }
   const oxxoBtn=document.getElementById('oxxoBtn');
-  if(btn){btn.disabled=true;btn.textContent=paymentMethod==='oxxo'?'Generando ticket OXXO…':'Conectando con Mercado Pago…';}
-  if(oxxoBtn){oxxoBtn.disabled=true;}
-  if(msg){msg.style.display='block';msg.textContent=paymentMethod==='oxxo'?'Estamos generando tu ticket OXXO con vencimiento de 24 horas…':'Estamos verificando tu reserva y preparando el pago seguro.';}
+  const speiBtn=document.getElementById('speiBtn');
+  const labels={mercado_pago:'Conectando con Mercado Pago…',oxxo:'Generando ticket OXXO…',spei:'Generando instrucciones SPEI…'};
+  if(btn){btn.disabled=true;btn.textContent=labels[paymentMethod]||labels.mercado_pago;}
+  [oxxoBtn,speiBtn].forEach(b=>{if(b)b.disabled=true;});
+  if(msg){msg.style.display='block';msg.textContent=paymentMethod==='oxxo'?'Estamos generando tu ticket OXXO con vencimiento de 24 horas…':paymentMethod==='spei'?'Estamos generando tu CLABE e instrucciones para transferir. El apartado se conservará hasta 72 horas después de generar el pago…':'Estamos verificando tu reserva y preparando el pago seguro.';}
   try{
     const {data,error}=await db.functions.invoke('mercado-pago',{body:{payment_id:pagoId,payment_token:paymentToken,payment_method:paymentMethod,payer_email:payerEmail}});
     if(error)throw new Error(error.message||'No se pudo iniciar el pago.');
     if(data?.error)throw new Error(data.detail||data.error);
     if(!data?.checkout_url)throw new Error('Mercado Pago no devolvió un enlace de pago.');
-    if(msg)msg.textContent=paymentMethod==='oxxo'?'Ticket OXXO generado. Abriendo instrucciones de pago…':'Reserva validada. Te estamos enviando a Mercado Pago…';
+    if(msg)msg.textContent=paymentMethod==='oxxo'?'Ticket OXXO generado. Abriendo instrucciones de pago…':paymentMethod==='spei'?'Instrucciones SPEI generadas. Abriendo CLABE y referencia de pago…':'Reserva validada. Te estamos enviando a Mercado Pago…';
     window.location.assign(data.checkout_url);
   }catch(err){
-    if(msg){msg.style.display='block';msg.textContent='No pudimos iniciar Mercado Pago: '+String(err?.message||err)+'. Tus números no se marcarán como vendidos hasta confirmar el pago.';}
+    if(msg){msg.style.display='block';msg.textContent='No pudimos iniciar el pago: '+String(err?.message||err)+'. Tus números no se marcarán como vendidos hasta confirmar el pago.';}
     if(btn){btn.disabled=false;btn.textContent=paymentMethod==='oxxo'?'💳 Otros métodos de pago':'💳 Reintentar pago con Mercado Pago';}
     if(oxxoBtn){oxxoBtn.disabled=false;oxxoBtn.textContent='🏪 Reintentar ticket OXXO · 24 h';}
+    if(speiBtn){speiBtn.disabled=false;speiBtn.textContent='🏦 Reintentar transferencia SPEI';}
   }
 }
-
 
 document.getElementById('psViewTickets')?.addEventListener('click',()=>{
   document.getElementById('paymentSuccess')?.classList.remove('open');
@@ -1706,11 +1709,13 @@ async function confirmar(e){
   waConfirm.href=waLink;
   const mpBtn=document.getElementById('mercadoPagoBtn');
   const oxxoBtn=document.getElementById('oxxoBtn');
+  const speiBtn=document.getElementById('speiBtn');
   const mpMsg=document.getElementById('mercadoPagoMsg');
   const gruposConPago=['regular','especial','iphone','express'];
   const permitePago=String(rifa?.estado||'').toLowerCase()==='activa'&&gruposConPago.includes(String(rifa?.grupo_rifa||'').toLowerCase());
   if(mpBtn){mpBtn.style.display=permitePago?'inline-block':'none';mpBtn.disabled=false;mpBtn.textContent='💳 Otros métodos de pago';}
   if(oxxoBtn){oxxoBtn.style.display=permitePago?'inline-block':'none';oxxoBtn.disabled=false;oxxoBtn.textContent='🏪 Generar ticket OXXO · 24 h';}
+  if(speiBtn){speiBtn.style.display=permitePago?'inline-block':'none';speiBtn.disabled=false;speiBtn.textContent='🏦 Pagar por transferencia SPEI · 72 h';}
   if(mpMsg){mpMsg.style.display='none';mpMsg.textContent='';}
   confirmWhatsAppClicked=false;
   document.getElementById('modalClose')?.classList.add('locked-close');
