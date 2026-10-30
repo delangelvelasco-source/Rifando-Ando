@@ -74,7 +74,8 @@ export default {
     if ((isRegular || isExpress) && request.method === "GET" && contentType.includes("text/html")) {
       let html = await response.text();
       const directEntryScript = '<script>(function(){function irANumeros(){var seccion=document.getElementById("numeros");if(!seccion)return false;seccion.style.scrollMarginTop="100px";seccion.scrollIntoView({behavior:"instant",block:"start"});return true;}if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){setTimeout(irANumeros,80);},{once:true});}else{setTimeout(irANumeros,80);}})();</script>';
-      if (/<\\/body>/i.test(html)) html = html.replace(/<\\/body>/i, directEntryScript + "</body>");
+      const bodyClose = html.toLowerCase().lastIndexOf("</body>");
+      if (bodyClose >= 0) html = html.slice(0, bodyClose) + directEntryScript + html.slice(bodyClose);
       else html += directEntryScript;
       outHeaders.delete("Content-Length");
       outHeaders.delete("ETag");
