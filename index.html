@@ -546,6 +546,12 @@ body{padding-top:158px!important}
 
 </style>
 <script>/* El retorno de Mercado Pago se verifica en la página del sorteo. */</script>
+
+<style id="fix-mobile-top-gap-20261029">
+/* El header ya está en flujo normal (sticky); no reservar espacio extra arriba. */
+body{padding-top:0!important}
+@media(max-width:760px){body{padding-top:0!important}}
+</style>
 </head>
 <body>
 
