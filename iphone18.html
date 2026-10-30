@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="version" content="2026-09-19-2308">
-<title>Rifando Ando · iPhone 18 Pro Max 256 GB</title>
+<title>Sorteo iPhone 18 Pro Max 256 GB | Sorteos Regios</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080808;color:#fff;font-family:system-ui,-apple-system,sans-serif}
@@ -130,7 +130,7 @@ header{background:rgba(5,5,5,.94)!important;backdrop-filter:blur(12px)}
 <body>
 <header>
 <div class="nav">
-<div class="logo">RIFANDO <span>ANDO</span> 🎟️</div>
+<div class="logo">SORTEOS <span>REGIOS</span> 🎟️</div>
 <div style="display:flex;gap:8px;align-items:center">
 <a class="btn" href="#numeros">Elegir números</a>
 <a class="btn" href="#ultimo-ganador">🏆 Último ganador</a>
@@ -206,7 +206,7 @@ header{background:rgba(5,5,5,.94)!important;backdrop-filter:blur(12px)}
 <section class="section" id="historial-ganadores"><h2>🏆 Historial de Ganadores</h2><div id="winnerHistory" class="winner-history"><div class="winner-empty">Aún no hay ganadores registrados.</div></div></section>
 </main>
 
-<footer class="foot">© 2026 Rifando Ando · La rifa entre compas<div style="margin-top:10px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap"><a href="reglas.html" style="color:#d9a936;text-decoration:none;font-weight:900">📜 Reglas, Bases, Términos y Condiciones</a><span style="color:#555">·</span><a href="aviso-privacidad.html" style="color:#d9a936;text-decoration:none;font-weight:900">🔒 Aviso de Privacidad</a></div></footer>
+<footer class="foot">© 2026 Sorteos Regios · Sorteos de Nuevo León<div style="margin-top:10px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap"><a href="reglas.html" style="color:#d9a936;text-decoration:none;font-weight:900">📜 Reglas, Bases, Términos y Condiciones</a><span style="color:#555">·</span><a href="aviso-privacidad.html" style="color:#d9a936;text-decoration:none;font-weight:900">🔒 Aviso de Privacidad</a></div></footer>
 
 <div class="modal" id="modal">
 <div class="modal-box">
@@ -701,8 +701,8 @@ function actualizarWhatsAppAyuda(){
   if(!link)return;
   const seleccion=nums();
   const message=seleccion.length
-    ? 'Hola Rifando Ando 👋, necesito ayuda o soporte con mi participación. Mis números seleccionados son: '+seleccion.join(', ')+'.'
-    : 'Hola Rifando Ando 👋, necesito ayuda o soporte con mi participación.';
+    ? 'Hola Sorteos Regios 👋, necesito ayuda o soporte con mi participación. Mis números seleccionados son: '+seleccion.join(', ')+'.'
+    : 'Hola Sorteos Regios 👋, necesito ayuda o soporte con mi participación.';
   link.href='https://wa.me/528123859824?text='+encodeURIComponent(message);
 }
 function abrirFormulario(){
@@ -745,7 +745,7 @@ function restaurarSolicitudPendiente(){
     bloquearNuevaSeleccion(true);
     const waConfirm=document.getElementById('waConfirm');
     const recoveredNumbers=String(p.numbers||'').trim();
-    const recoveredMessage='🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado de los siguientes números:\n\n🎫 '+recoveredNumbers+'\n💰 Total: '+String(p.total||'')+'\n👤 Nombre: '+String(p.name||'')+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
+    const recoveredMessage='🎟️✨ SORTEOS REGIOS 🏆\n\n👋 Hola, confirmo mi apartado de los siguientes números:\n\n🎫 '+recoveredNumbers+'\n💰 Total: '+String(p.total||'')+'\n👤 Nombre: '+String(p.name||'')+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
     waConfirm.href='https://wa.me/528123859824?text='+encodeURIComponent(recoveredMessage);
     confirmWhatsAppClicked=false;
     waConfirm.onclick=()=>{
@@ -810,7 +810,7 @@ async function confirmar(e){
   document.getElementById('confirmName').textContent=name;
   document.getElementById('confirmNumbers').textContent=displayNumbers;
   document.getElementById('confirmTotal').textContent='$'+displayTotal;
-  const message='🎟️✨ RIFANDO ANDO 🏆\n\n👋 Hola, confirmo mi apartado de los siguientes números:\n\n🎫 '+displayNumbers+'\n💰 Total: $'+displayTotal+'.00\n👤 Nombre: '+name+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
+  const message='🎟️✨ SORTEOS REGIOS 🏆\n\n👋 Hola, confirmo mi apartado de los siguientes números:\n\n🎫 '+displayNumbers+'\n💰 Total: $'+displayTotal+'.00\n👤 Nombre: '+name+'\n\n✅ Quedo atento para continuar con mi participación.\n\nGracias';
   const waLink='https://wa.me/528123859824?text='+encodeURIComponent(message);
   const waConfirm=document.getElementById('waConfirm');
   waConfirm.href=waLink;
