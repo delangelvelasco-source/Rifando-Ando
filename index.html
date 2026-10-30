@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080808">
 <link rel="manifest" href="manifest.json"><meta name="version" content="2026-10-10-1915-mp-all-active-raffles">
-<title>Rifando Ando | Rifas en línea y sorteos</title>
+<title>Sorteo Regio | Rifas y números en línea</title>
 <meta name="description" content="Rifas en línea entre compas. Elige tus números, participa en nuestros sorteos y conoce las reglas para participar.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -31,7 +31,7 @@
 {
   "@context":"https://schema.org",
   "@type":"WebSite",
-  "name":"Rifando Ando",
+  "name":"Sorteo Regio",
   "url":"https://rifasmty.com/",
   "description":"Rifas en línea entre compas. Elige tus números, participa en nuestros sorteos y conoce las reglas para participar.",
   "inLanguage":"es-MX"
@@ -565,6 +565,25 @@ body{padding-top:158px!important}
   }
 })();
 </script>
+
+<style id="sorteo-regio-theme">
+:root{color-scheme:dark;--sr-gold:#f5c343;--sr-green:#9af044;--sr-bg:#070907;--sr-panel:#101710}
+html{background:#070907}
+body{background:radial-gradient(ellipse at 50% -18%,#1b2a15 0%,#0b110a 42%,#050605 100%)!important;color:#fff}
+header{background:rgba(7,12,7,.96)!important;border-bottom:1px solid #53652b!important;box-shadow:0 8px 30px #0008}
+.logo span,.gold,.eyebrow,.official,.grand-amount,.winner-text,.raffle-id b{color:var(--sr-gold)!important}
+.btn,.help-btn,.lottery-badge,.grand-label{background:linear-gradient(135deg,#f5c343,#d99b1d)!important;color:#101308!important;border:1px solid #ffe08a!important;box-shadow:0 5px 18px #d6a52b26}
+.card,.quick-card,.step,.summary,.modal-box{background:linear-gradient(145deg,#121a10,#0b100a)!important;border-color:#394b27!important}
+.prize{background:radial-gradient(circle,#344522,#10170d 68%)!important}
+.grand-prize{background:radial-gradient(circle at 50% 35%,#35451d 0%,#11180d 48%,#090d08 100%)!important;border-color:#f5c343!important;box-shadow:0 0 25px #9af04422,inset 0 0 35px #f5c34312!important}
+.ticket.available{background:#185d2c!important;border-color:#55c96b!important}
+.ticket.selected{background:#f5c343!important;color:#111!important;border-color:#ffe08a!important}
+.raffle-link.active{background:#9af044!important;color:#101308!important;border-color:#c6ff86!important}
+.rules-box,.lottery-info,.winner-head{background:linear-gradient(135deg,#182313,#0b100a)!important;border-color:#53652b!important}
+#raffle-payment-notice{background:linear-gradient(110deg,#172313,#0a1009)!important;border-color:#f5c343!important;color:#fff!important}
+.share-raffle,.recover-btn{background:#11190e!important;border-color:#687d35!important;color:#f5c343!important}
+.foot{border-color:#29351f!important}
+</style>
 </head>
 <body>
 
@@ -573,7 +592,7 @@ body{padding-top:158px!important}
 <header>
 <div id="raffle-payment-notice" role="note" aria-label="Condición de realización de sorteos"><span class="notice-icon" aria-hidden="true">📣</span><span class="notice-copy">Cada sorteo tiene su propia modalidad, fecha y condiciones. <strong>Consulta las reglas del sorteo seleccionado.</strong></span><span class="notice-icon notice-calendar" aria-hidden="true">▣</span></div>
 <div class="nav">
-<div class="logo">RIFANDO <span>ANDO</span> 🎟️</div>
+<div class="logo">SORTEO <span>REGIO</span> 🏆</div>
 <div style="display:flex;gap:8px;align-items:center">
 <a class="btn" href="#numeros">Elegir números</a>
 <a class="btn" href="#ultimo-ganador">🏆 Último ganador</a>
@@ -585,9 +604,9 @@ body{padding-top:158px!important}
 <div id="publicDraw" class="draw-public" role="dialog" aria-modal="true" aria-labelledby="publicDrawStatus" onclick="cerrarSorteoPublico(event)"><div class="draw-public-box"><button class="draw-public-close" type="button" onclick="cerrarSorteoPublico(event)" aria-label="Cerrar animación del sorteo" title="Cerrar">×</button><div style="font-size:46px">🎲</div><div class="official">SORTEO EN VIVO</div><h2 id="publicDrawStatus">Preparando selección...</h2><div id="publicDrawNumber" class="draw-public-number">--</div><div id="publicDrawGrid" class="draw-public-grid"></div><div id="publicDrawResult" class="draw-public-result"><div style="font-size:28px;color:#f5d36a;font-weight:1000">🏆 ¡TENEMOS GANADOR!</div><div id="publicDrawWinnerNumber" style="font-size:72px;font-weight:1000;color:#d9a936"></div><div id="publicDrawWinnerName" style="font-size:26px;font-weight:900"></div></div></div></div><main>
 <div class="hero">
 <div>
-<div class="eyebrow">La rifa entre compas</div>
-<h1>¡Échale número, <span class="gold">compa!</span></h1>
-<p>Participa en nuestras rifas, elige tus números y cruza los dedos.</p>
+<div class="eyebrow">Sorteo Regio · Participa y gana</div>
+<h1>¡Tu número puede ser el <span class="gold">ganador!</span></h1>
+<p>Bienvenido a Sorteo Regio. Consulta los sorteos disponibles, revisa sus reglas y elige tus números.</p>
 <a class="btn" href="#numeros">Quiero participar</a>
 <nav class="raffle-links" id="rifas" aria-label="Nuestros sorteos">
 <div class="raffle-links-title">🎟️ Nuestros sorteos</div>
