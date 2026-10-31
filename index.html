@@ -1711,7 +1711,12 @@ async function confirmar(e){
     rifaId:rifa.id,
     numbers:displayNumbers,
     name:name,
-    total:'
+    total:'$'+displayTotal,
+    paymentId:pagoId,
+    paymentToken:paymentToken,
+    whatsappOpened:false,
+    timestamp:Date.now()
+  };
   const solicitudesPendientes=[solicitudGeneral];
   try{
     guardarPendienteRecuperable(solicitudGeneral);
