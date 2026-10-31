@@ -1696,11 +1696,6 @@ async function confirmar(e){
   const waConfirm=document.getElementById('waConfirm');
   waConfirm.href=waLink;
   waConfirm.style.display='inline-block';
-  waConfirm.onclick=()=>{
-    solicitudGeneral.whatsappOpened=true;
-    guardarPendienteRecuperable(solicitudGeneral);
-    waConfirm.style.display='none';
-  };
   const mpBtn=document.getElementById('mercadoPagoBtn');
   const oxxoBtn=document.getElementById('oxxoBtn');
   const speiBtn=document.getElementById('speiBtn');
@@ -1714,7 +1709,13 @@ async function confirmar(e){
   confirmWhatsAppClicked=false;
   waConfirm.target='_blank';
   waConfirm.rel='noopener';
-  waConfirm.onclick=null;
+  waConfirm.onclick=()=>{
+    solicitudGeneral.whatsappOpened=true;
+    guardarPendienteRecuperable(solicitudGeneral);
+    waConfirm.style.display='none';
+    const notice=document.getElementById('waConfirmNotice');
+    if(notice)notice.textContent='WhatsApp ya se abrió para esta solicitud; evita enviarla nuevamente.';
+  };
   document.getElementById('modalClose')?.classList.remove('locked-close');
   document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
   const mpNote=document.getElementById('mercadoPagoMsg');
