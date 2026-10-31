@@ -58,7 +58,7 @@ header{padding:16px 22px;border-bottom:1px solid #292929;position:sticky;top:0;b
 @media(max-width:760px){.quick-grid{grid-template-columns:1fr}.quick-info{padding-top:12px}.winner-head{grid-template-columns:1fr 1.25fr .9fr .65fr;font-size:10px;padding:10px 9px;gap:6px}.winner-card{grid-template-columns:1fr 1.25fr .9fr .65fr;padding:14px 9px;gap:6px}.winner-card .wname{font-size:14px}.winner-card .wprize{font-size:15px}.winner-card .wnum{font-size:24px}.winner-card .wdate{font-size:11px}}
 .legend{display:flex;flex-wrap:wrap;gap:18px;margin:-8px 0 18px;color:#aaa;font-size:14px}.legend span{display:flex;align-items:center;gap:7px}.legend i{width:12px;height:12px;border-radius:50%;display:inline-block}.lg-green{background:#1fc94b}.lg-yellow{background:#d9a936}.lg-orange{background:#f97316}.lg-gray{background:#555}.tickets{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}.ticket{padding:16px 3px;min-height:64px;border:1px solid #303030;border-radius:12px;background:#171717;color:#eee;font-size:26px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .ticket.selected{position:relative;background:#d9a936!important;color:#111!important;border:2px solid #fff0a6!important;box-shadow:0 0 0 2px #d9a936,0 0 14px #d9a93688!important}.ticket.selected::after{content:'✓';position:absolute;top:2px;right:5px;font-size:12px;line-height:1;font-weight:1000;color:#111}.ticket.available{background:#0f6b2c;color:#fff;border-color:#20c957;box-shadow:0 0 7px #20c95733}.ticket.pending{background:#f97316;color:#fff;border-color:#fb923c;box-shadow:0 0 10px #f9731655}.ticket.sold{color:#555;background:#000;border-color:#202020;text-decoration:line-through;cursor:not-allowed}
-.summary{margin-top:22px;padding:18px;border:1px solid #303030;border-radius:15px;background:#121212;display:flex;justify-content:space-between;align-items:center}.recover-btn{background:#17130a;color:#f5d36a;border:1px solid #8b6a1a;border-radius:12px;padding:11px 13px;font-weight:1000;cursor:pointer;min-height:46px;touch-action:manipulation}.recover-btn:hover{background:#211a0b;border-color:#d9a936}.recover-btn.has-draft{box-shadow:0 0 0 2px #d9a93622,0 0 12px #d9a93622}
+.summary{margin-top:22px;padding:18px;border:1px solid #303030;border-radius:15px;background:#121212;display:flex;justify-content:space-between;align-items:center}.recover-btn.has-draft{box-shadow:0 0 0 2px #d9a93622,0 0 12px #d9a93622}
 .how{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.step{padding:22px;border:1px solid #292929;border-radius:17px;background:#111}.winner-history{display:grid;gap:12px}.winner-head{display:grid;grid-template-columns:1fr 1.25fr .9fr .65fr;gap:12px;padding:13px 18px;border:1px solid #6d5215;border-radius:14px;background:linear-gradient(135deg,#211a0b,#111);color:#f5d36a;font-size:14px;font-weight:1000}.winner-card{display:grid;grid-template-columns:1fr 1.25fr .9fr .65fr;gap:12px;align-items:center;padding:18px;border:1px solid #3a2d0d;border-radius:16px;background:#111}.winner-card .wnum{font-size:34px;font-weight:1000;color:#d9a936;text-align:right}.winner-card .wname{font-size:18px;font-weight:900}.winner-card .wprize{font-size:20px;font-weight:1000;color:#f5d36a}.winner-card .wdate{font-size:13px;color:#777;margin-top:4px}.winner-empty{padding:24px;text-align:center;border:1px dashed #383838;border-radius:16px;color:#888}
 .step b{color:#d9a936}.step p{color:#999;line-height:1.5}.foot{border-top:1px solid #222;text-align:center;color:#777;padding:28px}
 .modal{position:fixed;inset:0;background:#000b;display:none;place-items:center;padding:18px;z-index:20}.modal.open{display:grid}
@@ -348,7 +348,7 @@ body{overflow-x:hidden}
 </style>
 
 <style>
-.recovery-help{margin-top:12px;padding:12px 14px;border:1px solid #5e4816;border-radius:13px;background:linear-gradient(135deg,#17130a,#111);display:flex;align-items:center;gap:11px;color:#aaa;font-size:13px;line-height:1.4}.recovery-help .recovery-help-icon{font-size:22px;flex:0 0 auto}.recovery-help b{color:#f5d36a}.recovery-help a{color:#d9a936;font-weight:900;text-decoration:none;white-space:nowrap}@media(max-width:760px){.recovery-help{font-size:12.5px;padding:11px 12px;align-items:flex-start}.recovery-help .recovery-help-icon{font-size:20px}}
+@media(max-width:760px){.recovery-help{font-size:12.5px;padding:11px 12px;align-items:flex-start}.recovery-help .recovery-help-icon{font-size:20px}}
 </style>
 
 
@@ -694,12 +694,9 @@ body{padding-top:0!important}
 <div class="tickets-zone" id="ticketsZone"><div class="tickets" id="tickets"><p style="color:#aaa">Cargando números...</p></div><div id="ventasCerradasOverlay" class="ventas-cerradas-overlay" aria-hidden="true"><div class="ventas-cerradas-card"><div class="ventas-lock">🔒</div><h3>VENTAS CERRADAS</h3><p id="ventasCerradasText">El sistema está en mantenimiento.</p><small id="ventasCerradasThanks">Gracias por tu comprensión.</small></div></div></div>
 <div class="summary">
 <div>Números: <b class="gold" id="count">0</b> · Total: <b class="gold">$<span id="total">0</span></b></div>
-<div style="display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end;align-items:center">
-<button class="recover-btn" id="recoverPurchaseBtn" type="button" style="display:none" onclick="recuperarCompra()">♻️ Recuperar mi compra</button>
 <button class="btn" onclick="abrirFormulario()">Continuar</button>
 </div>
-</div>
-<div class="recovery-help" role="note"><span class="recovery-help-icon">🔄</span><div><b>¿Cerraste la página?</b> Si ya habías seleccionado números, puedes recuperarlos desde este mismo dispositivo cuando aparezca <b>“♻️ Recuperar mi compra”</b>. <a href="reglas.html#recuperacion">Ver cómo funciona</a></div></div>
+
 </section>
 
 <section class="section winner-section">
