@@ -785,7 +785,33 @@ function guardarPendienteRecuperable(p){try{localStorage.setItem('rifando_pendie
 function mostrarPendienteWhatsApp(p){
   if(!p||!rifa)return;
   const numsPend=String(p.numbers||'').split(',').map(x=>parseInt(x.trim(),10)).filter(Number.isFinite).sort((a,b)=>a-b);
-  const lista=[{rifaId:String(p.rifaId),numbers:numsPend.map(n=>String(n).padStart(2,'0')).join(', '),name:p.name||'',total:p.total||('
+  const lista=[{rifaId:String(p.rifaId),numbers:numsPend.map(n=>String(n).padStart(2,'0')).join(', '),name:p.name||'',total:p.total||('$'+(numsPend.length*Number(rifa.precio_numero||0)).toLocaleString('es-MX')),timestamp:Number(p.timestamp)}];
+  const wa=document.getElementById('waConfirm');
+  document.getElementById('confirmName').textContent=lista[0].name;
+  document.getElementById('confirmNumbers').textContent=lista[0].numbers;
+  document.getElementById('confirmTotal').textContent=lista[0].total;
+  wa.href='https://wa.me/528123859824?text='+encodeURIComponent(construirMensajeSolicitudes(lista));
+  const mpBtn=document.getElementById('mercadoPagoBtn'),oxxoBtn=document.getElementById('oxxoBtn'),speiBtn=document.getElementById('speiBtn'),mpMsg=document.getElementById('mercadoPagoMsg');
+  const hasPaymentCredentials=Boolean(p.paymentId&&p.paymentToken);
+  window.rifandoPagoPendiente=hasPaymentCredentials?{paymentId:String(p.paymentId),paymentToken:String(p.paymentToken)}:null;
+  const canPay=hasPaymentCredentials&&String(rifa.estado||'').toLowerCase()==='activa'&&['regular','especial','iphone','express'].includes(String(rifa.grupo_rifa||'').toLowerCase());
+  [mpBtn,oxxoBtn,speiBtn].forEach(b=>{if(b){b.style.display=canPay?'inline-block':'none';b.disabled=false;}});
+  if(mpBtn)mpBtn.textContent='💳 Pagar ahora con Mercado Pago';
+  if(oxxoBtn)oxxoBtn.textContent='🏪 Generar ticket OXXO · 24 h';
+  if(speiBtn)speiBtn.textContent='🏦 Pagar por transferencia SPEI · 24 h';
+  if(mpMsg){mpMsg.style.display='block';mpMsg.textContent=canPay?'Recuperamos tu reserva y sus datos de pago. Puedes continuar con Mercado Pago sin volver a apartar los números.':'Esta solicitud es anterior a la recuperación segura del pago. No vuelvas a reservar estos números; solicita ayuda al administrador para revisar esta reserva.';}
+  const whatsappAlreadyOpened=p.whatsappOpened===true||!hasPaymentCredentials;
+  let waNotice=document.getElementById('waConfirmNotice');
+  if(!waNotice){waNotice=document.createElement('p');waNotice.id='waConfirmNotice';waNotice.style.cssText='color:#aaa;font-size:13px;margin:8px auto';wa.after(waNotice);}
+  if(whatsappAlreadyOpened){wa.style.display='none';waNotice.textContent='Esta solicitud ya se abrió en WhatsApp o es una solicitud antigua. No la envíes de nuevo.';}
+  else{wa.style.display='inline-block';waNotice.textContent='';wa.onclick=()=>{p.whatsappOpened=true;guardarPendienteRecuperable(p);wa.style.display='none';waNotice.textContent='WhatsApp ya se abrió para esta solicitud; evita enviarla nuevamente.';};}
+  confirmWhatsAppClicked=false;
+  formView.style.display='none';
+  confirmation.classList.add('show');
+  document.getElementById('modalClose')?.classList.remove('locked-close');
+  document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
+  modal.classList.add('open');
+}
 function recuperarCompra(){if(!rifa)return;const p=obtenerPendienteActual();if(p&&String(p.rifaId)===String(rifa.id)){mostrarPendienteWhatsApp(p);return}const d=leerBorrador();if(!d||String(d.rifaId)!==String(rifa.id)){alert('No hay una compra pendiente para recuperar en este dispositivo.');actualizarBotonRecuperar();return}if(d.name)nombre.value=d.name;if(d.phone)whatsapp.value=d.phone;const recover=aplicarNumerosDisponibles(d.numbers);if(!recover.length){alert('Los números guardados ya no están disponibles o la venta está cerrada.');return}guardarBorradorCompra();abrirFormulario()}
 
 function resetConfirmation(){
