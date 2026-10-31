@@ -1706,7 +1706,7 @@ async function confirmar(e){
   const speiBtn=document.getElementById('speiBtn');
   const mpMsg=document.getElementById('mercadoPagoMsg');
   const gruposConPago=['regular','especial','iphone','express'];
-  const permitePago=String(rifa?.estado||'').toLowerCase()==='activa'&&gruposConPago.includes(String(rifa?.grupo_rifa||'').toLowerCase());
+  const permitePago=Boolean(pagoId&&paymentToken)&&String(rifa?.estado||'').toLowerCase()==='activa'&&gruposConPago.includes(String(rifa?.grupo_rifa||'').toLowerCase());
   if(mpBtn){mpBtn.style.display=permitePago?'inline-block':'none';mpBtn.disabled=false;mpBtn.textContent='💳 Pagar ahora con Mercado Pago';}
   if(oxxoBtn){oxxoBtn.style.display=permitePago?'inline-block':'none';oxxoBtn.disabled=false;oxxoBtn.textContent='🏪 Generar ticket OXXO · 24 h';}
   if(speiBtn){speiBtn.style.display=permitePago?'inline-block':'none';speiBtn.disabled=false;speiBtn.textContent='🏦 Pagar por transferencia SPEI · 24 h';}
@@ -1718,7 +1718,7 @@ async function confirmar(e){
   document.getElementById('modalClose')?.classList.remove('locked-close');
   document.getElementById('confirmCloseBtn')?.classList.remove('locked-close');
   const mpNote=document.getElementById('mercadoPagoMsg');
-  if(mpNote){mpNote.style.display='block';mpNote.textContent='WhatsApp es opcional. Puedes pagar directamente o cerrar esta ventana; tu solicitud quedará guardada temporalmente para recuperarla.';}
+  if(mpNote){mpNote.style.display='block';mpNote.textContent=(pagoId&&paymentToken)?'WhatsApp es opcional. Puedes pagar directamente con Mercado Pago o cerrar esta ventana; tu reserva y los datos para recuperarla quedarán guardados en este dispositivo.':'No se recibieron los datos seguros de pago. No vuelvas a reservar los números; contacta al administrador para revisar esta solicitud.';}
   formView.style.display='none';
   confirmation.classList.add('show');
   sel.clear();
@@ -1940,12 +1940,16 @@ setTimeout(()=>procesarRetornoMercadoPago().catch(()=>{}),700);
       ? 'Recuperamos tu reserva y sus datos de pago. Puedes continuar con Mercado Pago sin volver a apartar los números.'
       : 'Esta solicitud se guardó antes de habilitar la recuperación segura del pago. No vuelvas a reservar estos números; solicita ayuda al administrador para revisar esta reserva.';
   }
-  if(p.whatsappOpened){
+  const whatsappAlreadyOpened=p.whatsappOpened===true||!hasPaymentCredentials;
+  let waNotice=document.getElementById('waConfirmNotice');
+  if(!waNotice){waNotice=document.createElement('p');waNotice.id='waConfirmNotice';waNotice.style.cssText='color:#aaa;font-size:13px;margin:8px auto';wa.after(waNotice);}
+  if(whatsappAlreadyOpened){
     wa.style.display='none';
-    wa.insertAdjacentText('afterend',' WhatsApp ya se abrió para esta solicitud; evita enviarla nuevamente.');
+    waNotice.textContent='Esta solicitud ya se abrió en WhatsApp o es una solicitud antigua. No la envíes de nuevo.';
   }else{
     wa.style.display='inline-block';
-    wa.onclick=()=>{p.whatsappOpened=true;guardarPendienteRecuperable(p);wa.style.display='none';};
+    waNotice.textContent='';
+    wa.onclick=()=>{p.whatsappOpened=true;guardarPendienteRecuperable(p);wa.style.display='none';waNotice.textContent='WhatsApp ya se abrió para esta solicitud; evita enviarla nuevamente.';};
   }
   confirmWhatsAppClicked=false;
   formView.style.display='none';
