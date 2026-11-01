@@ -1,5 +1,6 @@
 const ORIGIN = "https://rifando-ando-mx.pages.dev";
 const SHARE_IMAGE = "https://rifasmty.com/sorteo-regio-share.png?v=3";
+const REGULAR_SHARE_IMAGE = "https://rifasmty.com/sorteo-regular-share.svg?v=2";
 
 export default {
   async fetch(request, env) {
@@ -78,7 +79,14 @@ export default {
         '<meta property="og:title" content="Sorteo Regular RA-0002 | Gana $1,000 MXN">',
         '<meta property="og:description" content="Premio de $1,000 MXN · Boleto de $15 MXN · Sorteo Regular RA-0002. ¡Elige tus números!">',
         '<meta property="og:url" content="https://rifasmty.com/sorteo-regular">',
-        '<meta name="twitter:card" content="summary">',
+        '<meta property="og:image" content="' + REGULAR_SHARE_IMAGE + '">',
+        '<meta property="og:image:secure_url" content="' + REGULAR_SHARE_IMAGE + '">',
+        '<meta property="og:image:type" content="image/svg+xml">',
+        '<meta property="og:image:width" content="1200">',
+        '<meta property="og:image:height" content="630">',
+        '<meta property="og:image:alt" content="Sorteo Regular RA-0002: premio de $1,000 MXN y boleto de $15 MXN">',
+        '<meta name="twitter:card" content="summary_large_image">',
+        '<meta name="twitter:image" content="' + REGULAR_SHARE_IMAGE + '">',
         '<meta name="twitter:title" content="Sorteo Regular RA-0002 | Gana $1,000 MXN">',
         '<meta name="twitter:description" content="Premio de $1,000 MXN. Boleto de $15 MXN. Consulta disponibilidad y bases oficiales.">',
         '<link rel="canonical" href="https://rifasmty.com/sorteo-regular">'
@@ -87,6 +95,10 @@ export default {
       html = html.replace(/<meta\s+(?:property|name)=["'](?:og:[^"']+|twitter:[^"']+|description)["'][^>]*>/gi, "");
       html = html.replace(/<link\s+rel=["']canonical["'][^>]*>/gi, "");
       if (/<head[^>]*>/i.test(html)) html = html.replace(/<head[^>]*>/i, match => match + "\n" + tags + "\n");
+      const directEntryScript = '<script>(function(){function irANumeros(){var seccion=document.getElementById("numeros");if(!seccion)return false;seccion.style.scrollMarginTop="100px";seccion.scrollIntoView({behavior:"instant",block:"start"});return true;}function intentar(){if(!irANumeros())setTimeout(intentar,250);}if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){setTimeout(intentar,80);},{once:true});}else{setTimeout(intentar,80);}})();</script>';
+      const bodyClose = html.toLowerCase().lastIndexOf("</body>");
+      if (bodyClose >= 0) html = html.slice(0, bodyClose) + directEntryScript + html.slice(bodyClose);
+      else html += directEntryScript;
       outHeaders.delete("Content-Length");
       outHeaders.delete("ETag");
       outHeaders.set("Cache-Control", "no-store");
