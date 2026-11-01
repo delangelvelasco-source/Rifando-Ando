@@ -1497,7 +1497,7 @@ function obtenerDatosCompartir(){
   const esSorteoRegular=
     idRifa==='4b23f516-7973-4a04-bff6-9b9b5cb90f4d' ||
     /regular/.test(grupo) ||
-    /sorteo\\s*regular/i.test(nombre);
+    /sorteo\s*regular/i.test(nombre);
   const ruta=esSorteoRegular?'regular/':
     (rutasPorGrupo[grupo] || (grupo.includes('especial')?'especial/':
     grupo.includes('iphone')?'iphone/':grupo.includes('express')?'express/':null));
