@@ -1,11 +1,11 @@
 const ORIGIN = "https://rifando-ando-mx.pages.dev";
 const SHARE_IMAGE = "https://rifasmty.com/sorteo-regio-share.png?v=3";
+const REGULAR_SHARE_IMAGE = "https://rifasmty.com/sorteo-regular-share.svg?v=2";
 
 export default {
   async fetch(request, env) {
     const incoming = new URL(request.url);
 
-    // Serve SEO files directly so the raffle proxy can never corrupt or replace them.
     if (incoming.pathname === "/robots.txt") {
       return new Response(
         "User-agent: *\nAllow: /\n\nSitemap: https://rifasmty.com/sitemap.xml\n",
@@ -31,10 +31,10 @@ export default {
       return env.ASSETS.fetch(new Request(catalogUrl, request));
     }
 
-    // Sorteo Regular RA-0002 y Sorteo Express RA-0014 usan la página dinámica
-    // del sistema principal, seleccionada mediante el ID de la rifa.
-    const isRegular = incoming.pathname === "/sorteo-regular" || incoming.pathname === "/sorteo-regular/";
-    const isExpress = incoming.pathname === "/express" || incoming.pathname === "/express/";
+    // Rutas públicas del Sorteo Regular RA-0002: todas llegan al motor real
+    // de compra con el ID de rifa, nunca al catálogo.
+    const isRegular = ["/regular", "/regular/", "/sorteo-regular", "/sorteo-regular/"].includes(incoming.pathname);
+    const isExpress = ["/express", "/express/"].includes(incoming.pathname);
     const upstreamPath = (isRegular || isExpress) ? "/" :
       (incoming.pathname === "/sorteo-regio" || incoming.pathname === "/sorteo-regio/" ? "/sorteo-regio" : incoming.pathname);
     const upstreamSearch = isRegular
@@ -69,8 +69,6 @@ export default {
 
     const contentType = outHeaders.get("Content-Type") || "";
 
-    // Vista previa independiente para Sorteo Regular RA-0002 ($1,000 MXN).
-    // Evita que WhatsApp reutilice la imagen y el premio del Sorteo Regio.
     if (isRegular && request.method === "GET" && contentType.includes("text/html")) {
       let html = await response.text();
       const tags = [
@@ -81,23 +79,32 @@ export default {
         '<meta property="og:title" content="Sorteo Regular RA-0002 | Gana $1,000 MXN">',
         '<meta property="og:description" content="Premio de $1,000 MXN · Boleto de $15 MXN · Sorteo Regular RA-0002. ¡Elige tus números!">',
         '<meta property="og:url" content="https://rifasmty.com/sorteo-regular">',
-        '<meta name="twitter:card" content="summary">',
+        '<meta property="og:image" content="' + REGULAR_SHARE_IMAGE + '">',
+        '<meta property="og:image:secure_url" content="' + REGULAR_SHARE_IMAGE + '">',
+        '<meta property="og:image:type" content="image/svg+xml">',
+        '<meta property="og:image:width" content="1200">',
+        '<meta property="og:image:height" content="630">',
+        '<meta property="og:image:alt" content="Sorteo Regular RA-0002: premio de $1,000 MXN y boleto de $15 MXN">',
+        '<meta name="twitter:card" content="summary_large_image">',
+        '<meta name="twitter:image" content="' + REGULAR_SHARE_IMAGE + '">',
         '<meta name="twitter:title" content="Sorteo Regular RA-0002 | Gana $1,000 MXN">',
         '<meta name="twitter:description" content="Premio de $1,000 MXN. Boleto de $15 MXN. Consulta disponibilidad y bases oficiales.">',
         '<link rel="canonical" href="https://rifasmty.com/sorteo-regular">'
-      ].join("\\n");
-      html = html.replace(/<title[^>]*>[\\s\\S]*?<\\/title>/i, "");
-      html = html.replace(/<meta\\s+(?:property|name)=["'](?:og:[^"']+|twitter:[^"']+|description)["'][^>]*>/gi, "");
-      html = html.replace(/<link\\s+rel=["']canonical["'][^>]*>/gi, "");
-      if (/<head[^>]*>/i.test(html)) html = html.replace(/<head[^>]*>/i, match => match + "\\n" + tags + "\\n");
+      ].join("\n");
+      html = html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, "");
+      html = html.replace(/<meta\s+(?:property|name)=["'](?:og:[^"']+|twitter:[^"']+|description)["'][^>]*>/gi, "");
+      html = html.replace(/<link\s+rel=["']canonical["'][^>]*>/gi, "");
+      if (/<head[^>]*>/i.test(html)) html = html.replace(/<head[^>]*>/i, match => match + "\n" + tags + "\n");
+      const directEntryScript = '<script>(function(){function irANumeros(){var seccion=document.getElementById("numeros");if(!seccion)return false;seccion.style.scrollMarginTop="100px";seccion.scrollIntoView({behavior:"instant",block:"start"});return true;}function intentar(){if(!irANumeros())setTimeout(intentar,250);}if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){setTimeout(intentar,80);},{once:true});}else{setTimeout(intentar,80);}})();</script>';
+      const bodyClose = html.toLowerCase().lastIndexOf("</body>");
+      if (bodyClose >= 0) html = html.slice(0, bodyClose) + directEntryScript + html.slice(bodyClose);
+      else html += directEntryScript;
       outHeaders.delete("Content-Length");
       outHeaders.delete("ETag");
       outHeaders.set("Cache-Control", "no-store");
       return new Response(html, { status: response.status, statusText: response.statusText, headers: outHeaders });
     }
 
-    // En las rutas de participación, llevar al usuario directamente a la selección
-    // de números después de que el HTML del sorteo termine de cargarse.
     if ((isRegular || isExpress) && request.method === "GET" && contentType.includes("text/html")) {
       let html = await response.text();
       const directEntryScript = '<script>(function(){function irANumeros(){var seccion=document.getElementById("numeros");if(!seccion)return false;seccion.style.scrollMarginTop="100px";seccion.scrollIntoView({behavior:"instant",block:"start"});return true;}if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){setTimeout(irANumeros,80);},{once:true});}else{setTimeout(irANumeros,80);}})();</script>';
@@ -109,10 +116,10 @@ export default {
       outHeaders.set("Cache-Control", "no-store");
       return new Response(html, { status: response.status, statusText: response.statusText, headers: outHeaders });
     }
+
     if ((incoming.pathname === "/" || incoming.pathname.replace(/\/$/, "") === "/sorteo-regio") &&
         request.method === "GET" && contentType.includes("text/html")) {
       let html = await response.text();
-      // Normalizar los enlaces antiguos que todavía pueda entregar el upstream.
       html = html
         .replaceAll("https://rifasmty.lol/sorteo-regio", "https://rifasmty.com/sorteo-regio")
         .replaceAll("http://rifasmty.lol/sorteo-regio", "https://rifasmty.com/sorteo-regio");
@@ -135,7 +142,6 @@ export default {
         '<meta name="twitter:image" content="' + SHARE_IMAGE + '">',
         '<link rel="canonical" href="https://rifasmty.com/">'
       ].join("\n");
-      // Remove upstream social tags first; duplicate og:image tags can make WhatsApp use the wrong preview.
       html = html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, "");
       html = html.replace(/<meta\s+(?:property|name)=["'](?:og:[^"']+|twitter:[^"']+)["'][^>]*>/gi, "");
       html = html.replace(/<link\s+rel=["']canonical["'][^>]*>/gi, "");
