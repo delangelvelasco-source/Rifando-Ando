@@ -1,4 +1,8 @@
-/regular/   /index.html   200
-/especial/  /index.html   200
-/iphone/    /index.html   200
-/express/   /index.html   200
+/sorteo-regular /sorteo-regular.html 200
+/sorteo-regular/ /sorteo-regular.html 200
+/sorteo-regular-1000 /sorteo-regular-1000/index.html 200
+/sorteo-regular-1000/ /sorteo-regular-1000/index.html 200
+/regular/ /index.html 200
+/especial/ /index.html 200
+/iphone/ /index.html 200
+/express/ /index.html 200
