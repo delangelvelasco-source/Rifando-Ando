@@ -1490,8 +1490,17 @@ function obtenerDatosCompartir(){
     url.hostname="rifasmty.com";
   }
   const rutasPorGrupo={regular:'regular/',especial:'especial/',iphone:'iphone/',express:'express/'};
-  const grupo=String(rifa?.grupo_rifa||'').toLowerCase();
-  const ruta=rutasPorGrupo[grupo];
+  const grupo=String(rifa?.grupo_rifa||'').trim().toLowerCase();
+  const idRifa=String(rifa?.id||'').trim().toLowerCase();
+  // El sorteo Regular debe compartir SIEMPRE su URL propia, aunque Supabase
+  // devuelva grupo_rifa con mayúsculas, espacios o una etiqueta descriptiva.
+  const esSorteoRegular=
+    idRifa==='4b23f516-7973-4a04-bff6-9b9b5cb90f4d' ||
+    /regular/.test(grupo) ||
+    /sorteo\\s*regular/i.test(nombre);
+  const ruta=esSorteoRegular?'regular/':
+    (rutasPorGrupo[grupo] || (grupo.includes('especial')?'especial/':
+    grupo.includes('iphone')?'iphone/':grupo.includes('express')?'express/':null));
   const baseActual=new URL('/',window.location.origin).href;
   if(ruta){
     if(window.location.hostname.includes('github.io')){
