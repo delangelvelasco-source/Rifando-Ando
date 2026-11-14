@@ -25,7 +25,7 @@ header{border-bottom:1px solid #ffffff20;background:#041a12ed;backdrop-filter:bl
 h1{font-size:clamp(38px,7vw,68px);line-height:1.02;letter-spacing:-1.8px;margin:14px auto;max-width:800px}.hero p{color:var(--muted);font-size:clamp(16px,2.3vw,19px);line-height:1.65;max-width:660px;margin:0 auto}
 .section-head{display:flex;justify-content:space-between;align-items:end;gap:14px;margin:24px 0 18px}.section-head h2{font-size:26px;margin:0}.section-head p{color:var(--muted);font-size:13px;margin:0}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;padding-bottom:64px}
-.card{border:1px solid var(--line);border-radius:22px;overflow:hidden;background:linear-gradient(145deg,#10432d,#08271b 70%);box-shadow:0 18px 45px #0003}
+.card-image{width:100%;height:190px;object-fit:contain;padding:18px;background:radial-gradient(circle at 50% 40%,#ffffff12,transparent 65%)}\n.card{border:1px solid var(--line);border-radius:22px;overflow:hidden;background:linear-gradient(145deg,#10432d,#08271b 70%);box-shadow:0 18px 45px #0003}
 .card.featured{border:2px solid #f4c84a;background:linear-gradient(145deg,#3a2608,#102b1d 72%);box-shadow:0 0 0 3px #f4c84a20,0 22px 55px #0006,0 0 35px #f4c84a22}
 .prize-art{min-height:210px;background:radial-gradient(ellipse at 50% 42%,#ffdf7840,transparent 48%),linear-gradient(120deg,#5b3b0c,#17452b 62%,#09291c);border-bottom-color:#b98b2d}
 .prize-burst{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:230px;padding:18px 28px;border:2px solid #f6d66f;border-radius:18px;background:linear-gradient(145deg,#241704eF,#3d2b0deF);box-shadow:0 10px 35px #0007,0 0 24px #f5ce5b35;transform:rotate(-2deg)}
@@ -71,14 +71,48 @@ footer{border-top:1px solid #ffffff1a;color:var(--muted);font-size:12px;line-hei
 <header><div class="wrap nav"><div class="brand">SORTEOS <span>REGIOS</span></div><div class="nav-note">Sorteos seleccionados · Monterrey y Nuevo León</div></div></header>
 <main class="wrap">
 <section class="hero"><div class="eyebrow">Tu próximo número puede estar aquí</div><h1>Sorteos regios, <span style="color:var(--gold)">en un solo lugar.</span></h1><p>Explora los sorteos que seleccionamos para ti. Consulta los detalles y continúa en la página original de cada sorteo para revisar sus reglas y participar.</p></section>
-<section aria-labelledby="raffles-title"><div class="section-head"><h2 id="raffles-title">Rifas disponibles</h2><p>5 registros activos · Consulta cada edición</p></div>
-<div class="grid">
-<article class="card featured"><div class="art prize-art"><div class="prize-burst"><span>PREMIO MAYOR</span><strong>$50,000</strong><small>PESOS MXN</small></div></div><div class="card-body"><span class="tag">★ Sorteo destacado · RA-0016</span><h3>Sorteo Regio</h3><div class="prize-note">🏆 ¡VAMOS POR LOS 50 MIL!</div><p>Premio anunciado de <strong style="color:#ffe18a">$50,000 MXN</strong> si se venden todos los boletos. 60,000 números disponibles; cada boleto cuesta <strong style="color:#ffe18a">$2 MXN</strong>.</p><div class="actions"><a class="btn" href="/sorteo-regio.html">QUIERO PARTICIPAR <span aria-hidden="true">&nbsp;→</span></a><span class="small-note">Consulta bases y disponibilidad</span></div></div></article>
-<article class="card regular-card"><div class="art regular-art"><div class="regular-promo"><span class="regular-kicker">PREMIO DEL SORTEO</span><div class="regular-value"><small>$</small>1,000</div><span class="regular-currency">PESOS MXN</span><div class="regular-pills"><span>🎟 100 NÚMEROS</span><span>BOLETO $15</span></div></div></div><div class="card-body"><span class="tag">★ Sorteo Regular · RA-0002</span><h3>Sorteo Regular</h3><div class="regular-note">🏆 ¡GANA $1,000 MXN!</div><p>Participa por <strong style="color:#caff9b">$1,000 MXN</strong>. 100 números disponibles; cada boleto cuesta <strong style="color:#caff9b">$15 MXN</strong>.</p><div class="actions"><a class="btn" href="/sorteo-regular/">QUIERO PARTICIPAR <span aria-hidden="true">&nbsp;→</span></a><span class="small-note">Consulta bases y disponibilidad</span></div></div></article>
-<article class="card special-card"><div class="art special-art"><div class="regular-promo"><span class="regular-kicker">PREMIO ESPECIAL</span><div class="regular-value" style="color:#ffdc72;text-shadow:0 3px 0 #80510b,0 0 24px #ffdc6b55"><small>$</small>8,888</div><span class="regular-currency">PESOS MXN</span><div class="regular-pills"><span>🎟 100 NÚMEROS</span><span>BOLETO $100</span></div></div></div><div class="card-body"><span class="tag">Sorteo Especial · RA-0013</span><h3>Sorteo Especial</h3><div class="prize-note">🏆 ¡PREMIO DE $8,888!</div><p>Premio registrado de <strong style="color:#ffe18a">$8,888 MXN</strong>. 100 números; cada boleto cuesta <strong style="color:#ffe18a">$100 MXN</strong>.</p><div class="actions"><a class="btn" href="/especial.html?rifa=ce0c97c4-ef96-47b8-8776-70c3a3f6a122">QUIERO PARTICIPAR <span aria-hidden="true">&nbsp;→</span></a><span class="small-note">Consulta bases y disponibilidad</span></div></div></article>
-<article class="card regular-card"><div class="art iphone-art"><div class="device-icon" aria-hidden="true">📱</div></div><div class="card-body"><span class="tag">Sorteo iPhone · RA-0006</span><h3>iPhone 18 Pro Max 256 GB</h3><div class="regular-note">📱 ¡GANA UN IPHONE!</div><p>Premio registrado de <strong style="color:#caff9b">$31,999 MXN</strong>. 250 números; cada boleto cuesta <strong style="color:#caff9b">$180 MXN</strong>.</p><span class="edition-tag">EDICIÓN RA-0006</span><div class="actions"><a class="btn" href="/iphone18.html?rifa=c9e7746b-55b6-413e-8335-dbac9c458c14">QUIERO PARTICIPAR <span aria-hidden="true">&nbsp;→</span></a><span class="small-note">Consulta bases y disponibilidad</span></div></div></article>
-<article class="card regular-card"><div class="art iphone-art"><div class="device-icon" aria-hidden="true">📱</div></div><div class="card-body"><span class="tag">Sorteo iPhone · RA-0004</span><h3>iPhone 18 Pro Max 256 GB</h3><div class="regular-note">📱 ¡GANA UN IPHONE!</div><p>Premio registrado de <strong style="color:#caff9b">$31,999 MXN</strong>. 250 números; cada boleto cuesta <strong style="color:#caff9b">$180 MXN</strong>.</p><span class="edition-tag">EDICIÓN RA-0004</span><div class="actions"><a class="btn" href="/iphone18.html?rifa=9a9bca1f-3f22-4a1a-8813-70c7f5914f65">QUIERO PARTICIPAR <span aria-hidden="true">&nbsp;→</span></a><span class="small-note">Consulta bases y disponibilidad</span></div></div></article>
-</div></section>
+<section aria-labelledby="raffles-title"><div class="section-head"><h2 id="raffles-title">Rifas disponibles</h2><p>Sorteos activos · Información actualizada</p></div>
+<div class="grid" id="raffles-grid"><div class="empty">Cargando sorteos activos…</div></div></section>
 </main>
 
+<script src="/config.js"></script>
+<script>
+(async function(){
+  const grid=document.getElementById('raffles-grid');
+  if(!grid)return;
+  const money=n=>new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:2}).format(Number(n)||0);
+  const imageFor=r=>{
+    const g=(r.grupo_rifa||'').toLowerCase(), name=(r.nombre||'').toLowerCase();
+    if(g==='regio'||/regio/.test(name))return '/billete-sorteo-regio.png';
+    if(g==='especial'||/especial/.test(name))return '/copa.PNG';
+    if(g==='iphone'||/iphone/.test(name))return '/iphone-18-pro-max.svg';
+    if(g==='regular'||/regular/.test(name))return '/sorteo-regular-share.svg';
+    return '/copa.PNG';
+  };
+  const cardFor=r=>{
+    const card=document.createElement('article');
+    card.className='card'+((r.grupo_rifa||'').toLowerCase()==='regio'?' featured':((r.grupo_rifa||'').toLowerCase()==='regular'?' regular-card':''));
+    const art=document.createElement('div');art.className='art';
+    const img=document.createElement('img');img.className='card-image';img.src=imageFor(r);img.alt='Premio de '+(r.nombre||'sorteo');img.loading='lazy';art.appendChild(img);
+    const body=document.createElement('div');body.className='card-body';
+    const tag=document.createElement('span');tag.className='tag';tag.textContent='★ '+(r.codigo_sorteo||'Sorteo activo');
+    const title=document.createElement('h3');title.textContent=r.nombre||'Sorteo';
+    const prize=document.createElement('p');prize.textContent='Premio: '+(r.premio||'Consulta las bases')+'. Boleto: '+money(r.precio_numero)+'.';
+    const actions=document.createElement('div');actions.className='actions';
+    const link=document.createElement('a');link.className='btn';link.href='/participar?rifa='+encodeURIComponent(r.id);link.textContent='QUIERO PARTICIPAR →';
+    const note=document.createElement('span');note.className='small-note';note.textContent='Consulta bases y disponibilidad';
+    actions.append(link,note);body.append(tag,title,prize,actions);card.append(art,body);return card;
+  };
+  try{
+    if(typeof SUPABASE_URL==='undefined'||typeof SUPABASE_KEY==='undefined')throw new Error('Configuración de catálogo no disponible');
+    const url=SUPABASE_URL+'/rest/v1/rifas?select=id,nombre,premio,precio_numero,estado,codigo_sorteo,grupo_rifa,created_at&estado=eq.activa&order=created_at.desc';
+    const response=await fetch(url,{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY}});
+    if(!response.ok)throw new Error('No se pudieron consultar los sorteos');
+    const raffles=await response.json();
+    grid.replaceChildren();
+    if(!raffles.length){const empty=document.createElement('div');empty.className='empty';empty.textContent='Por el momento no hay sorteos activos.';grid.appendChild(empty);return;}
+    raffles.filter(r=>r.estado==='activa').forEach(r=>grid.appendChild(cardFor(r)));
+  }catch(error){grid.replaceChildren();const empty=document.createElement('div');empty.className='empty';empty.textContent='No fue posible cargar los sorteos. Intenta actualizar la página.';grid.appendChild(empty);console.error(error);}
+})();
+</script>
 </body></html>
