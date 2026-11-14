@@ -35,7 +35,8 @@ export default {
     // del sistema principal, seleccionada mediante el ID de la rifa.
     const isRegular = incoming.pathname === "/sorteo-regular" || incoming.pathname === "/sorteo-regular/";
     const isExpress = incoming.pathname === "/express" || incoming.pathname === "/express/";
-    const upstreamPath = (isRegular || isExpress) ? "/" :
+    const isParticipar = incoming.pathname === "/participar" || incoming.pathname === "/participar/";
+    const upstreamPath = (isRegular || isExpress || isParticipar) ? "/" :
       (incoming.pathname === "/sorteo-regio" || incoming.pathname === "/sorteo-regio/" ? "/sorteo-regio" : incoming.pathname);
     const upstreamSearch = isRegular
       ? "?rifa=4b23f516-7973-4a04-bff6-9b9b5cb90f4d"
