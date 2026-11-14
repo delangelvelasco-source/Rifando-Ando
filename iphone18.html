@@ -581,7 +581,7 @@ function actualizarProcesoSorteo(r){
     if(!notice){notice=document.createElement('div');notice.id='closedNotice';notice.textContent='🔒 VENTAS CERRADAS · Los números están bloqueados y no se pueden apartar.';ticketsEl.parentNode.insertBefore(notice,ticketsEl);}
   }else if(notice)notice.remove();
 }async function cargarRifa(){
-  const {data:r,error:re}=await db.from('rifas').select('*').eq('id','9a9bca1f-3f22-4a1a-8813-70c7f5914f65').maybeSingle();
+  const {data:r,error:re}=await db.from('rifas').select('*').eq('id',new URLSearchParams(window.location.search).get('rifa')||'9a9bca1f-3f22-4a1a-8813-70c7f5914f65').maybeSingle();
   if(re||!r){
     tickets.innerHTML='<p style="color:#aaa">No hay una rifa activa disponible.</p>';
     await mostrarGanadorPublico();
