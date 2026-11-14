@@ -106,7 +106,7 @@ footer{border-top:1px solid #ffffff1a;color:var(--muted);font-size:12px;line-hei
   try{
     if(typeof SUPABASE_URL==='undefined'||typeof SUPABASE_KEY==='undefined')throw new Error('Configuración de catálogo no disponible');
     const url=SUPABASE_URL+'/rest/v1/rifas?select=id,nombre,premio,precio_numero,estado,codigo_sorteo,grupo_rifa,created_at&estado=eq.activa&order=created_at.desc';
-    const response=await fetch(url,{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY}});
+    const response=await fetch(url,{headers:{apikey:SUPABASE_KEY}});
     if(!response.ok)throw new Error('No se pudieron consultar los sorteos');
     const raffles=await response.json();
     grid.replaceChildren();
